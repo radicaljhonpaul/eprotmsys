@@ -20,5 +20,7 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
 });
 
 Broadcast::channel('UsersArray', function () {
-    return true;
+    if(Auth::check()){
+        return true;
+    }
 });

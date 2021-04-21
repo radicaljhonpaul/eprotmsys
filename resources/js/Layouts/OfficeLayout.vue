@@ -292,14 +292,12 @@
                 showingNavigationDropdown: false,
             }
         },
-        mounted(){
+        created(){
+            console.log("Dsds");
             window.Echo.channel('UsersArray')
             .listen('UsersEvents', (e) => {
                 console.log(e);
             });
-        },
-        created(){
-            console.log("Dsds");
         },
         methods: {
             switchToTeam(team) {
