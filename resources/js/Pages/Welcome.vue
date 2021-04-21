@@ -3,7 +3,7 @@
         <nav class="nav fixed w-full flex flex-wrap items-center text-gray-500 justify-between px-4 bg-white">
             <div class="flex flex-no-shrink items-center mr-6 py-3 text-grey-darkest">
                 <img class="fill-current h-8 mr-2 w-8" src="/images/eprotrackmonsys.png">
-                <span class="font-semibold text-xl tracking-tight">PROTrailMIS</span>
+                <span class="font-semibold text-xl tracking-tight">ePROTrailMIS</span>
             </div>
 
                 <input class="menu-btn hidden" type="checkbox" id="menu-btn">
@@ -35,7 +35,7 @@
             <!--Left Col-->
             <div class="flex flex-col sm:text-base xl:text-6xl lg:text-5xl w-full md:w-1/2 justify-center items-start text-center md:text-left">
                 <h1 class="my-4 font-bold leading-tight">
-                    e-Purchase Request & Order Tracking and Monitoring System
+                    e-Purchase Request/Order Trailing & Monitoring Information System
                 </h1>
             </div>
             <!--Right Col-->

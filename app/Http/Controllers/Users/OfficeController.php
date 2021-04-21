@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Users;
 
 use Inertia\Inertia;
 use App\Http\Controllers\Controller;
+use App\Models\UsersDetails;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -17,7 +19,9 @@ class OfficeController extends Controller
     public function index()
     {
         //
-        return Inertia::render('Dashboards/OfficeDash');
+        return Inertia::render('Dashboards/OfficeDash',[
+            'UsersDetails' => UsersDetails::select('id','fname','lname','contact','cluster','section','division','position')->where('id', Auth::id())->get(),
+        ]);
     }
 
     /**

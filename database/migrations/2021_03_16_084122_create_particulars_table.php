@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class CreateParticularsTable extends Migration {
 
@@ -16,6 +17,7 @@ class CreateParticularsTable extends Migration {
 		// 	$table->float('item_amount');
 		// 	$table->integer('dtrack_id_fk');
 		// 	$table->string('purpose', 200);
+		// 	$table->softDeletes();
 		// });
 	}
 

@@ -1,5 +1,6 @@
 <?php
 
+use App\Events\UsersEvents;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -29,6 +30,11 @@ Route::get('/', function () {
     ]);
 });
 
+Route::get('/animal', function () {
+    broadcast(new UsersEvents("Yaawa"));
+});
+
+
 Route::get('getDivision', [DivSecClusController::class, 'getDivision']);
 Route::get('getSection', [DivSecClusController::class, 'getSection']);
 Route::get('getCluster', [DivSecClusController::class, 'getCluster']);
@@ -41,9 +47,11 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function(){
         // Custom function Returning Vue/Views
         Route::get('/mydocs', [DocumentController::class, 'index'])->name('mydocs');
         Route::get('/incoming', [DocumentController::class, 'incoming'])->name('incoming');
+        Route::get('/outgoing', [DocumentController::class, 'outgoing'])->name('outgoing');
         Route::get('/docshistory', [DocumentController::class, 'docshistory'])->name('docshistory');
         
         // Custom function Processing Data
+        Route::post('/routedoc', [DocumentController::class, 'routedoc'])->name('routedoc');
         Route::post('/logdoc', [DocumentController::class, 'logdoc'])->name('logdoc');
         Route::post('/createdoc', [DocumentController::class, 'create'])->name('createdoc');
         

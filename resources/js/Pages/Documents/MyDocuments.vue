@@ -34,10 +34,10 @@
 												Document
 											</th>
 											<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-												Prev.
+												Previous
 											</th>
 											<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-												Curr.
+												Current
 											</th>
 											<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
 												Destination
@@ -53,44 +53,41 @@
 												No Data Available
 											</td>
 										</tr>
-										<tr v-show="incomingDocuments.data.length > 0" v-for="docs in incomingDocuments.data" :key="docs.created_at" class="border-r-8 border-green-500">
+										<tr v-show="incomingDocuments.data.length > 0" v-for="(item, index) in incomingDocuments.data" :key="index" class="border-r-8 border-green-500">
 											<td class="px-6 py-4 whitespace-nowrap">
 												<div class="flex items-center">
 													<div class="flex-shrink-0 h-10 w-10">
-														<img class="h-10 w-10 rounded-full" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=4&w=256&h=256&q=60" alt="">
+														<img class="h-10 w-10 rounded-full" :src="'/storage/'+$page.props.user.profile_photo_path" alt="">
 													</div>
 													<div class="ml-4">
 														<div class="text-sm font-medium text-gray-900">
-															<span v-if="docs.users_details.gender == 'Male'">
+															<span v-if="item.users_details.gender == 'Male'">
 																Mr.
 															</span>	
 															<span v-else>
 																Ms.
-															</span>	
-															{{ docs.users_details.fname }} {{ docs.users_details.lname }}
+															</span>
+															{{ item.users_details.fname }} {{ item.users_details.lname }}
 														</div>
 													</div>
 												</div>
 											</td>
 											<td class="px-6 py-4 whitespace-nowrap">
-												<!-- <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-												Active
-												</span> -->
-												<div class="text-xs text-gray-900">{{ docs.doc_type }} </div>
-												<div class="text-xs text-gray-500">{{ docs.documents_particulars_tbl.length }} Particulars</div>
-												<div class="text-xs text-red-500">DTRAK No. {{ docs.dtrack_no }}</div>
+												<div class="text-xs text-gray-900">{{ item.doc_type }} </div>
+												<div class="text-xs text-gray-500">{{ item.documents_particulars_tbl.length }} Particulars</div>
+												<div class="text-xs text-red-500">DTRAK No. {{ item.dtrack_no }}</div>
 											</td>
 											
 											<!-- if there are exactly 2 ka logs -->
-											<td v-if="docs.documents_status_log_tbl.length > 1" class="px-6 py-4 whitespace-nowrap" style="font-size:.55rem;line-height:1rem;">
-												<p class="text-red-500" v-if="docs.documents_status_log_tbl[1] != null" v-html=" retDiv(docs.documents_status_log_tbl[1].division,docs.documents_status_log_tbl[1].section,docs.documents_status_log_tbl[1].cluster,1)"></p>
+											<td v-if="item.documents_status_log_tbl.length > 1" class="px-6 py-4 whitespace-nowrap" style="font-size:.55rem;line-height:1rem;">
+												<p class="text-red-500" v-if="item.documents_status_log_tbl[1] != null" v-html=" retDiv(item.documents_status_log_tbl[1].division,item.documents_status_log_tbl[1].section,item.documents_status_log_tbl[1].cluster,1)"></p>
 											</td>
-											<td v-if="docs.documents_status_log_tbl.length > 1" class="px-6 py-4 whitespace-nowrap" style="font-size:.55rem;line-height:1rem;">
-												<p class="text-yellow-500"  v-if="docs.documents_status_log_tbl[0] != null" v-html=" retDiv(docs.documents_status_log_tbl[0].division,docs.documents_status_log_tbl[0].section,docs.documents_status_log_tbl[0].cluster,1)"></p>
+											<td v-if="item.documents_status_log_tbl.length > 1" class="px-6 py-4 whitespace-nowrap" style="font-size:.55rem;line-height:1rem;">
+												<p class="text-yellow-500"  v-if="item.documents_status_log_tbl[0] != null" v-html=" retDiv(item.documents_status_log_tbl[0].division,item.documents_status_log_tbl[0].section,item.documents_status_log_tbl[0].cluster,1)"></p>
 											</td>
-											<td v-if="docs.documents_status_log_tbl.length > 1" class="px-6 py-4 whitespace-nowrap" style="font-size:.55rem;line-height:1rem;">
-												<p class="text-pink-500" v-if="docs.documents_status_log_tbl[0] != null && docs.documents_status_log_tbl[0].forwarded_to != null"  v-html="retDiv(docs.documents_status_log_tbl[0].forwarded_to,'','',2)"></p>
-												<p v-if="docs.documents_status_log_tbl[0] != null && docs.documents_status_log_tbl[0].forwarded_to == null">
+											<td v-if="item.documents_status_log_tbl.length > 1" class="px-6 py-4 whitespace-nowrap" style="font-size:.55rem;line-height:1rem;">
+												<p class="text-pink-500" v-if="item.documents_status_log_tbl[0] != null && item.documents_status_log_tbl[0].forwarded_to != null"  v-html="retDiv(item.documents_status_log_tbl[0].forwarded_to,'','',2)"></p>
+												<p v-if="item.documents_status_log_tbl[0] != null && item.documents_status_log_tbl[0].forwarded_to == null">
 													<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-500 text-white">
 														Pending
 													</span>
@@ -98,18 +95,18 @@
 											</td>
 
 											<!-- if there are exactly 1 ka logs -->
-											<td v-if="docs.documents_status_log_tbl.length == 1" class="px-6 py-4 whitespace-nowrap" style="font-size:.55rem;line-height:1rem;">
-												<p class="text-red-500" v-if="docs.documents_status_log_tbl[0] != null" v-html=" retDiv(docs.documents_status_log_tbl[0].division,docs.documents_status_log_tbl[0].section,docs.documents_status_log_tbl[0].cluster,1)"></p>
+											<td v-if="item.documents_status_log_tbl.length == 1" class="px-6 py-4 whitespace-nowrap" style="font-size:.55rem;line-height:1rem;">
+												<p class="text-red-500" v-if="item.documents_status_log_tbl[0] != null" v-html=" retDiv(item.documents_status_log_tbl[0].division,item.documents_status_log_tbl[0].section,item.documents_status_log_tbl[0].cluster,1)"></p>
 											</td>
-											<td v-if="docs.documents_status_log_tbl.length == 1" class="px-6 py-4 whitespace-nowrap" style="font-size:.55rem;line-height:1rem;">
-												<p class="text-yellow-500" v-if="docs.documents_status_log_tbl[0] != null" v-html=" retDiv(docs.documents_status_log_tbl[0].division,docs.documents_status_log_tbl[0].section,docs.documents_status_log_tbl[0].cluster,1)"></p>
+											<td v-if="item.documents_status_log_tbl.length == 1" class="px-6 py-4 whitespace-nowrap" style="font-size:.55rem;line-height:1rem;">
+												<p class="text-yellow-500" v-if="item.documents_status_log_tbl[0] != null" v-html=" retDiv(item.documents_status_log_tbl[0].division,item.documents_status_log_tbl[0].section,item.documents_status_log_tbl[0].cluster,1)"></p>
 											</td>
-											<td v-if="docs.documents_status_log_tbl.length == 1" class="px-6 py-4 whitespace-nowrap" style="font-size:.55rem;line-height:1rem;">
-												<p class="text-pink-500" v-if="docs.documents_status_log_tbl[0] != null && docs.documents_status_log_tbl[0].forwarded_to != null"  v-html="retDiv(docs.documents_status_log_tbl[0].forwarded_to,'','',2)"></p>
+											<td v-if="item.documents_status_log_tbl.length == 1" class="px-6 py-4 whitespace-nowrap" style="font-size:.55rem;line-height:1rem;">
+												<p class="text-pink-500" v-if="item.documents_status_log_tbl[0] != null && item.documents_status_log_tbl[0].forwarded_to != null"  v-html="retDiv(item.documents_status_log_tbl[0].forwarded_to,'','',2)"></p>
 											</td>
 
 											<td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-												<a @click="ViewingModal = true, viewParticulars(docs)" class="text-green-500 hover:text-green-700 cursor-pointer">View <i class="fas fa-eye"></i> </a>
+												<a @click="ViewingModal = true, viewParticulars(item), toggleParticularsDocHistory()" class="text-green-500 hover:text-green-700 cursor-pointer">View <i class="fas fa-eye"></i> </a>
 											</td>
 										</tr>
 										<!-- More items... -->
@@ -340,16 +337,16 @@
 							<span class="text-2xl font-semibold">{{ SpecificDocData.doc_type }}</span><br>
 							<span class="text-xs font-light" >Origin: {{ this.OriginFname }}  {{ this.OriginLname }} </span><br>
 						</div>
-						<div class="inline-flex gap-3 ml-auto">
-							<span class="text-gray-500">Dtrack No.</span> <span class="text-green-500">{{ SpecificDocData.dtrack_no }}</span>
+						<div class="block ml-auto">
+							<div class="text-xs text-gray-500">Dtrack No. <span class="text-green-500">{{ SpecificDocData.dtrack_no }}</span> </div>
+							<div class="text-xs text-gray-500 font-light ml-auto">Created On: {{ frontEndDateFormat(SpecificDocData.created_at) }}</div>	
 						</div>
 					</section>
-					<section class="flex gap-x-4 px-5 mt-2" v-if="ToggleDocsHistory_Particulars">
+					<section class="flex gap-x-4 px-5 mt-2" v-if="!ToggleDocsHistory_Particulars">
 						<!-- This example requires Tailwind CSS v2.0+ -->
 						<div class="py-2 align-middle inline-block min-w-full">
 							<section class="border-b text-gray-500 flex justify-between items-center">
 								<span class="text-1xl font-semibold">Particulars</span><br>
-								<span class="text-xs font-light ml-auto">Created On: {{ SpecificDocData.created_at }}</span>	
 							</section>
 							<div class="overflow-hidden border border-gray-200 ">
 								<table class="table-auto min-w-full divide-y divide-gray-200">
@@ -390,7 +387,7 @@
 						</div>
 					</section>
 
-					<section class="px-5 mt-2" v-if="!ToggleDocsHistory_Particulars">
+					<section class="px-5 mt-2" v-if="ToggleDocsHistory_Particulars">
 						<table class="table-auto min-w-full divide-y divide-gray-200">
 							<thead class="text-xs bg-gray-50">
 								<tr>
@@ -414,7 +411,7 @@
 							<tbody class="bg-white divide-y divide-gray-200">
 								<tr v-for="history in SpecificDocData.documents_status_log_tbl" :key="history" class="border-r-8 border-green-500 text-gray-500" style="font-size:.65rem;line-height:1rem;">
 									<td class="px-2 py-2 whitespace-nowrap">
-										{{ history.created_at }}
+										{{ frontEndDateFormat(history.created_at) }}
 									</td>
 									<td class="px-2 py-2 whitespace-nowrap">
 										<span v-html=" retDiv(history.division,history.section,history.cluster,1)"></span>	
@@ -443,7 +440,7 @@
 
 					<section class="px-3 pt-3 pb-1 flex justify-between items-center">
 							<button type="button" @click="toggleParticularsDocHistory" class="focus:outline-none bg-white text-xs text-blue-400 hover:bg-blue-400 uppercase hover:shadow-lg hover:text-white border border-blue-400 rounded-full px-3 py-2 mx-0 outline-none">
-								<span v-if="ToggleDocsHistory_Particulars">Docs History <i class="fas fa-history"></i></span>
+								<span v-if="ToggleDocsHistory_Particulars">Vew Particulars <i class="fas fa-history"></i></span>
 								<span v-if="!ToggleDocsHistory_Particulars">Go back <i class="fas fa-chevron-left"></i></span>
 							</button>
 						<div class="inline-flex gap-3 ml-auto">
@@ -463,7 +460,8 @@
     import OfficeLayout from '@/Layouts/OfficeLayout'
     import Modal from '@/Jetstream/Modal'
 	import UploadImages from "vue-upload-drop-images"
-	
+	import moment from 'moment'
+
     export default {
         components: {
             OfficeLayout,
@@ -475,7 +473,7 @@
 			return {
 				ViewingModal: false,
 				CreateDocumentModal: false,
-				ToggleDocsHistory_Particulars: true,
+				ToggleDocsHistory_Particulars: false,
 				CreateDocForm: this.$inertia.form({
 					CreateDtrackNo: null,
 					CreateDocType: null,
@@ -784,8 +782,7 @@
 				// ViewingModal
 				if(type == 1){
 					this.ViewingModal = false;
-					this.ViewingModalParticulars = false;
-					this.resetModal();
+					// this.resetModal();
 					this.SpecificDocData = [];
 					console.log(this.SpecificDocData);
 				}else if(type == 2){
@@ -797,20 +794,15 @@
 			},
 			toggleParticularsDocHistory(){
 				this.ToggleDocsHistory_Particulars = !this.ToggleDocsHistory_Particulars;
-				this.viewDocsHistory();
 			},
 			viewDocsHistory(){
 				console.log("viewDocsHistory");
-			},
-			resetModal(){
-				this.ViewingModalParticulars = true;
-				this.ViewingModalDocHistory = false;
 			},
 			openImageInNewTab(event){
 				var largeImage = document.getElementById(event.currentTarget.id);
 				var url=largeImage.getAttribute('src');
 				window.open(url,'_blank','docHistory');
-			},		
+			},
 			viewParticulars(data){
 				console.log("viewParticulars");
 				console.log(data);
@@ -886,6 +878,9 @@
 				let val = (value/1).toFixed(2).replace(',', '.')
 				return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
 			},
+			frontEndDateFormat: function(date) {
+				return moment(date).format('MMMM Do YYYY, h:mm:ss a');
+        	},
 			// Methods for Dependent Dropdown
             getDivision: function(){
               axios.get('/getDivision')
@@ -940,23 +935,6 @@
 			},
 			submitCreateDocumentModal() {
 				console.log("CreateDocForm");
-                
-                // const config = {
-                //     headers: {
-                //         'content-type': 'multipart/form-data'
-                //     }
-                // }
-                // let data = new FormData();
-                // data.append('file', this.CreateDocForm.CreateDocfile);	
-				// console.log(this.CreateDocForm);
-
-				// this.$inertia.post(route('office.createdoc'), {
-				// 	forceFormData: true,
-				// 	preserveScroll: true,
-				// 	onSuccess: () => this.CreateDocumentModal = false,
-				// 	onFinish: () => this.CreateDocForm.reset(),
-				// })
-
 				this.$inertia.post(route('office.createdoc'), this.CreateDocForm, {
 					forceFormData: true,
 					onSuccess: (res) => this.CreateDocumentModal = false,
@@ -967,9 +945,9 @@
 			},
 			handleImages(files){
 				console.log("yawa");
-					for(var i=0;i<files.length;i++){
-						this.CreateDocForm.CreateDocfile.push(files[i]);
-					}
+				for(var i=0;i<files.length;i++){
+					this.CreateDocForm.CreateDocfile.push(files[i]);
+				}
 				console.log(this.CreateDocForm.CreateDocfile);
 				if(files.length > this.CreateDocForm.CreateDocfile.length || files.length < this.CreateDocForm.CreateDocfile.length){
 					this.CreateDocForm.CreateDocfile = [];
@@ -978,7 +956,6 @@
 					}
 					console.log(this.CreateDocForm.CreateDocfile);
 				}
-
 			},
 		},
 		created: function(){

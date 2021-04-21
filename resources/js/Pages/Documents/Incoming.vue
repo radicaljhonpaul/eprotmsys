@@ -60,7 +60,7 @@
 											<td class="px-6 py-4 whitespace-nowrap">
 												<div class="flex items-center">
 													<div class="flex-shrink-0 h-10 w-10">
-														<img class="h-10 w-10 rounded-full" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=4&w=256&h=256&q=60" alt="">
+														<img class="h-10 w-10 rounded-full" :src="'/storage/'+$page.props.user.profile_photo_path" alt="">
 													</div>
 													<div class="ml-4">
 														<div class="text-sm font-medium text-gray-900">
@@ -313,10 +313,10 @@
 			</div>
 		</modal>
 
-		<!-- Modal for Logging Document -->
-		<modal :show="ForwardingModal" maxWidth="sm" >
+		<!-- Modal for Forwarding Document -->
+		<modal :show="ForwardingModal" maxWidth="2xl" >
 			<div class="py-2">
-				<form @submit.prevent="submitLogDocumentModal">
+				<form @submit.prevent="submitForwardingModal">
 					<section class="border-b border-gray-300 px-5 flex justify-between items-center">
 						<div class="text-gray-500">
 							<span class="text-2xl font-semibold">Route document |</span> <span class="text-lg"> {{ this.DtrakNoHolder }} </span> <br>
@@ -324,87 +324,109 @@
 						</div>
 					</section>
 
-					<section class="border-b border-gray-300 px-5 flex justify-between items-center">
-						<div class="w-full block">
-							<div class="block text-purple-500 my-2 text-base">
-								Destination
-							</div>
-							<div class="block text-gray-500 mb-2">
-								<label for="doctype" class="text-xs">Division</label>
-								<select class="mt-1 py-2 bg-gray-50 border-b-2 border-t-0 border-l-0 border-r-0 rounded-xs w-full text-gray-800 focus:outline-none focus:ring-0" v-model="ForwardDocForm.ForwardDocDivisionData" @change='getSection()' required>
-									<option v-for='divData in Division_List' :key="divData.value" :value='divData.id'>{{ divData.name }}</option>
-								</select>
-							</div>
-							
-							<div class="block text-gray-500 mb-2">
-								<label for="doctype" class="text-xs">Section</label>
-								<select class="mt-1 py-2 bg-gray-50 border-b-2 border-t-0 border-l-0 border-r-0 rounded-xs w-full text-gray-800 focus:outline-none focus:ring-0" v-model="ForwardDocForm.ForwardDocSectionData" @change='getCluster()'>
-									<option v-for='secData in Section_List' :key="secData.value" :value='secData.id'>{{ secData.name }}</option>
-								</select>
-							</div>
-
-							<div v-if="Cluster_List.length > 0 && ForwardDocForm.ForwardDocDivisionData == 4" class="block text-gray-500 mb-2">
-								<label for="doctype" class="text-xs">Cluster</label>
-								<select class="mt-1 py-2 bg-gray-50 border-b-2 border-t-0 border-l-0 border-r-0 rounded-xs w-full text-gray-800 focus:outline-none focus:ring-0" v-model="ForwardDocForm.ForwardDocClusterData">
-									<option v-for='clusData in Cluster_List' :key="clusData.value" :value='clusData.id'>{{ clusData.name }}</option>
-								</select>
-							</div>
-
-							<div class="block text-gray-500 my-3">
-								<!-- Toggle A -->
-								<label for="toogleA" class="flex items-center cursor-pointer">
-									<!-- toggle -->
-									<div class="relative">
-										<!-- input -->
-										<input id="toogleA" type="checkbox" class="sr-only" v-model="ForwardDocForm.AddNote"/>
-										<!-- line -->
-										<div class="w-10 h-4 bg-gray-100 rounded-full shadow-inner"></div>
-										<!-- dot -->
-										<div class="dot absolute w-6 h-6 border-1 bg-gray-500 rounded-full shadow-md -left-1 -top-1 transition"></div>
+					<div class="flex flex-wrap px-5 py-2">
+						<div class="w-full sm:w-1/2 md:w-1/2 lg:w-1/2 xl:w-1/2 mb-2 px-2">
+							<section class="flex justify-between items-center">
+								<div class="w-full block">
+									<div class="block text-purple-500 my-2 text-base">
+										Destination
 									</div>
-									<!-- label -->
-									<div class="ml-3 font-medium text-xs">
-										<span v-if="ForwardDocForm.AddNote == true" class="text-green-500">Please fill-out note for notes/actions/remarks</span>
-										<span v-if="ForwardDocForm.AddNote == false" class="text-red-500">Attach a note?</span>
+									<div class="block text-gray-500 mb-2">
+										<label for="doctype" class="text-xs">Division</label>
+										<select class="mt-1 py-2 bg-gray-50 border-b-2 border-t-0 border-l-0 border-r-0 rounded-xs w-full text-gray-800 focus:outline-none focus:ring-0" v-model="ForwardDocForm.ForwardDocDivisionData" @change='getSection()' required>
+											<option v-for='divData in Division_List' :key="divData.value" :value='divData.id'>{{ divData.name }}</option>
+										</select>
 									</div>
-								</label>
-							</div>
-
-							<!-- Has Note -->
-							<div class="block text-gray-500 my-2" v-if="ForwardDocForm.AddNote == true">
-								<textarea id="about" type="text" v-model="ForwardDocForm.ForwardDocNote" name="note" rows="5" class="shadow-sm focus:ring-indigo-500 focus:ring-1 focus:border-indigo-500 mt-1 block w-full sm:text-sm border-gray-300 rounded-md" placeholder="Place your comments here..."></textarea>
-							</div>
-
-							<!-- Has Attachment -->
-							<div class="block text-gray-500 my-3">
-								<!-- Toggle A -->
-								<label for="toogleB" class="flex items-center cursor-pointer">
-									<!-- toggle -->
-									<div class="relative">
-										<!-- input -->
-										<input id="toogleB" type="checkbox" class="sr-only" v-model="ForwardDocForm.AddAttachment"/>
-										<!-- line -->
-										<div class="w-10 h-4 bg-gray-100 rounded-full shadow-inner"></div>
-										<!-- dot -->
-										<div class="dot absolute w-6 h-6 border-1 bg-gray-500 rounded-full shadow-md -left-1 -top-1 transition"></div>
+									
+									<div class="block text-gray-500 mb-2">
+										<label for="doctype" class="text-xs">Section</label>
+										<select class="mt-1 py-2 bg-gray-50 border-b-2 border-t-0 border-l-0 border-r-0 rounded-xs w-full text-gray-800 focus:outline-none focus:ring-0" v-model="ForwardDocForm.ForwardDocSectionData" @change='getCluster()'>
+											<option v-for='secData in Section_List' :key="secData.value" :value='secData.id'>{{ secData.name }}</option>
+										</select>
 									</div>
-									<!-- label -->
-									<div class="ml-3 font-medium text-xs">
-										<span v-if="ForwardDocForm.AddAttachment == true" class="text-green-500">Add files to attach</span>
-										<span v-if="ForwardDocForm.AddAttachment == false" class="text-red-500">Attach a file?</span>
+
+									<div v-if="Cluster_List.length > 0 && ForwardDocForm.ForwardDocDivisionData == 4" class="block text-gray-500 mb-2">
+										<label for="doctype" class="text-xs">Cluster</label>
+										<select class="mt-1 py-2 bg-gray-50 border-b-2 border-t-0 border-l-0 border-r-0 rounded-xs w-full text-gray-800 focus:outline-none focus:ring-0" v-model="ForwardDocForm.ForwardDocClusterData">
+											<option v-for='clusData in Cluster_List' :key="clusData.value" :value='clusData.id'>{{ clusData.name }}</option>
+										</select>
 									</div>
-								</label>
-							</div>
 
-							<div class="block text-gray-500 my-2" v-if="ForwardDocForm.AddAttachment == true">
-								<UploadImages @change="handleImages" :max="5" maxError="Max files exceed" fileError="Please upload an image file. (.PNG, .JPEG, .JPG)" uploadMsg="Add files to attach"/>
-							</div>
-
+									<div class="block text-purple-500 my-3 text-base">
+										Document Action
+									</div>
+									<div class="block text-gray-500 mb-2">
+										<label for="doctype" class="text-xs">Action</label>
+										<select class="mt-1 py-2 bg-gray-50 border-b-2 border-t-0 border-l-0 border-r-0 rounded-xs w-full text-gray-800 focus:outline-none focus:ring-0" v-model='ForwardDocForm.ForwardDocAction' required>
+											<option v-for="option in Doc_Action_Options" :key="option.value" :value="option.value">
+												{{ option.text }}
+											</option>
+										</select>
+									</div>
+								</div>
+							</section>
 						</div>
-					</section>
 
-					<section class="px-3 pt-3 pb-1 flex justify-between items-center">
+						<div class="w-full sm:w-1/2 md:w-1/2 lg:w-1/2 xl:w-1/2 mb-2 px-2">
+							<div class="w-full block">
+								<div class="block text-gray-500 my-3">
+									<!-- Toggle A -->
+									<label for="toogleA" class="flex items-center cursor-pointer">
+										<!-- toggle -->
+										<div class="relative">
+											<!-- input -->
+											<input id="toogleA" type="checkbox" class="sr-only" v-model="ForwardDocForm.AddNote"/>
+											<!-- line -->
+											<div class="w-10 h-4 bg-gray-100 rounded-full shadow-inner"></div>
+											<!-- dot -->
+											<div class="dot absolute w-6 h-6 border-1 bg-gray-500 rounded-full shadow-md -left-1 -top-1 transition"></div>
+										</div>
+										<!-- label -->
+										<div class="ml-3 font-medium text-xs">
+											<span v-if="ForwardDocForm.AddNote == true" class="text-green-500">Please fill-out note for notes/actions/remarks</span>
+											<span v-if="ForwardDocForm.AddNote == false" class="text-red-500">Attach a note?</span>
+										</div>
+									</label>
+								</div>
+
+								<!-- Has Note -->
+								<div class="block text-gray-500 my-2" v-if="ForwardDocForm.AddNote == true">
+									<textarea id="about" type="text" v-model="ForwardDocForm.ForwardDocNote" name="note" rows="5" class="shadow-sm focus:ring-indigo-500 focus:ring-1 focus:border-indigo-500 mt-1 block w-full sm:text-sm border-gray-300 rounded-md" placeholder="Place your comments here..."></textarea>
+								</div>
+
+								<!-- Has Attachment -->
+								<div class="block text-gray-500 my-3">
+									<!-- Toggle A -->
+									<label for="toogleB" class="flex items-center cursor-pointer">
+										<!-- toggle -->
+										<div class="relative">
+											<!-- input -->
+											<input id="toogleB" type="checkbox" class="sr-only" v-model="ForwardDocForm.AddAttachment"/>
+											<!-- line -->
+											<div class="w-10 h-4 bg-gray-100 rounded-full shadow-inner"></div>
+											<!-- dot -->
+											<div class="dot absolute w-6 h-6 border-1 bg-gray-500 rounded-full shadow-md -left-1 -top-1 transition"></div>
+										</div>
+										<!-- label -->
+										<div class="ml-3 font-medium text-xs">
+											<span v-if="ForwardDocForm.AddAttachment == true" class="text-green-500">Add files to attach</span>
+											<span v-if="ForwardDocForm.AddAttachment == false" class="text-red-500">Attach a file?</span>
+										</div>
+									</label>
+								</div>
+
+								<div class="block text-gray-500 my-2" v-if="ForwardDocForm.AddAttachment == true">
+									<UploadImages @change="handleImages" :max="5" maxError="Max files exceed" fileError="Please upload an image file. (.PNG, .JPEG, .JPG)" uploadMsg="Add files to attach"/>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<section class="px-3 border-t border-gray-300  pt-3 pb-1 flex justify-between items-center">
 						<div class="inline-flex gap-3 ml-auto">
+							<button v-if="isForwardingDocFormComplete" type="submit" class="focus:outline-none bg-white text-xs text-green-500 hover:bg-green-500 uppercase hover:shadow-lg hover:text-white border border-green-500 rounded-full px-3 py-2 mx-0 outline-none">
+								Received <i class="fas fa-file-import"></i>
+							</button>
 							<button type="button" @click="closeModal(3)" class="focus:outline-none bg-white text-xs text-red-500 hover:bg-red-500 uppercase hover:shadow-lg hover:text-white border border-red-500 rounded-full px-3 py-2 mx-0 outline-none">
 								close <i class="fas fa-times-circle"></i>
 							</button>
@@ -448,9 +470,11 @@
 					ForwardDocDivisionData: null,
 					ForwardDocSectionData: 0,
 					ForwardDocClusterData: 0,
+					ForwardDocAction: null,
+					CreateDocfile: [],
+					DtrakNoHolder: "",
 				}),
 				IncomingDtrackArray: [],
-				DtrakNoHolder: "",
 				SpecificDocData: [],
 				OriginFname: "",
 				OriginLname: "",
@@ -459,9 +483,74 @@
 				Division_List: [],
 				Section_List: [],
 				Cluster_List: [],
+				Doc_Action_Options: [
+					{ text:"For Action", value: "For Action" },
+					{ text:"For Action Taken", value: "For Action Taken" },
+					{ text:"For Approval", value: "For Approval" },
+					{ text:"For ARD's approval", value: "For ARD's approval" },
+					{ text:"For awarding", value: "For awarding" },
+					{ text:"For CAF", value: "For CAF" },
+					{ text:"For Canvass", value: "For Canvass" },
+					{ text:"For Certification", value: "For Certification" },
+					{ text:"For Clearance", value: "For Clearance" },
+					{ text:"For Comment", value: "For Comment" },
+					{ text:"For Confirmation", value: "For Confirmation" },
+					{ text:"For Coordination", value: "For Coordination" },
+					{ text:"For Correction", value: "For Correction" },
+					{ text:"For Delivery", value: "For Delivery" },
+					{ text:"For Discussion / Meeting", value: "For Discussion / Meeting" },
+					{ text:"For Dissemination", value: 'Accom"For Dissemination"shment' },
+					{ text:"For Distribution", value: "For Distribution" },
+					{ text:"For Draft Message", value: "For Draft Message" },
+					{ text:"For Draft Reply", value: "For Draft Reply" },
+					{ text:"For Evaluation", value: "For Evaluation" },
+					{ text:"For Filing", value: "For Filing" },
+					{ text:"For Filling", value: "For Filling" },
+					{ text:"For Filling Up Forms", value: "For Filling Up Forms" },
+					{ text:"For Finalization", value: "For Finalization" },
+					{ text:"For Information", value: "For Information" },
+					{ text:"For Initial", value: "For Initial" },
+					{ text:"For Inspection", value: "For Inspection" },
+					{ text:"For Internet Posting", value: "For Internet Posting" },
+					{ text:"For Intranet Posting", value: "For Intranet Posting" },
+					{ text:"For Legal Action", value: "For Legal Action" },
+					{ text:"For Mailing", value: "For Mailing" },
+					{ text:"For Monitoring", value: "For Monitoring" },
+					{ text:"For Newspaper Publication", value: "For Newspaper Publication" },
+					{ text:"For Payment", value: "For Payment" },
+					{ text:"for PO preparation", value: "for PO preparation" },
+					{ text:"For Processing", value: "For Processing" },
+					{ text:"For Processing - CA", value: "For Processing - CA" },
+					{ text:"For Processing - LTO", value: "For Processing - LTO" },
+					{ text:"For Purchase Order (PO)", value: "For Purchase Order (PO)" },
+					{ text:"For RD's approval", value: "For RD's approval" },
+					{ text:"For Re-canvass", value: "For Re-canvass" },
+					{ text:"For Re-Evaluation", value: "For Re-Evaluation" },
+					{ text:"For Recommendation", value: "For Recommendation" },
+					{ text:"For Registry", value: "For Registry" },
+					{ text:"For Release", value: "For Release" },
+					{ text:"For Resolution", value: "For Resolution" },
+					{ text:"For Review", value: "For Review" },
+					{ text:"For Revision", value: "For Revision" },
+					{ text:"For Shopping", value: "For Shopping" },
+					{ text:"For Signature", value: "For Signature" },
+					{ text:"For Stock Availability Inquiry", value: "For Stock Availability Inquiry" },
+					{ text:"For Submission", value: "For Submission" },
+					{ text:"PR w/ canvass for opening", value: "PR w/ canvass for opening" },
+					{ text:"Receiving for approval", value: "Receiving for approval" },
+					{ text:"Receiving for Processing", value: "Receiving for Processing" },
+					{ text:"Receiving for signature", value: "Receiving for signature" },
+				],
 			};
 		},
-		computed: {	
+		computed: {
+			isForwardingDocFormComplete () {
+				if(this.ForwardDocForm.ForwardDocDivisionData && this.ForwardDocForm.ForwardDocAction){
+					return this.ForwardDocForm.ForwardDocDivisionData && this.ForwardDocForm.ForwardDocAction;
+				}else{
+					return false;
+				}
+			}
 		},
 		methods: {
 			closeModal(type){
@@ -492,8 +581,8 @@
 			},
 			passDtrakNo(data){
 				console.log("passDtrakNo");
-				this.DtrakNoHolder = data;
-				console.log(this.DtrakNoHolder);
+				this.ForwardDocForm.DtrakNoHolder = data;
+				console.log(this.ForwardDocForm.DtrakNoHolder);
 			},
 			openImageInNewTab(event){
 				var largeImage = document.getElementById(event.currentTarget.id);
@@ -672,7 +761,27 @@
             	}.bind(this));
 			},
 			submitForwardingModal(){
-				console.log("submitForwardingModal");
+				// console.log(this.ForwardDocForm);
+				this.$inertia.post(route('office.routedoc'), this.ForwardDocForm, {
+					forceFormData: true,
+ 					onSuccess: (res) => this.ForwardingModal = false,
+					onFinish: () => this.ForwardDocForm.reset(),
+				}).then(function (response) {
+					console.log(response);
+            	}.bind(this));
+			},
+			handleImages(files){
+				for(var i=0;i<files.length;i++){
+					this.ForwardDocForm.CreateDocfile.push(files[i]);
+				}
+				console.log(this.ForwardDocForm.CreateDocfile);
+				if(files.length > this.ForwardDocForm.CreateDocfile.length || files.length < this.ForwardDocForm.CreateDocfile.length){
+					this.ForwardDocForm.CreateDocfile = [];
+					for(var i=0;i<files.length;i++){
+						this.ForwardDocForm.CreateDocfile.push(files[i]);
+					}
+					console.log(this.ForwardDocForm.CreateDocfile);
+				}
 			},
 			frontEndDateFormat: function(date) {
 				return moment(date).format('MMMM Do YYYY, h:mm:ss a');

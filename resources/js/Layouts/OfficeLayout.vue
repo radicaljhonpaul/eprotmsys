@@ -19,6 +19,8 @@
                             <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
                                 <jet-nav-link :href="route('office.dashboard.index')" :active="route().current('office.dashboard.index')">
                                     Dashboard &nbsp; <i class="fas fa-satellite-dish text-gray-800"></i>
+
+                                    <!-- {{ this.UsersDetails.fname }} -->
                                 </jet-nav-link>
 
                                 <jet-nav-link :href="route('office.mydocs')" :active="route().current('office.mydocs')">
@@ -26,17 +28,17 @@
                                 </jet-nav-link>
 
                                 <jet-nav-link :href="route('office.incoming')" :active="route().current('office.incoming')">
-                                    Logged Documents &nbsp; <i class="fas fa-file-import text-gray-800"></i>
+                                    Incoming Documents &nbsp; <i class="fas fa-file-import text-gray-800"></i>
                                 </jet-nav-link>
 
-                                <!-- <jet-nav-link> 
-                                    History &nbsp; <i class="fas fa-history text-gray-800"></i>
-                                </jet-nav-link> -->
+                                <jet-nav-link :href="route('office.outgoing')" :active="route().current('office.outgoing')"> 
+                                    Forwarded Documents &nbsp; <i class="fas fa-file-export text-gray-800"></i>
+                                </jet-nav-link>
                             </div>
                         </div>
 
                         <div class="hidden sm:flex sm:items-center sm:ml-6">
-                            <div class="ml-3 relative">
+                            <div class="relative">
                                 <!-- Teams Dropdown -->
                                 <jet-dropdown align="right" width="60" v-if="$page.props.jetstream.hasTeamFeatures">
                                     <template #trigger>
@@ -53,17 +55,65 @@
                                 </jet-dropdown>
                             </div>
 
+                            <!-- Notif Dropdown -->
+                            <div class="relative">
+                                <jet-dropdown align="right" width="80">
+                                    <template #trigger>
+                                        <button class="flex text-sm border-2 px-2 py-2 border-transparent text-gray-500 rounded-full focus:outline-none focus:border-gray-200 transition duration-150 ease-in-out">
+                                            <i class="fas fa-bell"></i>
+                                        </button>
+                                    </template>
+
+                                    <template #content>
+                                        <!-- Notifications -->
+                                        <div class="block px-4 py-2 text-xs text-gray-400">
+                                            Notifcations
+                                        </div>
+
+                                        <div class="py-2">
+                                            <a href="#" class="flex items-center px-4 py-3 border-b hover:bg-gray-100">
+                                                <img class="h-8 w-8 rounded-full object-cover mx-1" src="/images/track.png" alt="avatar">
+                                                <p class="text-gray-600 text-sm mx-2">
+                                                    <span class="font-bold" href="#">Sara Salah</span> replied on the <span class="font-bold text-blue-500" href="#">Upload Image</span> artical . 2m
+                                                </p>
+                                            </a>
+                                            <a href="#" class="flex items-center px-4 py-3 border-b hover:bg-gray-100">
+                                                <img class="h-8 w-8 rounded-full object-cover mx-1" src="/images/track.png" alt="avatar">
+                                                <p class="text-gray-600 text-sm mx-2">
+                                                    <span class="font-bold" href="#">Slick Net</span> start following you . 45m
+                                                </p>
+                                            </a>
+                                            <a href="#" class="flex items-center px-4 py-3 border-b hover:bg-gray-100">
+                                                <img class="h-8 w-8 rounded-full object-cover mx-1" src="/images/track.png" alt="avatar">
+                                                <p class="text-gray-600 text-sm mx-2">
+                                                    <span class="font-bold" href="#">Jane Doe</span> Like Your reply on <span class="font-bold text-blue-500" href="#">Test with TDD</span> artical . 1h
+                                                </p>
+                                            </a>
+                                            <a href="#" class="flex items-center px-4 py-3 hover:bg-gray-100">
+                                                <img class="h-8 w-8 rounded-full object-cover mx-1" src="/images/track.png" alt="avatar">
+                                                <p class="text-gray-600 text-sm mx-2">
+                                                    <span class="font-bold" href="#">Abigail Bennett</span> start following you . 3h
+                                                </p>
+                                            </a>
+                                        </div>
+                                        <a href="#" class="block bg-gray-800 text-white text-center font-bold py-2 hover:bg-white hover:text-gray-800">See all notifications</a>
+                                    </template>
+                                </jet-dropdown>
+                            </div>
+
                             <!-- Settings Dropdown -->
                             <div class="ml-3 relative">
-                                <jet-dropdown align="right" width="48">
+                                <jet-dropdown align="right" width="80">
                                     <template #trigger>
-                                        <button v-if="$page.props.jetstream.managesProfilePhotos" class="flex text-sm border-2 border-transparent rounded-full focus:outline-none focus:border-gray-300 transition duration-150 ease-in-out">
-                                            <img class="h-8 w-8 rounded-full object-cover" :src="$page.props.user.profile_photo_url" :alt="$page.props.user.email" />
+                                        <button v-if="$page.props.jetstream.managesProfilePhotos" class="flex text-sm border-2 border-transparent rounded-full focus:outline-none focus:border-gray-200 transition duration-150 ease-in-out">
+                                            <img class="h-8 w-8 rounded-full object-cover" :src="'/storage/'+$page.props.user.profile_photo_path" :alt="$page.props.user.email" />
                                         </button>
 
-                                        <span v-else class="inline-flex rounded-md">
+                                        <span v-if="!$page.props.jetstream.managesProfilePhotos" class="inline-flex rounded-md">
                                             <button type="button" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
-                                                {{ $page.props.user.email }}
+                                                <span class="text-pink-500 text-xs">
+                                                    {{ $page.props.user.email }}
+                                                </span>
 
                                                 <svg class="ml-2 -mr-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                                                     <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -74,8 +124,11 @@
 
                                     <template #content>
                                         <!-- Account Management -->
-                                        <div class="block px-4 py-2 text-xs text-gray-400">
-                                            Manage Account
+                                        <div class="block px-4 py-2 text-gray-400">
+                                            <p class="text-base">
+                                                {{ $page.props.UsersDetails[0].fname +' '+ $page.props.UsersDetails[0].lname}}
+                                            </p>
+                                            <span class="text-pink-500 text-xs"> {{ $page.props.UsersDetails[0].position }} </span>
                                         </div>
 
                                         <jet-dropdown-link :href="route('profile.show')">
@@ -97,6 +150,7 @@
                                     </template>
                                 </jet-dropdown>
                             </div>
+
                         </div>
 
                         <!-- Hamburger -->
@@ -123,19 +177,19 @@
                         </jet-responsive-nav-link>
 
                         <jet-responsive-nav-link :href="route('office.incoming')" :active="route().current('office.incoming')">
-                            Logged Documents &nbsp; <i class="fas fa-file-import text-gray-800"></i>
+                            Incoming Documents &nbsp; <i class="fas fa-file-import text-gray-800"></i>
                         </jet-responsive-nav-link>
 
-                        <!-- <jet-responsive-nav-link> 
-                            History &nbsp; <i class="fas fa-history text-gray-800"></i>
-                        </jet-responsive-nav-link> -->
+                        <jet-responsive-nav-link :href="route('office.outgoing')" :active="route().current('office.outgoing')"> 
+                            Forwarded Documents &nbsp; <i class="fas fa-file-export text-gray-800"></i>
+                        </jet-responsive-nav-link>
                     </div>
 
                     <!-- Responsive Settings Options -->
                     <div class="pt-4 pb-1 border-t border-gray-200">
                         <div class="flex items-center px-4">
                             <div v-if="$page.props.jetstream.managesProfilePhotos" class="flex-shrink-0 mr-3" >
-                                <img class="h-10 w-10 rounded-full object-cover" :src="$page.props.user.profile_photo_url" :alt="$page.props.user.email" />
+                                <img class="h-10 w-10 rounded-full object-cover" :src="'/storage/'+$page.props.user.profile_photo_path" :alt="$page.props.user.email" />
                             </div>
 
                             <div>
@@ -238,7 +292,15 @@
                 showingNavigationDropdown: false,
             }
         },
-
+        mounted(){
+            window.Echo.channel('UsersArray')
+            .listen('UsersEvents', (e) => {
+                console.log(e);
+            });
+        },
+        created(){
+            console.log("Dsds");
+        },
         methods: {
             switchToTeam(team) {
                 this.$inertia.put(route('current-team.update'), {
@@ -250,6 +312,78 @@
 
             logout() {
                 this.$inertia.post(route('logout'));
+            },
+			retDiv(div){
+				// var type2 = [];
+				var divs = [
+					"",
+					"RD's OFFICE",
+					"ARD's OFFICE",
+					"LHSD",
+					"MSD",
+					"RLED",
+				]
+                
+                if(div != 0){
+                    return divs[div];
+                }else{
+                    return divs[0]
+                }
+			},
+            retSec(sec){
+                var secs = [
+					"",
+					"NNC",
+					"PHILHEALTH INSURANCE CORP.",
+					"ADELA SIERRA TY MEMORIAL MEDICAL CENTER",
+					"CARAGA REGIONAL HOSPITAL",
+					"DRUG TREATMENT AND REHAB.",
+					"OFFICE OF STRATEGIC MANAGEMENT",
+					"PDO ADS",
+					"PDO ADN",
+					"PDO SDN",
+					"PDO SDS",
+					"PDO PDI",
+					"RESSU/HEMS",
+					"PLANNING SECTION",
+					"RESEARCH SECTION",
+					"LEGAL SECTION",
+					"FINANCE SECTION",
+					"HR MNGT. & DEV. SECTION",
+					"HEALTH FACILITY SECTION",
+					"HEALTH PROGRAM SECTION",
+					"PROCUREMENT SECTION",
+					"MATERIAL MNGT. SECTION",
+					"GOVERNANCE SECTION",
+					"FAMILY HEALTH SECTION",
+					"INFECTIOUS SECTION",
+					"NON-COMMUNICABLE DISEASES SECTION",
+				]
+
+                if(sec != 0){
+                    return secs[sec];
+                }else{
+                    return secs[0]
+                }
+            },
+            retClus(clus){
+				var cluster = [
+					"",
+					"PERSONNEL",
+					"TRAINING",
+					"HEALTH PROMOTION",
+					"KNOWLEDGE MANAGEMENT CLUSTER",
+					"DEPLOYMENT PROGRAM CLUSTER",
+					"BUDGET",
+					"ACCOUNTING",
+					"CASHIER",
+				]
+
+                if(clus != 0){
+                    return cluster[clus];
+                }else{
+                    return cluster[0]
+                }
             },
         }
     };
