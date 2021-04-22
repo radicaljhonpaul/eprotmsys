@@ -26,16 +26,11 @@
             }
         },
         created(){
-
-            // Echo.channel('progressBar')
-            // .listen('UpdateProgressData', e => {
-            //     console.log('UpdateProgressData has been updated!');
-            //     console.log(e);
+            // console.log(this.$attrs.UsersDetails[0].id);
+            // window.Echo.private('UsersArray_'+this.$attrs.UsersDetails[0].id)
+            // .listen('UsersEvents', (e) => {
+            //     console.log(e.data.message +' From: '+ e.data.id);
             // });
-            window.Echo.channel('UsersArray')
-            .listen('UsersEvents', (e) => {
-                console.log("Sdsds");
-            });
         }
     };
 </script>

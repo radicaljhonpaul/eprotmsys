@@ -1,7 +1,6 @@
 <template>
     <div>
         <jet-banner />
-
         <div class="min-h-screen bg-gray-100">
             <nav class="bg-white border-b border-gray-100">
                 <!-- Primary Navigation Menu -->
@@ -19,8 +18,6 @@
                             <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
                                 <jet-nav-link :href="route('office.dashboard.index')" :active="route().current('office.dashboard.index')">
                                     Dashboard &nbsp; <i class="fas fa-satellite-dish text-gray-800"></i>
-
-                                    <!-- {{ this.UsersDetails.fname }} -->
                                 </jet-nav-link>
 
                                 <jet-nav-link :href="route('office.mydocs')" :active="route().current('office.mydocs')">
@@ -59,8 +56,8 @@
                             <div class="relative">
                                 <jet-dropdown align="right" width="80">
                                     <template #trigger>
-                                        <button class="flex text-sm border-2 px-2 py-2 border-transparent text-gray-500 rounded-full focus:outline-none focus:border-gray-200 transition duration-150 ease-in-out">
-                                            <i class="fas fa-bell"></i>
+                                        <button class="flex text-sm px-2 border-transparent text-gray-500 rounded-full focus:outline-none focus:border-gray-200 transition duration-150 ease-in-out">
+                                            <i class="fas fa-bell" style="font-size:1.2rem;"></i>
                                         </button>
                                     </template>
 
@@ -106,7 +103,9 @@
                                 <jet-dropdown align="right" width="80">
                                     <template #trigger>
                                         <button v-if="$page.props.jetstream.managesProfilePhotos" class="flex text-sm border-2 border-transparent rounded-full focus:outline-none focus:border-gray-200 transition duration-150 ease-in-out">
-                                            <img class="h-8 w-8 rounded-full object-cover" :src="'/storage/'+$page.props.user.profile_photo_path" :alt="$page.props.user.email" />
+                                            <img v-if="$page.props.user.profile_photo_path" class="h-8 w-8 border-2 border-gray-200 rounded-full object-cover" :src="'/storage/'+$page.props.user.profile_photo_path" :alt="$page.props.user.email" />
+                                            <img v-if="$page.props.user.profile_photo_path == null && $page.props.UsersDetails[0].gender == 'Male'" class="h-8 w-8 border-2 border-gray-200 rounded-full object-cover" src="/images/no_profile_pic/male.gif">
+                                            <img v-if="$page.props.user.profile_photo_path == null && $page.props.UsersDetails[0].gender == 'Female'" class="h-8 w-8 border-2 border-gray-200 rounded-full object-cover" src="/images/no_profile_pic/female.gif">
                                         </button>
 
                                         <span v-if="!$page.props.jetstream.managesProfilePhotos" class="inline-flex rounded-md">
@@ -172,7 +171,7 @@
                             Dashboard
                         </jet-responsive-nav-link>
 
-                        <jet-responsive-nav-link :href="route('office.incoming')" :active="route().current('office.incoming')">
+                        <jet-responsive-nav-link :href="route('office.mydocs')" :active="route().current('office.mydocs')">
                             My Documents &nbsp; <i class="fas fa-file-alt text-gray-800"></i>
                         </jet-responsive-nav-link>
 
@@ -189,12 +188,16 @@
                     <div class="pt-4 pb-1 border-t border-gray-200">
                         <div class="flex items-center px-4">
                             <div v-if="$page.props.jetstream.managesProfilePhotos" class="flex-shrink-0 mr-3" >
-                                <img class="h-10 w-10 rounded-full object-cover" :src="'/storage/'+$page.props.user.profile_photo_path" :alt="$page.props.user.email" />
+                                <img v-if="$page.props.user.profile_photo_path" class="h-8 w-8 border-2 border-gray-200 rounded-full object-cover" :src="'/storage/'+$page.props.user.profile_photo_path" :alt="$page.props.user.email" />
+                                <img v-if="$page.props.user.profile_photo_path == null && $page.props.UsersDetails[0].gender == 'Male'" class="h-8 w-8 border-2 border-gray-200 rounded-full object-cover" src="/images/no_profile_pic/male.gif">
+                                <img v-if="$page.props.user.profile_photo_path == null && $page.props.UsersDetails[0].gender == 'Female'" class="h-8 w-8 border-2 border-gray-200 rounded-full object-cover" src="/images/no_profile_pic/female.gif">
                             </div>
 
                             <div>
-                                <div class="font-medium text-base text-gray-800">{{ $page.props.user.email }}</div>
-                                <div class="font-medium text-sm text-gray-500">{{ $page.props.user.email }}</div>
+                                <div class="font-medium text-base text-gray-800">
+                                    {{ $page.props.UsersDetails[0].fname +' '+ $page.props.UsersDetails[0].lname}}
+                                </div>
+                                <div class="font-medium text-xs text-gray-500">{{ $page.props.UsersDetails[0].position }}</div>
                             </div>
                         </div>
 
@@ -266,6 +269,78 @@
                 <slot></slot>
             </main>
         </div>
+
+        <!--Notifications -->
+        <notificationGroup group="Notifications_Btm" position="bottom">
+            <div class="fixed inset-0 flex px-4 py-6 pointer-events-none p-6 items-start justify-end">
+                <div class="max-w-sm w-full">
+                <notification v-slot="{notifications}">
+                    <div v-for="notification in notifications" :key="notification.id">
+                        <div v-if="notification.type==='info'" class="flex max-w-sm w-full mx-auto bg-white shadow-md rounded-lg overflow-hidden mt-4">
+                            <div class="flex justify-center items-center w-12 bg-blue-500">
+                            <svg
+                                class="h-6 w-6 fill-current text-white"
+                                viewBox="0 0 40 40"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <path
+                                d="M20 3.33331C10.8 3.33331 3.33337 10.8 3.33337 20C3.33337 29.2 10.8 36.6666 20 36.6666C29.2 36.6666 36.6667 29.2 36.6667 20C36.6667 10.8 29.2 3.33331 20 3.33331ZM21.6667 28.3333H18.3334V25H21.6667V28.3333ZM21.6667 21.6666H18.3334V11.6666H21.6667V21.6666Z"
+                                />
+                            </svg>
+                            </div>
+
+                            <div class="-mx-3 py-2 px-4">
+                            <div class="mx-3">
+                                <span class="text-blue-500 font-semibold">{{notification.title}}</span>
+                                <p class="text-gray-600 text-sm">T{{notification.text}}</p>
+                            </div>
+                            </div>
+                        </div>
+                        <div v-if="notification.type==='warning'" class="flex max-w-sm w-full mx-auto bg-white shadow-md rounded-lg overflow-hidden mt-4">
+                            <div class="flex justify-center items-center w-12 bg-yellow-500">
+                            <svg
+                                class="h-6 w-6 fill-current text-white"
+                                viewBox="0 0 40 40"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <path
+                                d="M20 3.33331C10.8 3.33331 3.33337 10.8 3.33337 20C3.33337 29.2 10.8 36.6666 20 36.6666C29.2 36.6666 36.6667 29.2 36.6667 20C36.6667 10.8 29.2 3.33331 20 3.33331ZM21.6667 28.3333H18.3334V25H21.6667V28.3333ZM21.6667 21.6666H18.3334V11.6666H21.6667V21.6666Z"
+                                />
+                            </svg>
+                            </div>
+
+                            <div class="-mx-3 py-2 px-4">
+                            <div class="mx-3">
+                                <span class="text-yellow-500 font-semibold">{{notification.title}}</span>
+                                <p class="text-gray-600 text-sm">{{notification.text}}</p>
+                            </div>
+                            </div>
+                        </div>
+                        <div v-if="notification.type==='error'" class="flex max-w-sm w-full mx-auto bg-white shadow-md rounded-lg overflow-hidden mt-4">
+                            <div class="flex justify-center items-center w-12 bg-red-500">
+                            <svg
+                                class="h-6 w-6 fill-current text-white"
+                                viewBox="0 0 40 40"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <path
+                                d="M20 3.33331C10.8 3.33331 3.33337 10.8 3.33337 20C3.33337 29.2 10.8 36.6666 20 36.6666C29.2 36.6666 36.6667 29.2 36.6667 20C36.6667 10.8 29.2 3.33331 20 3.33331ZM21.6667 28.3333H18.3334V25H21.6667V28.3333ZM21.6667 21.6666H18.3334V11.6666H21.6667V21.6666Z"
+                                />
+                            </svg>
+                            </div>
+
+                            <div class="-mx-3 py-2 px-4">
+                            <div class="mx-3">
+                                <span class="text-red-500 font-semibold">{{notification.title}}</span>
+                                <p class="text-gray-600 text-sm">{{notification.text}}</p>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                </notification>
+                </div>
+            </div>
+        </notificationGroup>
     </div>
 </template>
 
@@ -293,10 +368,21 @@
             }
         },
         created(){
-            console.log("Dsds");
-            window.Echo.channel('UsersArray')
-            .listen('UsersEvents', (e) => {
-                console.log(e);
+            console.log("user_ID");
+            console.log(this.$page.props.user.id);
+
+            Echo.private('CreateDocument_'+this.$page.props.user.id)
+            .listen('CreateDocument', (e) => {
+                console.log(e.data.message +' From: '+ e.data.id);
+                this.$notify(
+                    {
+                        group: "Notifications_Btm",
+                        title: "Info",
+                        text: e.data.message,
+                        type: "warning",
+                    },
+                    5000
+                );
             });
         },
         methods: {

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Documents;
 
-
 use App\Http\Controllers\Controller;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -21,6 +20,8 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\Division;
 use App\Models\Section;
 use App\Models\Cluster;
+// Events
+use App\Events\CreateDocument;
 
 class DocumentController extends Controller
 {
@@ -286,87 +287,125 @@ class DocumentController extends Controller
      */
     public function create(Request $request)
     {
+
+        $data = [
+            "id" => $request->SpecificUserData,
+            "message" => "Created a ". $request->CreateDocType ." Document forwarded to you. Action: ". $request->CreateDocAction,
+        ];
+
+        // return $data;
+        broadcast(new CreateDocument($data))->toOthers();
+
+        // DB::beginTransaction();
+        // try {
+
+
+        //     $UsersDetails = UsersDetails::select('id','division','section','cluster')->where('user_id_fk',Auth::id())->get();
+        //     $origin = $UsersDetails[0]->division.'_'.$UsersDetails[0]->section.'_'.$UsersDetails[0]->cluster;
+        //     // Documents
+        //     $documents = new DocumentsTbl;
+        //     $documents->dtrack_no = $request->CreateDtrackNo;
+        //     $documents->doc_type = $request->CreateDocType;
+        //     $documents->doc_end_user = Auth::id();
+        //     $documents->doc_current_status = $request->CreateDocAction;
+        //     // get location (div,sec,clus)
+        //     $documents->doc_current_location = $UsersDetails[0]->division.','.$UsersDetails[0]->section.','.$UsersDetails[0]->cluster;
+        //     $documents->forwarded_to = $request->CreateDocDivisionData.','.$request->CreateDocSectionData.','.$request->CreateDocClusterData;
+        //     $documents->save();
+
+        //     // Documents Logs
+        //     $documentsStatusLogs = new DocumentsStatusLogTbl;
+        //     $documentsStatusLogs->document_status = $request->CreateDocAction;
+        //     $documentsStatusLogs->dtrack_id_fk = $request->CreateDtrackNo;
+        //     $documentsStatusLogs->doc_notes = $request->CreateDocNote;
+        //     $documentsStatusLogs->division = $UsersDetails[0]->division;
+        //     $documentsStatusLogs->section = $UsersDetails[0]->section;
+        //     $documentsStatusLogs->cluster = $UsersDetails[0]->cluster;
+        //     $documentsStatusLogs->forwarded_to = $request->CreateDocDivisionData.','.$request->CreateDocSectionData.','.$request->CreateDocClusterData;
+        //     $documentsStatusLogs->status = "origin";
+        //     $documentsStatusLogs->save();
+
+        //     // Notifications
+            
+        //     $event_type = "Create";
+        //     $event_type = "Created a Document";
+        //     $to = $request->SpecificUserData;
+        //     $this->storeNotification($event_type, $event_type, Auth::id(), $to);
+            
+        //     if(sizeof($request->CreateDocfile) > 0){
+        //         // Img Logs
+        //         foreach ($request->CreateDocfile as $key) {
+        //             // time_Auth(id)_DtrackNo
+        //             $file_name = $key->getClientOriginalName();
+        //             $folder_name = Auth::id();
+
+        //             $fileUpload = new ImgLogsTbl;
+        //             $fileUpload->filename = $file_name;
+        //             $fileUpload->path = "profile/$origin/$folder_name/Img_Logs/$file_name";
+        //             $fileUpload->document_status_logs_id_fk = $documentsStatusLogs->id;
+        //             Storage::disk("public")->put("profile/$origin/$folder_name/Img_Logs/$file_name",file_get_contents($key));
+        //             $fileUpload->save();
+        //         }
+        //     }else;
+
+        //     if($request->CreateDocType == "Purchase Request"){
+        //         foreach ($request->CreateParticularsArray as $key) {
+        //             $particulars = new DocumentsParticularsTbl;
+        //             $particulars->Item = $key['item'];
+        //             $particulars->item_qty = $key['qty'];
+        //             $particulars->item_unit = $key['unit'];
+        //             $particulars->item_amount = $key['amt'];
+        //             $particulars->purpose = $key['purpose'];
+        //             $particulars->dtrack_id_fk = $request->CreateDtrackNo;
+        //             $particulars->save();
+
+        //         }
+        //     }else;
+
+        //     DB::commit();
+
+            
+        //     return Redirect::route('office.mydocs');
+
+        // } catch (\Exception $e) {
+        //     DB::rollback();
+        //     return $e->getMessage();
+        // }
+    }
+
+    public function storeNotification($event_type, $event_text, $from, $to)
+    {
+        /** Create Document 
+         * "Created a Document"
+         * Receive Document
+         * "Received a document you forwarded"
+         * Route Document
+         * "Forwarded a document for you to received"
+         * Update Document
+         * "Made changes to a document"
+        */
         DB::beginTransaction();
         try {
+            $notif_event = new NotificationEventsTbl;
+            $notif_event->event_type = $event_type;
+            $notif_event->event_text = $event_text;
+            $notif_event->save();
 
-            $UsersDetails = UsersDetails::select('id','division','section','cluster')->where('user_id_fk',Auth::id())->get();
-            $origin = $UsersDetails[0]->division.'_'.$UsersDetails[0]->section.'_'.$UsersDetails[0]->cluster;
-            // Documents
-            $documents = new DocumentsTbl;
-            $documents->dtrack_no = $request->CreateDtrackNo;
-            $documents->doc_type = $request->CreateDocType;
-            $documents->doc_end_user = Auth::id();
-            $documents->doc_current_status = $request->CreateDocAction;
-            // get location (div,sec,clus)
-            $documents->doc_current_location = $UsersDetails[0]->division.','.$UsersDetails[0]->section.','.$UsersDetails[0]->cluster;
-            $documents->forwarded_to = $request->CreateDocDivisionData.','.$request->CreateDocSectionData.','.$request->CreateDocClusterData;
-            $documents->save();
-
-            // Documents Logs
-            $documentsStatusLogs = new DocumentsStatusLogTbl;
-            $documentsStatusLogs->document_status = $request->CreateDocAction;
-            $documentsStatusLogs->dtrack_id_fk = $request->CreateDtrackNo;
-            $documentsStatusLogs->doc_notes = $request->CreateDocNote;
-            $documentsStatusLogs->division = $UsersDetails[0]->division;
-            $documentsStatusLogs->section = $UsersDetails[0]->section;
-            $documentsStatusLogs->cluster = $UsersDetails[0]->cluster;
-            $documentsStatusLogs->forwarded_to = $request->CreateDocDivisionData.','.$request->CreateDocSectionData.','.$request->CreateDocClusterData;
-            $documentsStatusLogs->status = "origin";
-            $documentsStatusLogs->save();
-
-            // Notifications
-            $notifEvent = new NotificationEventsTbl;
-            $notifEvent->event_type = "Create";
-            $notifEvent->event_text = "Created a ".$request->CreateDocType." Document with DTRAK No: " .$request->CreateDtrackNo;
-            $notifEvent->save();
-
-            $noti = new NotificationsTbl;
-            $noti->from = Auth::id();
-            $noti->to = $request->CreateDocDivisionData.','.$request->CreateDocSectionData.','.$request->CreateDocClusterData;
-            $noti->event_id_fk = $notifEvent->id;
-            $noti->save();
-            
-            if(sizeof($request->CreateDocfile) > 0){
-                // Img Logs
-                foreach ($request->CreateDocfile as $key) {
-                    // time_Auth(id)_DtrackNo
-                    $file_name = $key->getClientOriginalName();
-                    $folder_name = Auth::id();
-
-                    $fileUpload = new ImgLogsTbl;
-                    $fileUpload->filename = $file_name;
-                    $fileUpload->path = "profile/$origin/$folder_name/Img_Logs/$file_name";
-                    $fileUpload->document_status_logs_id_fk = $documentsStatusLogs->id;
-                    Storage::disk("public")->put("profile/$origin/$folder_name/Img_Logs/$file_name",file_get_contents($key));
-                    $fileUpload->save();
-                }
-            }else;
-
-            if($request->CreateDocType == "Purchase Request"){
-                foreach ($request->CreateParticularsArray as $key) {
-                    $particulars = new DocumentsParticularsTbl;
-                    $particulars->Item = $key['item'];
-                    $particulars->item_qty = $key['qty'];
-                    $particulars->item_unit = $key['unit'];
-                    $particulars->item_amount = $key['amt'];
-                    $particulars->purpose = $key['purpose'];
-                    $particulars->dtrack_id_fk = $request->CreateDtrackNo;
-                    $particulars->save();
-
-                }
-            }else;
+            $notif = new NotificationsTbl;
+            $notif->from = $from;
+            $notif->to = $to;
+            $notif->event_id_fk = $notif_event->id;
+            $notif->save();
 
             DB::commit();
-
-            
-            return Redirect::route('office.mydocs');
+            return 1;
 
         } catch (\Exception $e) {
             DB::rollback();
             return $e->getMessage();
         }
-    }
 
+    }
     /**
      * Store a newly created resource in storage.
      *

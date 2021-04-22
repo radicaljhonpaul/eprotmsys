@@ -23,3 +23,7 @@ If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Lar
 - Apr 21, 2021 Wed
 // Resolved Websocket Issue: Not displaying in console.
 *** Add "wssPort: 6001", Composer Update : "pusher/pusher-php-server": "^5.0",
+- Apr 22, 2021 Wed
+// Change vendor\laravel\jetstream\src\Http\Controllers\inertia\UserProfileController
+*** (Append UserDetails to Props)
+// Install vue3-vt-notifications for toast notifications

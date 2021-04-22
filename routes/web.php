@@ -30,14 +30,11 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/animal', function () {
-    broadcast(new UsersEvents("Yaawa"));
-});
-
 
 Route::get('getDivision', [DivSecClusController::class, 'getDivision']);
 Route::get('getSection', [DivSecClusController::class, 'getSection']);
 Route::get('getCluster', [DivSecClusController::class, 'getCluster']);
+Route::get('getSpecificUser', [OfficeController::class, 'getSpecificUser']);
 
 Route::group(['middleware' => ['auth:sanctum', 'verified']], function(){
 

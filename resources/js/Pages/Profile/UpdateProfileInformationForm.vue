@@ -20,7 +20,14 @@
                 <jet-label for="photo" value="Photo" />
 
                 <!-- Current Profile Photo -->
-                <div class="mt-2" v-show="! photoPreview">
+                <div class="mt-2" v-if="photoPreview == null && UsersDetails[0].gender == 'Male'">
+                    <img src="/images/no_profile_pic/male.gif" :alt="user.name" class="rounded-full h-20 w-20 border-2 border-gray-100 object-cover">
+                </div>
+                <div class="mt-2" v-if="photoPreview == null && UsersDetails[0].gender == 'Female'">
+                    <img src="/images/no_profile_pic/female.gif" :alt="user.name" class="rounded-full h-20 w-20 border-2 border-gray-100 object-cover">
+                </div>
+
+                <div class="mt-2" v-show="photoPreview != null">
                     <img :src="'/storage/'+user.profile_photo_path" :alt="user.name" class="rounded-full h-20 w-20 object-cover">
                 </div>
 
@@ -152,7 +159,7 @@
             JetSecondaryButton,
         },
 
-        props: ['user'],
+        props: ['user','UsersDetails'],
 
         data() {
             return {

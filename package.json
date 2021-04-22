@@ -31,6 +31,7 @@
     "dependencies": {
         "alpinejs": "^2.8.2",
         "moment": "^2.29.1",
-        "vue-upload-drop-images": "^1.0.4"
+        "vue-upload-drop-images": "^1.0.4",
+        "vue3-vt-notifications": "^1.0.0"
     }
 }

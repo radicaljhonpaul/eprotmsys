@@ -10,7 +10,7 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class UsersEvents implements ShouldBroadcast
+class CreateDocument implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -20,7 +20,7 @@ class UsersEvents implements ShouldBroadcast
      *
      * @return void
      */
-    public function __construct( $data )
+    public function __construct($data)
     {
         $this->data = $data;
     }
@@ -32,6 +32,6 @@ class UsersEvents implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('UsersArray_'. $this->data['id']);
+        return new PrivateChannel('CreateDocument_'. $this->data['id']);
     }
 }

@@ -163,22 +163,31 @@
 						<div class="flex gap-2">
 							<div class="block text-gray-500 mb-2 w-1/2">
 								<label for="doctype" class="text-xs">Division</label>
-								<select class="mt-1 py-2 bg-gray-50 border-b-2 border-t-0 border-l-0 border-r-0 rounded-xs w-full text-gray-800 focus:outline-none focus:ring-0" v-model="CreateDocForm.CreateDocDivisionData" @change='getSection()' required>
+								<select class="mt-1 py-2 bg-gray-50 border-b-2 border-t-0 border-l-0 border-r-0 rounded-xs w-full text-gray-800 focus:outline-none focus:ring-0" v-model="CreateDocForm.CreateDocDivisionData" @change='getSection(),getSpecificUser()' required>
 								<option v-for='divData in Division_List' :key="divData.value" :value='divData.id'>{{ divData.name }}</option>
 								</select>
 							</div>
 							
 							<div class="block text-gray-500 mb-2 w-1/2">
 								<label for="doctype" class="text-xs">Section</label>
-								<select class="mt-1 py-2 bg-gray-50 border-b-2 border-t-0 border-l-0 border-r-0 rounded-xs w-full text-gray-800 focus:outline-none focus:ring-0" v-model="CreateDocForm.CreateDocSectionData" @change='getCluster()'>
+								<select class="mt-1 py-2 bg-gray-50 border-b-2 border-t-0 border-l-0 border-r-0 rounded-xs w-full text-gray-800 focus:outline-none focus:ring-0" v-model="CreateDocForm.CreateDocSectionData" @change='getCluster(),getSpecificUser()'>
 								<option v-for='secData in Section_List' :key="secData.value" :value='secData.id'>{{ secData.name }}</option>
 								</select>
 							</div>
 						</div>
 						<div v-if="Cluster_List.length > 0 && CreateDocForm.CreateDocDivisionData == 4" class="block text-gray-500 mb-2">
 							<label for="doctype" class="text-xs">Cluster</label>
-							<select class="mt-1 py-2 bg-gray-50 border-b-2 border-t-0 border-l-0 border-r-0 rounded-xs w-full text-gray-800 focus:outline-none focus:ring-0" v-model="CreateDocForm.CreateDocClusterData">
+							<select class="mt-1 py-2 bg-gray-50 border-b-2 border-t-0 border-l-0 border-r-0 rounded-xs w-full text-gray-800 focus:outline-none focus:ring-0" v-model="CreateDocForm.CreateDocClusterData" @change='getSpecificUser()'>
 							<option v-for='clusData in Cluster_List' :key="clusData.value" :value='clusData.id'>{{ clusData.name }}</option>
+							</select>
+						</div>
+
+						<div class="block text-gray-500 mb-2">
+							<label for="doctype" class="text-xs">Specific User</label>
+							<select class="mt-1 py-2 bg-gray-50 border-b-2 border-t-0 border-l-0 border-r-0 rounded-xs w-full text-gray-800 focus:outline-none focus:ring-0" v-model='CreateDocForm.SpecificUserData' required>
+								<option v-for="option in SpecificUser" :key="option.id" :value="option.id">
+									{{ option.fname +' '+ option.lname }}
+								</option>
 							</select>
 						</div>
 
@@ -484,6 +493,7 @@
 					AddNote: false,
 					AddAttachment: false,
 					CreateDocNote: null,
+					SpecificUserData: null,
 					CreateParticularsArray: [
 						{
 							item: '',
@@ -696,6 +706,7 @@
 				Division_List: [],
 				Section_List: [],
 				Cluster_List: [],
+				SpecificUser: [],
 				Doc_Action_Options: [
 					{ text:"For Action", value: "For Action" },
 					{ text:"For Action Taken", value: "For Action Taken" },
@@ -906,6 +917,19 @@
                  }
               }).then(function(response){
                     this.Cluster_List = response.data;
+                }.bind(this));
+            },
+			getSpecificUser: function() {
+				console.log("SpecificUser");
+                axios.get('/getSpecificUser',{
+                 params: {
+                   division_id: this.CreateDocForm.CreateDocDivisionData,
+                   section_id: this.CreateDocForm.CreateDocSectionData,
+                   cluster_id: this.CreateDocForm.CreateDocClusterData,
+                 }
+              }).then(function(response){
+                    this.SpecificUser = response.data;
+					console.log(response.data);
                 }.bind(this));
             },
 			nextStep(page) {

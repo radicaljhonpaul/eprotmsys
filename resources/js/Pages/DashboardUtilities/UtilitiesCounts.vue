@@ -2,7 +2,7 @@
     <section class="text-gray-600 body-font">
         <div class="container px-5 mx-auto">
             <h1 class="title-font font-medium text-xl mb-2 text-gray-900">Purchase Request - Purchase Order</h1>
-            <div class="flex flex-wrap text-center">
+            <div class="flex flex-wrap text-left">
                 <div class="md:w-1/3 w-full px-2">
                     <div class="border-b-2 border-gray-200 px-4 py-2">
                     <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="text-indigo-500 w-12 h-12 mb-3 inline-block" viewBox="0 0 24 24">

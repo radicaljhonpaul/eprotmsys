@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Users;
 
+use App\Events\UsersEvents;
 use Inertia\Inertia;
 use App\Http\Controllers\Controller;
 use App\Models\UsersDetails;
@@ -20,10 +21,20 @@ class OfficeController extends Controller
     {
         //
         return Inertia::render('Dashboards/OfficeDash',[
-            'UsersDetails' => UsersDetails::select('id','fname','lname','contact','cluster','section','division','position')->where('id', Auth::id())->get(),
+            'UsersDetails' => UsersDetails::select('id','fname','lname','contact','cluster','section','division','position','gender')->where('id', Auth::id())->get(),
         ]);
     }
 
+    public function getSpecificUser(Request $request)
+    {
+        $data = UsersDetails::select('id','fname','lname')->where('division', $request->division_id)
+        ->where('section', $request->section_id)
+        ->where('cluster', $request->cluster_id)
+        ->get();
+        return $data;
+    }
+
+    
     /**
      * Show the form for creating a new resource.
      *
