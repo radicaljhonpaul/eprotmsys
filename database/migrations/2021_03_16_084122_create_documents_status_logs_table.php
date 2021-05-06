@@ -12,13 +12,27 @@ class CreateDocumentsStatusLogsTable extends Migration {
 		// 	$table->increments('id');
 		// 	$table->timestamps();
 		// 	$table->string('document_status');
-		// 	$table->integer('document_id_fk');
+		// $table->string('dtrack_id_fk' ,50);
 		// 	$table->string('doc_notes', 500);
 		// 	$table->integer('division');
 		// 	$table->integer('section');
 		// 	$table->integer('cluster');
 		// 	$table->string('forwarded_to', 20);
-		// 	$table->integer('img_log_id_fk');
+		// 	$table->softDeletes();
+		// });
+
+		// Schema::create('documents_mutation_status_logs', function(Blueprint $table) {
+		// 	$table->increments('id');
+		// 	$table->timestamps();
+		// 	$table->string('document_status',50);
+		// 	$table->string('dtrack_id_fk' ,50);
+		// 	$table->string('doc_notes', 500);
+		// 	$table->integer('division');
+		// 	$table->integer('section');
+		// 	$table->integer('cluster');
+		// 	$table->string('forwarded_to', 20);
+		// 	$table->integer('receiver_id');
+		// 	$table->string('status', 20);
 		// 	$table->softDeletes();
 		// });
 
@@ -27,6 +41,7 @@ class CreateDocumentsStatusLogsTable extends Migration {
 		// 	$table->timestamps();
 		// 	$table->string('filename');
 		// 	$table->string('path');
+		// 	$table->integer('document_status_logs_id_fk');
 		// 	$table->integer('user_id_fk');
 		// 	$table->softDeletes();
 		// });

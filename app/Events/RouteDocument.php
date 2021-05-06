@@ -13,15 +13,16 @@ use Illuminate\Queue\SerializesModels;
 class RouteDocument implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
-
+    
+    public $data;
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($data)
     {
-        //
+        $this->data = $data;
     }
 
     /**
@@ -31,6 +32,6 @@ class RouteDocument implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('channel-name');
+        return new PrivateChannel('RouteDocument_'. $this->data['id']);
     }
 }

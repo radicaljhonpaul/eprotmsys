@@ -27,10 +27,6 @@
         },
         created(){
             // console.log(this.$attrs.UsersDetails[0].id);
-            // window.Echo.private('UsersArray_'+this.$attrs.UsersDetails[0].id)
-            // .listen('UsersEvents', (e) => {
-            //     console.log(e.data.message +' From: '+ e.data.id);
-            // });
         }
     };
 </script>

@@ -15,7 +15,7 @@ class CreateParticularsTable extends Migration {
 		// 	$table->integer('item_qty');
 		// 	$table->string('item_unit', 50);
 		// 	$table->float('item_amount');
-		// 	$table->integer('dtrack_id_fk');
+		// 	$table->string('dtrack_id_fk', 50);
 		// 	$table->string('purpose', 200);
 		// 	$table->softDeletes();
 		// });

@@ -14,5 +14,13 @@ class NotificationsTbl extends Model
     protected $table = 'notifications';
     public $timestamps = true;
     
+    public function NotificationEventsTbl()
+    {
+        return $this->hasOne(NotificationEventsTbl::class, 'event_id_fk', 'id');
+    }
 
+    public function UsersDetails()
+    {
+        return $this->hasOne(UsersDetails::class, 'id', 'from');
+    }
 }

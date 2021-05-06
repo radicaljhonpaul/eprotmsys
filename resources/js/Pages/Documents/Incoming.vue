@@ -1,25 +1,34 @@
 <template>
 	<office-layout>
-		<div class="py-12">
+		<div class="py-6">
 			<div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-
-				<div class="lg:flex lg:items-center lg:justify-between mb-5">
+				<span class="text-lg font-bold text-gray-900">
+					Logged Documents
+				</span>
+				<div class="lg:flex lg:items-center lg:justify-between mt-2 mb-2">
 					<div class="flex-1 min-w-0">
-						<h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
-							Logged Documents
-						</h2>
-						<div class="mt-1 flex flex-col sm:flex-row sm:flex-wrap sm:mt-0 sm:space-x-6"></div>
+						<div class="mt-1 flex flex-col sm:flex-row sm:flex-wrap sm:mt-0 sm:space-x-6">
+							<div class="border overflow-hidden flex ">
+								<input type="text" class="py-2 bg-white border-b-2 border-purple-600 border-t-0 border-l-0 border-r-0 rounded-xs w-full text-base text-purple-600 focus:outline-none focus:ring-0" v-model="SearchDoc" placeholder="Search Docs here...">
+								<button v-if="this.SearchDoc != ''" @click="searchDocuments()" class="flex items-center justify-center px-4 py-2 border-b-2 bg-white text-purple-600 hover:bg-purple-600 hover:text-white focus:outline-none border-purple-600">
+									<i class="fas fa-search"></i>
+								</button>
+								<button @click="resetSearchDocuments()" class="flex items-center justify-center px-4 py-2 border-b-2 bg-white text-purple-600 hover:bg-purple-600 hover:text-white focus:outline-none border-purple-600">
+									<i class="fas fa-window-restore"></i>
+								</button>
+							</div>
+						</div>
 					</div>
 					<div class="mt-5 flex lg:mt-0 lg:ml-4">
 						<span class="sm:ml-3">
-							<button v-if="incomingDocuments.length > 0" @click="LogDocumentModal = true" type="button" class="inline-flex items-center px-4 py-2 border-2 border-transparent rounded-md shadow-sm text-sm font-medium bg-white text-green-600 hover:bg-green-700 hover:text-white focus:outline-none border-green-700">
+							<button v-if="IncomingDocuments.length > 0" @click="LogDocumentModal = true" type="button" class="inline-flex items-center px-4 py-2 border-2 border-transparent rounded-md shadow-sm text-sm font-medium bg-white text-purple-600 hover:bg-purple-700 hover:text-white focus:outline-none border-purple-700">
 								<i class="fas fa-file-import"></i> &nbsp;	
-								Incoming Docs &nbsp; <div style="padding-top: 0.1em; padding-bottom: 0.1rem" class="text-xs px-2 bg-red-500 text-white rounded-full">{{ incomingDocuments.length }}</div>
+								Incoming Docs &nbsp; <div style="padding-top: 0.1em; padding-bottom: 0.1rem" class="text-xs px-2 bg-red-500 text-white rounded-full">{{ IncomingDocuments.length }}</div>
 							</button>
  
-							<button v-if="incomingDocuments.length == 0" @click="LogDocumentModal = true" type="button" class="inline-flex items-center px-4 py-2 border-2 border-transparent rounded-md shadow-sm text-sm font-medium bg-gray-500 text-white focus:outline-none border-gray-700" disabled>
+							<button v-if="IncomingDocuments.length == 0" @click="LogDocumentModal = true" type="button" class="inline-flex items-center px-4 py-2 border-2 border-transparent rounded-md shadow-sm text-sm font-medium bg-gray-500 text-white focus:outline-none border-gray-700" disabled>
 								<i class="fas fa-file-import"></i> &nbsp;	
-								Incoming Docs &nbsp; <div style="padding-top: 0.1em; padding-bottom: 0.1rem" class="text-xs px-2 bg-red-500 text-white rounded-full">{{ incomingDocuments.length }}</div>
+								Incoming Docs &nbsp; <div style="padding-top: 0.1em; padding-bottom: 0.1rem" class="text-xs px-2 bg-red-500 text-white rounded-full">{{ IncomingDocuments.length }}</div>
 							</button>
 							
 						</span>
@@ -31,36 +40,37 @@
 						<div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
 							<div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
 								<table class="table-auto min-w-full divide-y divide-gray-200">
-									<thead class="text-xs bg-gray-50">
+									<thead class="text-xs bg-purple-600 text-white">
 										<tr>
-										<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+										<th scope="col" class="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">
 											End-User
 										</th>
-										<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+										<th scope="col" class="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">
 											Document
 										</th>
-										<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+										<th scope="col" class="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">
 											Received
 										</th>
-										<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+										<th scope="col" class="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">
 											Forwarded
 										</th>
-										<th scope="col" class="relative px-6 py-3">
+										<th scope="col" class="relative px-3 py-3">
 											<span class="sr-only">View</span>
 										</th>
 										</tr>
 									</thead>
 									<tbody class="bg-white divide-y divide-gray-200">
-										<tr v-if="!LoggedDocuments.data.length">
+										<tr v-if="!Documents.data.length">
 											<td colspan="6" class="text-center border font-bold text-red-500 text-lg py-5">
 												No Data Available
 											</td>
 										</tr>
-										<tr v-show="LoggedDocuments.data.length > 0" v-for="docs in LoggedDocuments.data" :key="docs.created_at" class="border-r-8 border-green-500">
-											<td class="px-6 py-4 whitespace-nowrap">
+										<tr v-show="Documents.data.length > 0" v-for="docs in Documents.data" :key="docs.created_at">
+											<td class="px-3 py-2 whitespace-nowrap">
 												<div class="flex items-center">
 													<div class="flex-shrink-0 h-10 w-10">
-														<img class="h-10 w-10 rounded-full" :src="'/storage/'+$page.props.user.profile_photo_path" alt="">
+
+														<img class="h-10 w-10 rounded-full" :src="'/storage/'+docs.users_details.user.profile_photo_path" alt="">
 													</div>
 													<div class="ml-4">
 														<div class="text-sm font-medium text-gray-900">
@@ -70,26 +80,28 @@
 															<span v-else>
 																Ms.
 															</span>	
-															{{ docs.users_details.fname }} {{ docs.users_details.lname }}
+															{{ docs.users_details.lname }}
 														</div>
 													</div>
 												</div>
 											</td>
-											<td class="px-6 py-4 whitespace-nowrap">
+											<td class="px-3 py-2 whitespace-nowrap">
 												<div class="text-xs text-gray-900">{{ docs.doc_type }} </div>
 												<div class="text-xs text-gray-500">{{ docs.documents_particulars_tbl.length }} Particulars</div>
-												<div class="text-xs text-red-500">DTRAK No. {{ docs.dtrack_no }}</div>
+												<div class="text-xs text-purple-600">DTRAK No. {{ docs.dtrack_no }}</div>
 												<p class="text-xs text-gray-900">{{ frontEndDateFormat(docs.created_at) }} </p>
 											</td>
 											
 											<!-- if there are exactly 2 ka logs -->
-											<td v-if="docs.documents_status_log_tbl.length > 1" class="px-6 py-4 whitespace-nowrap text-red-500" style="font-size:.55rem;line-height:1rem;">
-												<p v-if="docs.documents_status_log_tbl[1] != null" v-html=" retDivSecClus(docs.documents_status_log_tbl[1].division,docs.documents_status_log_tbl[1].section,docs.documents_status_log_tbl[1].cluster,1)"></p>
-												<p class="text-xs text-gray-900">{{ frontEndDateFormat(docs.documents_status_log_tbl[1].created_at) }} </p>
+											<!-- v-if="docs.documents_status_log_tbl.length > 1" -->
+											<td v-if="docs.documents_status_log_tbl.length > 0" class="px-3 py-2 whitespace-nowrap text-red-500" style="font-size:.55rem;line-height:1rem;">
+												<p v-if="docs.documents_status_log_tbl[0] != null" v-html=" retDivSecClus(docs.documents_status_log_tbl[0].division,docs.documents_status_log_tbl[0].section,docs.documents_status_log_tbl[0].cluster,1)"></p>
+												<p class="text-xs text-gray-900">{{ frontEndDateFormat(docs.documents_status_log_tbl[0].created_at) }} </p>
 											</td>
-											<td v-if="docs.documents_status_log_tbl.length > 1" class="px-6 py-4 whitespace-nowrap text-yellow-500" style="font-size:.55rem;line-height:1rem;">
-												<p v-if="docs.documents_status_log_tbl[0] != null && docs.documents_status_log_tbl[0].forwarded_to != null" v-html=" retDivSecClus(docs.documents_status_log_tbl[0].division,docs.documents_status_log_tbl[0].section,docs.documents_status_log_tbl[0].cluster,1)"></p>
-												<p v-if="docs.documents_status_log_tbl[0] != null && docs.documents_status_log_tbl[0].forwarded_to != null" class="text-xs text-gray-900">{{ frontEndDateFormat(docs.documents_status_log_tbl[0].created_at) }} </p>
+											<!-- v-if="docs.documents_status_log_tbl.length > 1" -->
+											<td v-if="docs.documents_status_log_tbl.length > 0" class="px-3 py-2 whitespace-nowrap text-yellow-500" style="font-size:.55rem;line-height:1rem;">
+												<p v-if="docs.documents_status_log_tbl[0] != null && docs.documents_status_log_tbl[0].forwarded_to != null" v-html=" retDiv(docs.documents_status_log_tbl[0].forwarded_to)"></p>
+												<p v-if="docs.documents_status_log_tbl[0] != null && docs.documents_status_log_tbl[0].forwarded_to != null" class="text-xs text-gray-900">{{ frontEndDateFormat(docs.documents_status_log_tbl[0].updated_at) }} </p>
 												<p v-if="docs.documents_status_log_tbl[0].forwarded_to == null" class="text-xs text-gray-900">
 													<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-500 text-white">
 														Pending
@@ -97,10 +109,10 @@
 												</p>
 											</td>
 
-											<td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-												<a @click="ViewingModal = true, viewParticulars(docs)" class="text-green-500 hover:text-green-700 cursor-pointer">View <i class="fas fa-eye"></i> </a>
-												<br>
-												<a @click="ForwardingModal = true, passDtrakNo(docs.dtrack_no)" class="text-yellow-500 hover:text-yellow-700 cursor-pointer">Forward <i class="fas fa-file-export"></i> </a>
+											<td class="px-3 py-2 whitespace-nowrap text-center text-sm font-medium">
+												<a @click="ViewingModal = true, viewParticulars(docs)" class="text-purple-500 hover:text-purple-700 cursor-pointer">View <i class="fas fa-eye"></i> </a>
+												<hr v-if="docs.final_status == 'Processing'" class="border-gray-500 my-2">
+												<a v-if="docs.final_status == 'Processing'" @click="ForwardingModal = true, passDtrakNo(docs.dtrack_no), viewParticulars(docs)" class="text-green-500 hover:text-green-700 cursor-pointer">Forward <i class="fas fa-file-export"></i> </a>
 											</td>
 										</tr>
 										<!-- More items... -->
@@ -108,11 +120,14 @@
 								</table>
 							</div>
 						</div>
+
+						<div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+							<pagination :links="Documents.links" :current_page="Documents.current_page" :prev_url="Documents.prev_page_url" :next_url="Documents.next_page_url" :total_page="Documents.last_page" :path="Documents.path"></pagination>
+						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-
 
 		<!-- Modal for Logging Document -->
 		<modal :show="LogDocumentModal" maxWidth="md" >
@@ -128,7 +143,7 @@
 
 					<section class="w-full bg-white px-5 pb-3 mt-2 border-b border-gray-300" >
 						<label class="block text-purple-500">
-							DTRAK No.
+							DTRAK No. 
 							<input required ref="logDtrackNo" v-model="LogForm.logDtrackNo" type="text"  v-on:keyup="checkDtrackNo($event)" class="mt-1 py-2 bg-gray-100 border-0 rounded-sm w-full text-purple-500" />
 						</label>
 					</section>
@@ -161,14 +176,13 @@
 								<span class="text-gray-500 text-base">
 									{{ this.LogDocData.documents_particulars_tbl.length }}
 								</span>
-								
 							</div>
 							
 							<div class="w-1/2 px-2 text-xs">
 								<label class="block text-purple-800">
 									Received from
 								</label>
-								<span class="text-gray-500" v-html="retDiv(this.LogDocData.doc_current_location)"></span>	
+								<span class="text-gray-500" v-html="this.retDiv(this.LogDocData.doc_current_location)"></span>	
 							</div>
 						</div>
 					</section>
@@ -197,8 +211,10 @@
 							<span class="text-2xl font-semibold">{{ SpecificDocData.doc_type }}</span><br>
 							<span class="text-xs font-light" >Origin: {{ this.OriginFname }}  {{ this.OriginLname }} </span><br>
 						</div>
-						<div class="inline-flex gap-3 ml-auto">
-							<span class="text-gray-500">Dtrack No.</span> <span class="text-green-500">{{ SpecificDocData.dtrack_no }}</span>
+						<div class="block ml-auto">
+							<div class="text-xs text-gray-500">Dtrack No. <span class="text-green-500">{{ SpecificDocData.dtrack_no }}</span> </div>
+							<!-- <span class="text-xs text-gray-500 font-light" v-if="SpecificDocData.doc_type == 'Purchase Request' && SpecificDocData.documents_mutation_log_tbl != null">PR No. <span class="text-green-500">{{ SpecificDocData.documents_mutation_log_tbl[0].doc_from }}</span>	</span><br> -->
+							<div class="text-xs text-gray-500 font-light ml-auto">Created On: {{ frontEndDateFormat(SpecificDocData.created_at) }}</div>	
 						</div>
 					</section>
 					<section class="flex gap-x-4 px-5 mt-2" v-if="ToggleDocsHistory_Particulars">
@@ -206,7 +222,6 @@
 						<div class="py-2 align-middle inline-block min-w-full">
 							<section class="border-b text-gray-500 flex justify-between items-center">
 								<span class="text-1xl font-semibold">Particulars</span><br>
-								<span class="text-xs font-light ml-auto">Created On: {{ SpecificDocData.created_at }}</span>	
 							</section>
 							<div class="overflow-hidden border border-gray-200 ">
 								<table class="table-auto min-w-full divide-y divide-gray-200">
@@ -258,10 +273,10 @@
 										Location
 									</th>
 									<th scope="col" class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-										Remarks/Notes
+										Remarks/Notes & Action
 									</th>
 									<th scope="col" class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-										Status
+										Destination
 									</th>
 									<th scope="col" class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
 										Attachments
@@ -269,19 +284,26 @@
 								</tr>
 							</thead>
 							<tbody class="bg-white divide-y divide-gray-200">
-								<tr v-for="history in SpecificDocData.documents_status_log_tbl" :key="history" class="border-r-8 border-green-500 text-gray-500" style="font-size:.65rem;line-height:1rem;">
+								<tr v-for="history in SpecificDocData.documents_status_log_tbl" :key="history" class="text-gray-500" style="font-size:.65rem;line-height:1rem;">
 									<td class="px-2 py-2 whitespace-nowrap">
-										{{ history.created_at }}
+										{{ frontEndDateFormat(history.created_at) }}
 									</td>
 									<td class="px-2 py-2 whitespace-nowrap">
 										<span v-html=" retDivSecClus(history.division,history.section,history.cluster,1)"></span>	
 									</td>
 									<td class="px-2 py-2 whitespace-nowrap">
-										{{ history.doc_notes }}
+										<span v-if="history.doc_notes != null"> {{ history.doc_notes }} </span>
+										<span class="text-red-500" v-if="history.doc_notes == null"> No Document Notes </span>
+										<br/>
+										<span v-if="history.document_status != null" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+											{{ history.document_status }}
+										</span>
+										<span class="text-red-500" v-if="history.document_status == null"> No Action </span>
 									</td>
 									<td class="px-2 py-2 whitespace-nowrap">
-										<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-											{{ history.document_status }}
+										<span v-if="history.forwarded_to" v-html=" retDiv(history.forwarded_to)"></span>	
+										<span v-if="!history.forwarded_to" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-500 text-white">
+											Pending
 										</span>
 									</td>
 									<td class="px-2 py-2 whitespace-nowrap">
@@ -292,6 +314,10 @@
 												</figure>
 											</div>
 										</div>
+
+										<span class="text-red-500" v-if="history.img_logs_tbl.length == 0">
+											No Attachments
+										</span>
 									</td>
 								</tr>
 							</tbody>
@@ -319,13 +345,42 @@
 				<form @submit.prevent="submitForwardingModal">
 					<section class="border-b border-gray-300 px-5 flex justify-between items-center">
 						<div class="text-gray-500">
-							<span class="text-2xl font-semibold">Route document |</span> <span class="text-lg"> {{ this.DtrakNoHolder }} </span> <br>
+							<span class="text-2xl font-semibold">Route document |</span> <span class="text-lg"> {{ 'DTRAK No. ' + this.ForwardDocForm.DtrakNoHolder }} </span> <br>
 							<span class="text-xs font-light">(This is for routing received documents only)</span>
 						</div>
 					</section>
 
 					<div class="flex flex-wrap px-5 py-2">
 						<div class="w-full sm:w-1/2 md:w-1/2 lg:w-1/2 xl:w-1/2 mb-2 px-2">
+						<!-- -->
+							<section  v-if="SpecificDocData.doc_type == 'Purchase Request' && SpecificDocData.doc_current_location == '4,20,0' && SpecificDocData.doc_current_status == 'For PR Numbering'" class="flex justify-between items-center">
+								<div class="w-full block">
+									<div class="block text-purple-500 my-2 text-base">
+										Approved PR <br/>
+										<span class="text-xs">Please add a PR Number for tracking</span>
+									</div>
+									<div class="block text-gray-500 mb-2">
+										<label for="doctype" class="text-xs">PR No.</label>
+										<input required v-model="ForwardDocForm.DocumentMutationFrom" type="text" class="mt-1 py-2 bg-gray-50 border-b-2 border-t-0 border-l-0 border-r-0 rounded-xs w-full text-gray-800 focus:outline-none focus:ring-0" />
+									</div>
+
+								</div>
+							</section>
+
+							<section  v-if="SpecificDocData.doc_type == 'Purchase Request' && SpecificDocData.doc_current_location == '4,20,0' && SpecificDocData.doc_current_status == 'For Purchase Order (PO)'" class="flex justify-between items-center">
+								<div class="w-full block">
+									<div class="block text-purple-500 my-2 text-base">
+										For PO <br/>
+										<span class="text-xs">Please add a PO Number for tracking</span>
+									</div>
+									<div class="block text-gray-500 mb-2">
+										<label for="doctype" class="text-xs">PO No.</label>
+										<input required v-model="ForwardDocForm.DocumentMutationTo" type="text" class="mt-1 py-2 bg-gray-50 border-b-2 border-t-0 border-l-0 border-r-0 rounded-xs w-full text-gray-800 focus:outline-none focus:ring-0" />
+									</div>
+
+								</div>
+							</section>
+
 							<section class="flex justify-between items-center">
 								<div class="w-full block">
 									<div class="block text-purple-500 my-2 text-base">
@@ -333,22 +388,32 @@
 									</div>
 									<div class="block text-gray-500 mb-2">
 										<label for="doctype" class="text-xs">Division</label>
-										<select class="mt-1 py-2 bg-gray-50 border-b-2 border-t-0 border-l-0 border-r-0 rounded-xs w-full text-gray-800 focus:outline-none focus:ring-0" v-model="ForwardDocForm.ForwardDocDivisionData" @change='getSection()' required>
+										<select class="mt-1 py-2 bg-gray-50 border-b-2 border-t-0 border-l-0 border-r-0 rounded-xs w-full text-gray-800 focus:outline-none focus:ring-0" v-model="ForwardDocForm.ForwardDocDivisionData" @change='getSection(this.ForwardDocForm.ForwardDocDivisionData);getSpecificUser()' required>
 											<option v-for='divData in Division_List' :key="divData.value" :value='divData.id'>{{ divData.name }}</option>
 										</select>
 									</div>
 									
 									<div class="block text-gray-500 mb-2">
 										<label for="doctype" class="text-xs">Section</label>
-										<select class="mt-1 py-2 bg-gray-50 border-b-2 border-t-0 border-l-0 border-r-0 rounded-xs w-full text-gray-800 focus:outline-none focus:ring-0" v-model="ForwardDocForm.ForwardDocSectionData" @change='getCluster()'>
+										<select class="mt-1 py-2 bg-gray-50 border-b-2 border-t-0 border-l-0 border-r-0 rounded-xs w-full text-gray-800 focus:outline-none focus:ring-0" v-model="ForwardDocForm.ForwardDocSectionData" @change='getCluster(this.ForwardDocForm.ForwardDocSectionData);getSpecificUser()'>
+											<option value='0'>None</option>
 											<option v-for='secData in Section_List' :key="secData.value" :value='secData.id'>{{ secData.name }}</option>
 										</select>
 									</div>
 
 									<div v-if="Cluster_List.length > 0 && ForwardDocForm.ForwardDocDivisionData == 4" class="block text-gray-500 mb-2">
 										<label for="doctype" class="text-xs">Cluster</label>
-										<select class="mt-1 py-2 bg-gray-50 border-b-2 border-t-0 border-l-0 border-r-0 rounded-xs w-full text-gray-800 focus:outline-none focus:ring-0" v-model="ForwardDocForm.ForwardDocClusterData">
+										<select class="mt-1 py-2 bg-gray-50 border-b-2 border-t-0 border-l-0 border-r-0 rounded-xs w-full text-gray-800 focus:outline-none focus:ring-0" v-model="ForwardDocForm.ForwardDocClusterData" @change='getSpecificUser()'>
 											<option v-for='clusData in Cluster_List' :key="clusData.value" :value='clusData.id'>{{ clusData.name }}</option>
+										</select>
+									</div>
+
+									<div class="block text-gray-500 mb-2">
+										<label for="doctype" class="text-xs">Specific User</label>
+										<select class="mt-1 py-2 bg-gray-50 border-b-2 border-t-0 border-l-0 border-r-0 rounded-xs w-full text-gray-800 focus:outline-none focus:ring-0" v-model='ForwardDocForm.SpecificUserData' required>
+											<option v-for="option in SpecificUser" :key="option.id" :value="option.id">
+												{{ option.fname +' '+ option.lname }}
+											</option>
 										</select>
 									</div>
 
@@ -425,7 +490,7 @@
 					<section class="px-3 border-t border-gray-300  pt-3 pb-1 flex justify-between items-center">
 						<div class="inline-flex gap-3 ml-auto">
 							<button v-if="isForwardingDocFormComplete" type="submit" class="focus:outline-none bg-white text-xs text-green-500 hover:bg-green-500 uppercase hover:shadow-lg hover:text-white border border-green-500 rounded-full px-3 py-2 mx-0 outline-none">
-								Received <i class="fas fa-file-import"></i>
+								Received & Forward <i class="fas fa-file-import"></i>
 							</button>
 							<button type="button" @click="closeModal(3)" class="focus:outline-none bg-white text-xs text-red-500 hover:bg-red-500 uppercase hover:shadow-lg hover:text-white border border-red-500 rounded-full px-3 py-2 mx-0 outline-none">
 								close <i class="fas fa-times-circle"></i>
@@ -444,14 +509,17 @@
     import Modal from '@/Jetstream/Modal'
 	import moment from 'moment'
 	import UploadImages from "vue-upload-drop-images"
+	import Mylib from '@/CustomFunctions/Mylib.js';
+    import Pagination from '../../CustomComponents/Pagination.vue'
 	
     export default {
         components: {
             OfficeLayout,
             Modal,
 			UploadImages,
+			Pagination,
         },
-		props: ['LoggedDocuments','incomingDocuments','UsersDetails'],
+		props: ['Documents','UsersDetails','IncomingDocuments'],
 		data() {
 			return {
 				ViewingModal: false,
@@ -473,7 +541,13 @@
 					ForwardDocAction: null,
 					CreateDocfile: [],
 					DtrakNoHolder: "",
+					SpecificUserData: null,
+					DocumentMutationFrom: null,
+					DocumentMutationTo: null,
+					DocumentMutationTypeFrom: null,
+					DocumentMutationTypeTo: null,
 				}),
+				SearchDoc:'',
 				IncomingDtrackArray: [],
 				SpecificDocData: [],
 				OriginFname: "",
@@ -483,7 +557,9 @@
 				Division_List: [],
 				Section_List: [],
 				Cluster_List: [],
+				SpecificUser: [],
 				Doc_Action_Options: [
+					{ text:"For Abstract as Read", value: "For Abstract as Read" },
 					{ text:"For Action", value: "For Action" },
 					{ text:"For Action Taken", value: "For Action Taken" },
 					{ text:"For Approval", value: "For Approval" },
@@ -499,12 +575,11 @@
 					{ text:"For Correction", value: "For Correction" },
 					{ text:"For Delivery", value: "For Delivery" },
 					{ text:"For Discussion / Meeting", value: "For Discussion / Meeting" },
-					{ text:"For Dissemination", value: 'Accom"For Dissemination"shment' },
+					{ text:"For Dissemination", value: 'For Dissemination' },
 					{ text:"For Distribution", value: "For Distribution" },
 					{ text:"For Draft Message", value: "For Draft Message" },
 					{ text:"For Draft Reply", value: "For Draft Reply" },
 					{ text:"For Evaluation", value: "For Evaluation" },
-					{ text:"For Filing", value: "For Filing" },
 					{ text:"For Filling", value: "For Filling" },
 					{ text:"For Filling Up Forms", value: "For Filling Up Forms" },
 					{ text:"For Finalization", value: "For Finalization" },
@@ -516,9 +591,11 @@
 					{ text:"For Legal Action", value: "For Legal Action" },
 					{ text:"For Mailing", value: "For Mailing" },
 					{ text:"For Monitoring", value: "For Monitoring" },
+					{ text:"For Mode of Procurement", value: "For Mode of Procurement" },
 					{ text:"For Newspaper Publication", value: "For Newspaper Publication" },
 					{ text:"For Payment", value: "For Payment" },
-					{ text:"for PO preparation", value: "for PO preparation" },
+					{ text:"For PO preparation", value: "For PO preparation" },
+					{ text:"For PR Numbering", value: "For PR Numbering" },
 					{ text:"For Processing", value: "For Processing" },
 					{ text:"For Processing - CA", value: "For Processing - CA" },
 					{ text:"For Processing - LTO", value: "For Processing - LTO" },
@@ -527,6 +604,7 @@
 					{ text:"For Re-canvass", value: "For Re-canvass" },
 					{ text:"For Re-Evaluation", value: "For Re-Evaluation" },
 					{ text:"For Recommendation", value: "For Recommendation" },
+					{ text:"For RFQ", value: "For RFQ" },
 					{ text:"For Registry", value: "For Registry" },
 					{ text:"For Release", value: "For Release" },
 					{ text:"For Resolution", value: "For Resolution" },
@@ -554,30 +632,10 @@
 		},
 		methods: {
 			closeModal(type){
-				// ViewingModal
-				if(type == 1){
-					this.ViewingModal = false;
-					this.ViewingModalParticulars = false;
-					this.SpecificDocData = [];
-					console.log(this.SpecificDocData);
-				// LogDocumentModal
-				}else if(type == 2){
-					this.LogDocumentModal = false;
-					this.LogForm.logDtrackNo = null;
-					this.ToggleErrorLogForm = null;
-				// ForwardingModal
-				}else if(type == 3){
-					this.ForwardingModal = false;
-				}else;
-
+				Mylib.closeModal(this,type);
 			},
 			viewParticulars(data){
-				console.log("viewParticulars");
-				console.log(data);
-				this.SpecificDocData = data;
-				console.log(this.SpecificDocData.users_details.fname);
-				this.OriginFname = this.SpecificDocData.users_details.fname;
-				this.OriginLname = this.SpecificDocData.users_details.lname;
+				Mylib.viewParticulars(this,data);
 			},
 			passDtrakNo(data){
 				console.log("passDtrakNo");
@@ -585,9 +643,7 @@
 				console.log(this.ForwardDocForm.DtrakNoHolder);
 			},
 			openImageInNewTab(event){
-				var largeImage = document.getElementById(event.currentTarget.id);
-				var url=largeImage.getAttribute('src');
-				window.open(url,'_blank','docHistory');
+				Mylib.openImageInNewTab(event);
 			},
 			formatAmount(value) {
 				let val = (value/1).toFixed(2).replace(',', '.')
@@ -595,162 +651,54 @@
 			},
 			// Methods for Dependent Dropdown
             getDivision: function(){
-              axios.get('/getDivision')
-              .then(function (response) {
-                 this.Division_List = response.data;
-				 console.log(this.Division_List);
-              }.bind(this));
+				Mylib.getDivision(this);
             },
-			getSection: function() {
-                axios.get('/getSection',{
+			getSection: function(division) {
+				Mylib.getSection(this,division);
+            },
+			getCluster: function(section) {
+				Mylib.getCluster(this,section);
+            },
+			getSpecificUser: function() {
+
+				console.log("SpecificUser");
+				console.log(this.ForwardDocForm.ForwardDocDivisionData+' '+this.ForwardDocForm.ForwardDocSectionData+' '+this.ForwardDocForm.ForwardDocClusterData);
+                axios.get('/getSpecificUser',{
                  params: {
-                   division_id: this.ForwardDocForm.ForwardDocDivisionData
+                   division_id: this.ForwardDocForm.ForwardDocDivisionData,
+                   section_id: this.ForwardDocForm.ForwardDocSectionData,
+                   cluster_id: this.ForwardDocForm.ForwardDocClusterData,
                  }
               }).then(function(response){
-                    this.Section_List = response.data;
-					console.log(response.data);
-                }.bind(this));
-            },
-			getCluster: function() {
-                axios.get('/getCluster',{
-                 params: {
-                   section_id: this.ForwardDocForm.ForwardDocSectionData
-                 }
-              }).then(function(response){
-                    this.Cluster_List = response.data;
+                    this.SpecificUser = response.data;
 					console.log(response.data);
                 }.bind(this));
             },
 			checkDtrackNo(event){
-				for(var i=0; i<this.incomingDocuments.length; i++) {
-					console.log(this.incomingDocuments[i].dtrack_no);
-					if(this.incomingDocuments[i].dtrack_no.toString() == this.LogForm.logDtrackNo.toString()) {
-						// console.log("MATCHED");
-						this.ToggleErrorLogForm = true;
-						this.LogDocData = this.incomingDocuments[i];
-						console.log(this.incomingDocuments[i]);
-					}else{
-						this.ToggleErrorLogForm = false;
-						this.LogDocData = [];
-						// console.log("UNMATCHED");
+				if(event.keyCode == 13) {
+					event.preventDefault();
+					return false;
+				}else{
+					for(var i=0; i<this.IncomingDocuments.length; i++) {
+						if(this.IncomingDocuments[i].dtrack_no.toString() == this.LogForm.logDtrackNo.toString()) {
+							console.log("MATCHED");
+							this.ToggleErrorLogForm = true;
+							this.LogDocData = this.IncomingDocuments[i];
+							console.log(this.IncomingDocuments[i]);
+							break;
+						}else{
+							this.ToggleErrorLogForm = false;
+							this.LogDocData = [];
+							// console.log("UNMATCHED");
+						}
 					}
 				}
 			},
 			retDiv(currentLocation){
-				var arr = currentLocation.split(',');
-				arr
-				var divs = [
-					"",
-					"RD's OFFICE",
-					"ARD's OFFICE",
-					"LHSD",
-					"MSD",
-					"RLED",
-				]
-				var secs = [
-					"",
-					"NNC",
-					"PHILHEALTH INSURANCE CORP.",
-					"ADELA SIERRA TY MEMORIAL MEDICAL CENTER",
-					"CARAGA REGIONAL HOSPITAL",
-					"DRUG TREATMENT AND REHAB.",
-					"OFFICE OF STRATEGIC MANAGEMENT",
-					"PDO ADS",
-					"PDO ADN",
-					"PDO SDN",
-					"PDO SDS",
-					"PDO PDI",
-					"RESSU/HEMS",
-					"PLANNING SECTION",
-					"RESEARCH SECTION",
-					"LEGAL SECTION",
-					"FINANCE SECTION",
-					"HR MNGT. & DEV. SECTION",
-					"HEALTH FACILITY SECTION",
-					"HEALTH PROGRAM SECTION",
-					"PROCUREMENT SECTION",
-					"MATERIAL MNGT. SECTION",
-					"GOVERNANCE SECTION",
-					"FAMILY HEALTH SECTION",
-					"INFECTIOUS SECTION",
-					"NON-COMMUNICABLE DISEASES SECTION",
-				]
-				var cluster = [
-					"",
-					"PERSONNEL",
-					"TRAINING",
-					"HEALTH PROMOTION",
-					"KNOWLEDGE MANAGEMENT CLUSTER",
-					"DEPLOYMENT PROGRAM CLUSTER",
-					"BUDGET",
-					"ACCOUNTING",
-					"CASHIER",
-				]
-				return divs[arr[0]] +'<br/>'+ secs[arr[1]] +"<br/>"+ cluster[arr[2]];
+				return Mylib.retDiv(currentLocation);
 			},
 			retDivSecClus(div,sec,clus,type){
-				var type2 = [];
-				var divs = [
-					"",
-					"RD's OFFICE",
-					"ARD's OFFICE",
-					"LHSD",
-					"MSD",
-					"RLED",
-				]
-				var secs = [
-					"",
-					"NNC",
-					"PHILHEALTH INSURANCE CORP.",
-					"ADELA SIERRA TY MEMORIAL MEDICAL CENTER",
-					"CARAGA REGIONAL HOSPITAL",
-					"DRUG TREATMENT AND REHAB.",
-					"OFFICE OF STRATEGIC MANAGEMENT",
-					"PDO ADS",
-					"PDO ADN",
-					"PDO SDN",
-					"PDO SDS",
-					"PDO PDI",
-					"RESSU/HEMS",
-					"PLANNING SECTION",
-					"RESEARCH SECTION",
-					"LEGAL SECTION",
-					"FINANCE SECTION",
-					"HR MNGT. & DEV. SECTION",
-					"HEALTH FACILITY SECTION",
-					"HEALTH PROGRAM SECTION",
-					"PROCUREMENT SECTION",
-					"MATERIAL MNGT. SECTION",
-					"GOVERNANCE SECTION",
-					"FAMILY HEALTH SECTION",
-					"INFECTIOUS SECTION",
-					"NON-COMMUNICABLE DISEASES SECTION",
-				]
-				var cluster = [
-					"",
-					"PERSONNEL",
-					"TRAINING",
-					"HEALTH PROMOTION",
-					"KNOWLEDGE MANAGEMENT CLUSTER",
-					"DEPLOYMENT PROGRAM CLUSTER",
-					"BUDGET",
-					"ACCOUNTING",
-					"CASHIER",
-				]
-
-				if(type == 2){
-				// if type 2 -> receives div then undefined 2 + 1 params,
-					var answ = div.split(',');
-					answ.forEach(function(obj){
-						type2.push(parseInt(obj));
-					});
-				
-					return divs[type2[0]] +'<br/>'+ secs[type2[1]] +"<br/>"+ cluster[type2[2]];
-
-				}else{
-					return divs[div] +'<br/>'+ secs[sec] +"<br/>"+ cluster[clus];
-				}
-				
+				return Mylib.retDivSecClus(div,sec,clus,type);
 			},
 			submitLogDocumentModal(){
 				this.$inertia.post(route('office.logdoc'), this.LogForm, {
@@ -767,7 +715,7 @@
  					onSuccess: (res) => this.ForwardingModal = false,
 					onFinish: () => this.ForwardDocForm.reset(),
 				}).then(function (response) {
-					console.log(response);
+					this.$inertia.reload();
             	}.bind(this));
 			},
 			handleImages(files){
@@ -783,8 +731,8 @@
 					console.log(this.ForwardDocForm.CreateDocfile);
 				}
 			},
-			frontEndDateFormat: function(date) {
-				return moment(date).format('MMMM Do YYYY, h:mm:ss a');
+			frontEndDateFormat(date_data) {
+				return Mylib.frontEndDateFormat(date_data);
         	},
 			forIndex(index) {
 				return index+1
@@ -792,26 +740,18 @@
 			toggleParticularsDocHistory(){
 				this.ToggleDocsHistory_Particulars = !this.ToggleDocsHistory_Particulars;
 			},
-			// viewDocsHistory(){
-			// 	console.log("viewDocsHistory");
-			// },
-			// resetModal(){
-			// 	this.ViewingModalParticulars = true;
-			// 	this.ViewingModalDocHistory = false;
-			// },
-			// openImageInNewTab(event){
-			// 	var largeImage = document.getElementById(event.currentTarget.id);
-			// 	var url=largeImage.getAttribute('src');
-			// 	window.open(url,'_blank','docHistory');
-			// },		
-			// viewParticulars(data){
-			// 	console.log("viewParticulars");
-			// 	console.log(data);
-			// 	this.SpecificDocData = data;
-			// },
+			// Searching
+			searchDocuments: function() {
+				console.log("searchDocuments");
+					this.$inertia.get(route('office.searchDocuments'), { SearchDoc: this.SearchDoc, RedirectComponent: 'Documents/Incoming' }, { replace: true })
+			},
+			// Reset Searching
+			resetSearchDocuments: function() {
+				this.$inertia.get(route('office.logged'), { }, { })
+            },
 		},
 		created: function(){
-			this.getDivision()
+			this.getDivision();
         }
     };
 </script>

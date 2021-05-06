@@ -1,8 +1,8 @@
 <template>
     <div>
         <jet-banner />
-        <div class="min-h-screen bg-gray-100">
-            <nav class="bg-white border-b border-gray-100">
+        <div class="min-h-screen">
+            <nav class="bg-white border-b border-gray-100 shadow-sm">
                 <!-- Primary Navigation Menu -->
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="flex justify-between h-16">
@@ -24,8 +24,8 @@
                                     My Documents &nbsp; <i class="fas fa-file-alt text-gray-800"></i>
                                 </jet-nav-link>
 
-                                <jet-nav-link :href="route('office.incoming')" :active="route().current('office.incoming')">
-                                    Incoming Documents &nbsp; <i class="fas fa-file-import text-gray-800"></i>
+                                <jet-nav-link :href="route('office.logged')" :active="route().current('office.logged')">
+                                    Logged Documents &nbsp; <i class="fas fa-file-import text-gray-800"></i>
                                 </jet-nav-link>
 
                                 <jet-nav-link :href="route('office.outgoing')" :active="route().current('office.outgoing')"> 
@@ -54,48 +54,7 @@
 
                             <!-- Notif Dropdown -->
                             <div class="relative">
-                                <jet-dropdown align="right" width="80">
-                                    <template #trigger>
-                                        <button class="flex text-sm px-2 border-transparent text-gray-500 rounded-full focus:outline-none focus:border-gray-200 transition duration-150 ease-in-out">
-                                            <i class="fas fa-bell" style="font-size:1.2rem;"></i>
-                                        </button>
-                                    </template>
-
-                                    <template #content>
-                                        <!-- Notifications -->
-                                        <div class="block px-4 py-2 text-xs text-gray-400">
-                                            Notifcations
-                                        </div>
-
-                                        <div class="py-2">
-                                            <a href="#" class="flex items-center px-4 py-3 border-b hover:bg-gray-100">
-                                                <img class="h-8 w-8 rounded-full object-cover mx-1" src="/images/track.png" alt="avatar">
-                                                <p class="text-gray-600 text-sm mx-2">
-                                                    <span class="font-bold" href="#">Sara Salah</span> replied on the <span class="font-bold text-blue-500" href="#">Upload Image</span> artical . 2m
-                                                </p>
-                                            </a>
-                                            <a href="#" class="flex items-center px-4 py-3 border-b hover:bg-gray-100">
-                                                <img class="h-8 w-8 rounded-full object-cover mx-1" src="/images/track.png" alt="avatar">
-                                                <p class="text-gray-600 text-sm mx-2">
-                                                    <span class="font-bold" href="#">Slick Net</span> start following you . 45m
-                                                </p>
-                                            </a>
-                                            <a href="#" class="flex items-center px-4 py-3 border-b hover:bg-gray-100">
-                                                <img class="h-8 w-8 rounded-full object-cover mx-1" src="/images/track.png" alt="avatar">
-                                                <p class="text-gray-600 text-sm mx-2">
-                                                    <span class="font-bold" href="#">Jane Doe</span> Like Your reply on <span class="font-bold text-blue-500" href="#">Test with TDD</span> artical . 1h
-                                                </p>
-                                            </a>
-                                            <a href="#" class="flex items-center px-4 py-3 hover:bg-gray-100">
-                                                <img class="h-8 w-8 rounded-full object-cover mx-1" src="/images/track.png" alt="avatar">
-                                                <p class="text-gray-600 text-sm mx-2">
-                                                    <span class="font-bold" href="#">Abigail Bennett</span> start following you . 3h
-                                                </p>
-                                            </a>
-                                        </div>
-                                        <a href="#" class="block bg-gray-800 text-white text-center font-bold py-2 hover:bg-white hover:text-gray-800">See all notifications</a>
-                                    </template>
-                                </jet-dropdown>
+                                <notification-list></notification-list>
                             </div>
 
                             <!-- Settings Dropdown -->
@@ -175,8 +134,8 @@
                             My Documents &nbsp; <i class="fas fa-file-alt text-gray-800"></i>
                         </jet-responsive-nav-link>
 
-                        <jet-responsive-nav-link :href="route('office.incoming')" :active="route().current('office.incoming')">
-                            Incoming Documents &nbsp; <i class="fas fa-file-import text-gray-800"></i>
+                        <jet-responsive-nav-link :href="route('office.logged')" :active="route().current('office.logged')">
+                            Logged Documents &nbsp; <i class="fas fa-file-import text-gray-800"></i>
                         </jet-responsive-nav-link>
 
                         <jet-responsive-nav-link :href="route('office.outgoing')" :active="route().current('office.outgoing')"> 
@@ -270,76 +229,31 @@
             </main>
         </div>
 
+
         <!--Notifications -->
-        <notificationGroup group="Notifications_Btm" position="bottom">
-            <div class="fixed inset-0 flex px-4 py-6 pointer-events-none p-6 items-start justify-end">
-                <div class="max-w-sm w-full">
-                <notification v-slot="{notifications}">
-                    <div v-for="notification in notifications" :key="notification.id">
-                        <div v-if="notification.type==='info'" class="flex max-w-sm w-full mx-auto bg-white shadow-md rounded-lg overflow-hidden mt-4">
-                            <div class="flex justify-center items-center w-12 bg-blue-500">
-                            <svg
-                                class="h-6 w-6 fill-current text-white"
-                                viewBox="0 0 40 40"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <path
-                                d="M20 3.33331C10.8 3.33331 3.33337 10.8 3.33337 20C3.33337 29.2 10.8 36.6666 20 36.6666C29.2 36.6666 36.6667 29.2 36.6667 20C36.6667 10.8 29.2 3.33331 20 3.33331ZM21.6667 28.3333H18.3334V25H21.6667V28.3333ZM21.6667 21.6666H18.3334V11.6666H21.6667V21.6666Z"
-                                />
-                            </svg>
-                            </div>
-
-                            <div class="-mx-3 py-2 px-4">
-                            <div class="mx-3">
-                                <span class="text-blue-500 font-semibold">{{notification.title}}</span>
-                                <p class="text-gray-600 text-sm">T{{notification.text}}</p>
-                            </div>
-                            </div>
-                        </div>
-                        <div v-if="notification.type==='warning'" class="flex max-w-sm w-full mx-auto bg-white shadow-md rounded-lg overflow-hidden mt-4">
-                            <div class="flex justify-center items-center w-12 bg-yellow-500">
-                            <svg
-                                class="h-6 w-6 fill-current text-white"
-                                viewBox="0 0 40 40"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <path
-                                d="M20 3.33331C10.8 3.33331 3.33337 10.8 3.33337 20C3.33337 29.2 10.8 36.6666 20 36.6666C29.2 36.6666 36.6667 29.2 36.6667 20C36.6667 10.8 29.2 3.33331 20 3.33331ZM21.6667 28.3333H18.3334V25H21.6667V28.3333ZM21.6667 21.6666H18.3334V11.6666H21.6667V21.6666Z"
-                                />
-                            </svg>
-                            </div>
-
-                            <div class="-mx-3 py-2 px-4">
-                            <div class="mx-3">
-                                <span class="text-yellow-500 font-semibold">{{notification.title}}</span>
-                                <p class="text-gray-600 text-sm">{{notification.text}}</p>
-                            </div>
-                            </div>
-                        </div>
-                        <div v-if="notification.type==='error'" class="flex max-w-sm w-full mx-auto bg-white shadow-md rounded-lg overflow-hidden mt-4">
-                            <div class="flex justify-center items-center w-12 bg-red-500">
-                            <svg
-                                class="h-6 w-6 fill-current text-white"
-                                viewBox="0 0 40 40"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <path
-                                d="M20 3.33331C10.8 3.33331 3.33337 10.8 3.33337 20C3.33337 29.2 10.8 36.6666 20 36.6666C29.2 36.6666 36.6667 29.2 36.6667 20C36.6667 10.8 29.2 3.33331 20 3.33331ZM21.6667 28.3333H18.3334V25H21.6667V28.3333ZM21.6667 21.6666H18.3334V11.6666H21.6667V21.6666Z"
-                                />
-                            </svg>
-                            </div>
-
-                            <div class="-mx-3 py-2 px-4">
-                            <div class="mx-3">
-                                <span class="text-red-500 font-semibold">{{notification.title}}</span>
-                                <p class="text-gray-600 text-sm">{{notification.text}}</p>
-                            </div>
-                            </div>
-                        </div>
-                    </div>
-                </notification>
+        <notificationGroup group="generic" position="bottom">
+        <div class="fixed inset-x-0 bottom-0 flex px-4 py-6 pointer-events-none p-6 items-start justify-end">
+            <div class="max-w-sm w-full">
+            <notification v-slot="{notifications}">
+                <div
+                class="flex max-w-sm w-full mx-auto bg-white shadow-md rounded-lg overflow-hidden mt-4"
+                v-for="notification in notifications"
+                :key="notification.id"
+                >
+                <div class="flex justify-center items-center w-12 bg-blue-500">
+                    <i class="fas fa-file-alt text-white px-3"></i>
                 </div>
+
+                <div class="-mx-3 py-2 px-4">
+                    <div class="mx-3">
+                    <span class="text-blue-500 font-semibold">{{notification.title}}</span>
+                    <p class="text-gray-600 text-sm">{{notification.text}}</p>
+                    </div>
+                </div>
+                </div>
+            </notification>
             </div>
+        </div>
         </notificationGroup>
     </div>
 </template>
@@ -351,6 +265,7 @@
     import JetDropdownLink from '@/Jetstream/DropdownLink'
     import JetNavLink from '@/Jetstream/NavLink'
     import JetResponsiveNavLink from '@/Jetstream/ResponsiveNavLink'
+    import NotificationList from '../CustomComponents/NotificationList.vue'
 
     export default {
         components: {
@@ -360,30 +275,17 @@
             JetDropdownLink,
             JetNavLink,
             JetResponsiveNavLink,
+            NotificationList,
+            // ToastGroups
         },
-
         data() {
             return {
                 showingNavigationDropdown: false,
             }
         },
         created(){
-            console.log("user_ID");
+            this.socket_events();
             console.log(this.$page.props.user.id);
-
-            Echo.private('CreateDocument_'+this.$page.props.user.id)
-            .listen('CreateDocument', (e) => {
-                console.log(e.data.message +' From: '+ e.data.id);
-                this.$notify(
-                    {
-                        group: "Notifications_Btm",
-                        title: "Info",
-                        text: e.data.message,
-                        type: "warning",
-                    },
-                    5000
-                );
-            });
         },
         methods: {
             switchToTeam(team) {
@@ -393,81 +295,58 @@
                     preserveState: false
                 })
             },
-
             logout() {
                 this.$inertia.post(route('logout'));
             },
-			retDiv(div){
-				// var type2 = [];
-				var divs = [
-					"",
-					"RD's OFFICE",
-					"ARD's OFFICE",
-					"LHSD",
-					"MSD",
-					"RLED",
-				]
-                
-                if(div != 0){
-                    return divs[div];
-                }else{
-                    return divs[0]
-                }
-			},
-            retSec(sec){
-                var secs = [
-					"",
-					"NNC",
-					"PHILHEALTH INSURANCE CORP.",
-					"ADELA SIERRA TY MEMORIAL MEDICAL CENTER",
-					"CARAGA REGIONAL HOSPITAL",
-					"DRUG TREATMENT AND REHAB.",
-					"OFFICE OF STRATEGIC MANAGEMENT",
-					"PDO ADS",
-					"PDO ADN",
-					"PDO SDN",
-					"PDO SDS",
-					"PDO PDI",
-					"RESSU/HEMS",
-					"PLANNING SECTION",
-					"RESEARCH SECTION",
-					"LEGAL SECTION",
-					"FINANCE SECTION",
-					"HR MNGT. & DEV. SECTION",
-					"HEALTH FACILITY SECTION",
-					"HEALTH PROGRAM SECTION",
-					"PROCUREMENT SECTION",
-					"MATERIAL MNGT. SECTION",
-					"GOVERNANCE SECTION",
-					"FAMILY HEALTH SECTION",
-					"INFECTIOUS SECTION",
-					"NON-COMMUNICABLE DISEASES SECTION",
-				]
+            socket_events(){
+                Echo.private('CreateDocument_'+this.$page.props.user.id)
+                .listen('CreateDocument', (e) => {
+                    console.log(e.data.message +' From: '+ e.data.id);
+                    this.$notify(
+                        {
+                            group: "generic",
+                            title: "Info",
+                            text: e.data.message,
+                            type: "info",
+                        },
+                        10000
+                    );
+                    this.$inertia.reload();
+                })
 
-                if(sec != 0){
-                    return secs[sec];
-                }else{
-                    return secs[0]
-                }
-            },
-            retClus(clus){
-				var cluster = [
-					"",
-					"PERSONNEL",
-					"TRAINING",
-					"HEALTH PROMOTION",
-					"KNOWLEDGE MANAGEMENT CLUSTER",
-					"DEPLOYMENT PROGRAM CLUSTER",
-					"BUDGET",
-					"ACCOUNTING",
-					"CASHIER",
-				]
+                Echo.private('LogDocument_'+this.$page.props.user.id)
+                .listen('LogDocument', (e) => {
+                    console.log(e.data.message +' From: '+ e.data.id);
+                    this.$notify(
+                        {
+                            group: "generic",
+                            title: "Info",
+                            text: e.data.message,
+                            type: "info",
+                        },
+                        10000
+                    );
+                    this.$inertia.reload();
+                });
 
-                if(clus != 0){
-                    return cluster[clus];
-                }else{
-                    return cluster[0]
-                }
+                Echo.private('RouteDocument_'+this.$page.props.user.id)
+                .listen('RouteDocument', (e) => {
+                    console.log(e.data.message +' From: '+ e.data.id);
+                    this.$notify(
+                        {
+                            group: "generic",
+                            title: "Info",
+                            text: e.data.message,
+                            type: "info",
+                        },
+                        10000
+                    );
+                    
+                    // Call function to Load Documents
+                    console.log("Received and For Reload");
+                    this.$inertia.reload();
+                });
+
             },
         }
     };

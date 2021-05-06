@@ -4,7 +4,7 @@ require('./bootstrap');
 import { createApp, h } from 'vue';
 import { App as InertiaApp, plugin as InertiaPlugin } from '@inertiajs/inertia-vue3';
 import { InertiaProgress } from '@inertiajs/progress';
-import Notifications from 'vue3-vt-notifications'
+import Notifications from 'vue3-vt-notifications';
 
 const el = document.getElementById('app');
 

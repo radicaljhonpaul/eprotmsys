@@ -27,3 +27,6 @@ If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Lar
 // Change vendor\laravel\jetstream\src\Http\Controllers\inertia\UserProfileController
 *** (Append UserDetails to Props)
 // Install vue3-vt-notifications for toast notifications
+
+// Install vue3-apex charts for dashboard
+// Done Routing and Mutation from PR to PO

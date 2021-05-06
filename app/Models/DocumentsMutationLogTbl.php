@@ -6,12 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class NotificationEventsTbl extends Model
+class DocumentsMutationLogTbl extends Model
 {
     use HasFactory;
     use SoftDeletes;
 
-    protected $table = 'notification_events';
+    protected $table = 'documents_mutation_logs';
     public $timestamps = true;
 
 }

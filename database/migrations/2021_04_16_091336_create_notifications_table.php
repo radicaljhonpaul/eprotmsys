@@ -16,6 +16,7 @@ class CreateNotificationsTable extends Migration
         // Schema::create('notifications', function (Blueprint $table) {
         // 	$table->increments('id');
         //     $table->timestamps();
+		// 	$table->string('dtrack_id_fk',50);
 		// 	$table->integer('from');
 		// 	$table->integer('to');
 		// 	$table->integer('event_id_fk');

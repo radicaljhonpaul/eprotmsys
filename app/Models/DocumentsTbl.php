@@ -23,7 +23,15 @@ class DocumentsTbl extends Model
     }
 
     public function DocumentsStatusLogTbl(){
-        return $this->hasMany(DocumentsStatusLogTbl::class, 'dtrack_id_fk', 'dtrack_no');
+        return $this->hasMany(DocumentsStatusLogTbl::class, 'doc_id', 'id');
     }
-    
+
+    public function DocumentsMutationLogTbl(){
+        return $this->hasOne(DocumentsMutationLogTbl::class, 'dtrack_id_fk', 'dtrack_no');
+    }
+
+    public function DocumentsMutationTbl(){
+        return $this->hasOne(DocumentsMutationTbl::class, 'dtrack_no', 'dtrack_no');
+    }
+
 }
