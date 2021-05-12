@@ -82,9 +82,9 @@
 											</td>
 											
 											<!-- Details on Receiving Date etc -->
-											<td class="px-3 py-2 whitespace-nowrap text-left font-medium">
-												<p class="text-gray-900" style="font-size:.55rem;line-height:1rem;" v-html=" retDiv(docs.forwarded_to)"></p>
-                                                <p class="text-xs text-gray-900">{{ frontEndDateFormat(docs.updated_at) }} </p>
+											<td class="px-3 py-2 whitespace-nowrap text-gray-900">
+												<doc-destination style="font-size:.55rem;line-height:1rem;" :Destination="docs.forwarded_to"></doc-destination>	
+                                                <p class="text-xs">{{ frontEndDateFormat(docs.updated_at) }}</p>
                                             </td>
 											<td class="px-3 py-2 whitespace-nowrap text-left text-xs font-medium">
                                                 <p class="text-xs text-gray-900">{{ dateDifference(docs.created_at,docs.updated_at) }} </p>
@@ -193,7 +193,7 @@
 										{{ frontEndDateFormat(history.created_at) }}
 									</td>
 									<td class="px-2 py-2 whitespace-nowrap">
-										<span v-html=" retDivSecClus(history.division,history.section,history.cluster,1)"></span>	
+										<doc-location :Division="history.division" :Cluster="history.cluster" :Office="history.office" :Type="1"></doc-location>
 									</td>
 									<td class="px-2 py-2 whitespace-nowrap">
 										<span v-if="history.doc_notes != null"> {{ history.doc_notes }} </span>
@@ -205,7 +205,7 @@
 										<span v-if="history.document_status == null" class="text-red-500"> No Action </span>
 									</td>
 									<td class="px-2 py-2 whitespace-nowrap">
-										<span v-if="history.forwarded_to" v-html=" retDiv(history.forwarded_to)"></span>	
+										<doc-destination v-if="history.forwarded_to" :Destination="history.forwarded_to"></doc-destination>	
 										<span v-if="!history.forwarded_to" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-500 text-white">
 											Pending
 										</span>
@@ -250,7 +250,10 @@
 	import UploadImages from "vue-upload-drop-images"
 	import Mylib from '@/CustomFunctions/Mylib.js';
     import Pagination from '../../CustomComponents/Pagination.vue'
-
+	import DocActions from '../../CustomComponents/DocActions.vue'
+	import DocTypes from '../../CustomComponents/DocTypes.vue'
+	import DocLocation from '../../CustomComponents/DocLocation.vue'
+	import DocDestination from '../../CustomComponents/DocDestination.vue'
 	
     export default {
         components: {
@@ -258,6 +261,10 @@
             Modal,
 			UploadImages,
 			Pagination,
+			DocActions,
+			DocTypes,
+			DocLocation,
+			DocDestination,
         },
 		props: ['Documents','UsersDetails'],
 		data() {
@@ -300,12 +307,6 @@
 			},
 			formatAmount(value) {
 				return Mylib.formatAmount(value);
-			},
-			retDiv(currentLocation){
-				return Mylib.retDiv(currentLocation);
-			},
-			retDivSecClus(div,sec,clus,type){
-				return Mylib.retDivSecClus(div,sec,clus,type);
 			},
 			frontEndDateFormat: function(date_data) {
 				return Mylib.frontEndDateFormat(date_data);

@@ -49,151 +49,34 @@ let frontEndDateFormat = (date_data) => {
   return moment(date_data).format('MMMM Do YYYY, h:mm:ss a');
 };
 
-let retDiv = (currentLocation) => {
-  var arr = currentLocation.split(',');
-
-  var divs = [
-    "",
-    "RD's OFFICE",
-    "ARD's OFFICE",
-    "LHSD",
-    "MSD",
-    "RLED",
-    ]
-    var secs = [
-    "",
-    "NNC",
-    "PHILHEALTH INSURANCE CORP.",
-    "ADELA SIERRA TY MEMORIAL MEDICAL CENTER",
-    "CARAGA REGIONAL HOSPITAL",
-    "DRUG TREATMENT AND REHAB.",
-    "OFFICE OF STRATEGIC MANAGEMENT",
-    "PDO ADS",
-    "PDO ADN",
-    "PDO SDN",
-    "PDO SDS",
-    "PDO PDI",
-    "RESSU/HEMS",
-    "PLANNING SECTION",
-    "RESEARCH SECTION",
-    "LEGAL SECTION",
-    "FINANCE SECTION",
-    "HR MNGT. & DEV. SECTION",
-    "HEALTH FACILITY SECTION",
-    "HEALTH PROGRAM SECTION",
-    "PROCUREMENT SECTION",
-    "MATERIAL MNGT. SECTION",
-    "GOVERNANCE SECTION",
-    "FAMILY HEALTH SECTION",
-    "INFECTIOUS SECTION",
-    "NON-COMMUNICABLE DISEASES SECTION",
-    "BAC",
-    ]
-    var cluster = [
-    "",
-    "PERSONNEL",
-    "TRAINING",
-    "HEALTH PROMOTION",
-    "KNOWLEDGE MNGT. CLUSTER",
-    "DEPLOYMENT PROG. CLUSTER",
-    "BUDGET",
-    "ACCOUNTING",
-    "CASHIER",
-    ]
-    return divs[arr[0]] +' | '+ secs[arr[1]] +"<br/>"+ cluster[arr[2]];
-};
-
-let retDivSecClus = (div,sec,clus,type) => {
-
-  var type2 = [];
-  var divs = [
-    "",
-    "RD's OFFICE",
-    "ARD's OFFICE",
-    "LHSD",
-    "MSD",
-    "RLED",
-  ]
-  var secs = [
-    "",
-    "NNC",
-    "PHILHEALTH INSURANCE CORP.",
-    "ADELA SIERRA TY MEMORIAL MEDICAL CENTER",
-    "CARAGA REGIONAL HOSPITAL",
-    "DRUG TREATMENT AND REHAB.",
-    "OFFICE OF STRATEGIC MANAGEMENT",
-    "PDO ADS",
-    "PDO ADN",
-    "PDO SDN",
-    "PDO SDS",
-    "PDO PDI",
-    "RESSU/HEMS",
-    "PLANNING SECTION",
-    "RESEARCH SECTION",
-    "LEGAL SECTION",
-    "FINANCE SECTION",
-    "HR MNGT. & DEV. SECTION",
-    "HEALTH FACILITY SECTION",
-    "HEALTH PROGRAM SECTION",
-    "PROCUREMENT SECTION",
-    "MATERIAL MNGT. SECTION",
-    "GOVERNANCE SECTION",
-    "FAMILY HEALTH SECTION",
-    "INFECTIOUS SECTION",
-    "NON-COMMUNICABLE DISEASES SECTION",
-    "BAC",
-  ]
-  var cluster = [
-    "",
-    "PERSONNEL",
-    "TRAINING",
-    "HEALTH PROMOTION",
-    "KNOWLEDGE MNGT. CLUSTER",
-    "DEPLOYMENT PROG. CLUSTER",
-    "BUDGET",
-    "ACCOUNTING",
-    "CASHIER",
-  ]
-
-  if(type == 2){
-    // if type 2 -> receives div then undefined 2 + 1 params,
-    var answ = div.split(',');
-    answ.forEach(function(obj){
-      type2.push(parseInt(obj));
-    });
-    return divs[type2[0]] +' | '+ secs[type2[1]] +"<br/>"+ cluster[type2[2]];
-  }else{
-    return divs[div] +' | '+ secs[sec] +"<br/>"+ cluster[clus];
-  }
-  
-};
-
-let getDivision = (that) => {
-  axios.get('/getDivision')
+let getOfficesDivision = (that) => {
+  axios.get('/getOfficesDivision')
   .then(function (response) {
     that.Division_List = response.data;
     console.log(that.Division_List);
   }.bind(that));
 };
 
-let getSection = (that,division) => {
-  axios.get('/getSection',{
+let getOfficesCluster = (that,cluster,division) => {
+  axios.get('/getOfficesCluster',{
     params: {
+      cluster_id: cluster,
       division_id: division
     }
   }).then(function(response){
-    that.Section_List = response.data;
-    console.log(that.Section_List);
+    that.Cluster_List = response.data;
+    console.log(that.Cluster_List);
    }.bind(that));
 };
 
-let getCluster = (that,section) => {
-  axios.get('/getCluster',{
+let getOffices = (that,section,division) => {
+  axios.get('/getOffices',{
     params: {
-      section_id: section
+      division_id: division,
+      cluster_id: section
     }
   }).then(function(response){
-      that.Cluster_List = response.data;
+      that.Office_List = response.data;
       console.log(response.data);
    }.bind(that));
 };
@@ -244,19 +127,119 @@ let dateDifference = (startDate,endDate) => {
   }
 };
 
+let dateAs = (time) => {
+  var duration = moment.duration(moment(time));
+  var arr = [];
+  var days, hours, min, sec, milisec;
+  if(duration.asDays() < 1){
+      arr.push(1);
+      hours = duration.asHours();
+      arr.push(parseInt(hours));
+      if(hours % 1 > 0){
+          min = moment.duration(hours).asMinutes();
+          if(min % 1 > 0){
+              arr.push(parseInt(min));
+
+              sec = moment.duration(min).asSeconds();
+              if(min % 1 > 0){
+                  arr.push(parseInt(sec));
+
+                  milisec = moment.duration(sec).asMilliseconds();
+                  if(sec % 1 > 0){
+                      arr.push(parseInt(milisec));
+                  }
+              }
+          }else;
+      }else;
+
+  }else{
+      arr.push(2);
+      arr.push(days);
+      hours = duration.asHours();
+      arr.push(parseInt(hours));
+      if(hours % 1 > 0){
+          min = moment.duration(hours).asMinutes();
+          if(min % 1 > 0){
+              arr.push(parseInt(min));
+
+              sec = moment.duration(min).asSeconds();
+              if(min % 1 > 0){
+                  arr.push(parseInt(sec));
+
+                  milisec = moment.duration(sec).asMilliseconds();
+                  if(sec % 1 > 0){
+                      arr.push(parseInt(milisec));
+                  }
+              }
+          }else;
+      }else;
+  }
+  console.log(arr);
+  if(arr[0] == 1){
+    var finalArr = [];
+    console.log("arr[0]");
+    if(arr[1] > 0){
+      finalArr.push(arr[1]+' Hrs ');
+    }else;
+
+    if(arr[2] > 0){
+      finalArr.push(arr[2]+' min ');
+    }else;
+
+    if(arr[3] > 0){
+      finalArr.push(arr[3]+' sec ');
+    }else;
+
+    if(arr[4] > 0){
+      finalArr.push(arr[4]+' ms ');
+    }else;
+
+    var finalData="";
+    for(var i=0; i < finalArr.length; i++){
+      finalData = finalData.concat(finalArr[i]);
+    }
+      return finalData;
+  }else{
+    console.log("arr[1]");
+    if(arr[1] > 0){
+      finalArr.push(arr[1]+' Days ');
+    }else;
+
+    if(arr[2] > 0){
+      finalArr.push(arr[2]+' Hrs ');
+    }else;
+
+    if(arr[3] > 0){
+      finalArr.push(arr[3]+' min ');
+    }else;
+
+    if(arr[4] > 0){
+      finalArr.push(arr[4]+' sec ');
+    }else;
+
+    if(arr[5] > 0){
+      finalArr.push(arr[5]+' ms ');
+    }else;
+
+    var finalData="";
+    for(var i=0; i < finalArr.length; i++){
+      finalData = finalData.concat(finalArr[i]);
+    }
+    return finalData;
+  }
+};
 
 var xport = {
   closeModal: closeModal,
   viewParticulars: viewParticulars,
   openImageInNewTab: openImageInNewTab,
   formatAmount: formatAmount,
-  getDivision: getDivision,
-  getSection: getSection,
-  getCluster: getCluster,
   frontEndDateFormat: frontEndDateFormat,
-  retDiv: retDiv,
-  retDivSecClus: retDivSecClus,
   dateDifference: dateDifference,
+  getOfficesDivision: getOfficesDivision,
+  getOfficesCluster: getOfficesCluster,
+  getOffices: getOffices,
+  dateAs: dateAs,
 };
 
 export default xport;

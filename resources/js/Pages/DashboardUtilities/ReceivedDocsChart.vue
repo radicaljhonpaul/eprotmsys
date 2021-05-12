@@ -1,39 +1,63 @@
 <template>
     <div class=" w-full">
+        <h2 class="text-base text-pink-500">All Logged Documents</h2>
         <apexchart
         width="100%"
         height="262px"
-        type="line"
-        :options="chartOptions"
-        :series="series"
+        type="bar"
+        :options="bindChartData(ChartData, 1)"
+        :series="bindChartData(ChartData, 2)"
         ></apexchart>
     </div>
+    <pre>
+        {{ chartOptions }}
+    </pre>
 </template>
 
 <script>
     import VueApexCharts from "vue3-apexcharts";
 
     export default {
+        props: {
+            ChartData: Array,
+        },
         components: {
             apexchart: VueApexCharts,
         },
         data(){
             return {
-                chartOptions: {
-                    chart: {
-                    id: "vuechart-example",
-                    },
-                    xaxis: {
-                    categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998],
-                    },
-                },
-                series: [
-                    {
-                    name: "series-1",
-                    data: [30, 40, 35, 50, 49, 60, 70, 91],
-                    },
-                ],
+                showChart: 0,
             };
+        },
+        methods: {
+            bindChartData(data, type){
+                console.log("bindChartData");
+                var series = [];
+                var labels = []; 
+                $.each(data, function(key, value) {
+                    labels.push(key);
+                    series.push(value.length);
+                });
+                if(type == 1){
+                    var Options = {
+                        chart: {
+                            id: "vuechart-example",
+                        },
+                        xaxis: {
+                            categories: labels,
+                        },
+                    }
+                    return Options;
+                }else{
+                    var seriesArr = [
+                        {
+                            name: "Value",
+                            data: series,
+                        },
+                    ]
+                    return seriesArr;
+                }
+            },
         },
         created(){
             console.log("ReceivedDocsChart.vue");

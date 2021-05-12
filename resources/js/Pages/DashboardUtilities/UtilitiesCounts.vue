@@ -3,36 +3,41 @@
         <div class="container px-5 mx-auto">
             <h1 class="title-font font-medium text-xl mb-2 text-gray-900">Purchase Request - Purchase Order</h1>
             <div class="flex flex-wrap text-left">
-                <div class="md:w-1/3 w-full px-2">
-                    <div class="border-b-2 border-gray-200 px-4 py-2">
-                    <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="text-indigo-500 w-12 h-12 mb-3 inline-block" viewBox="0 0 24 24">
-                        <path d="M8 17l4 4 4-4m-4-5v9"></path>
-                        <path d="M20.88 18.09A5 5 0 0018 9h-1.26A8 8 0 103 16.29"></path>
-                    </svg>
-                    <h2 class="title-font font-medium text-3xl text-gray-900">40</h2>
-                    <p class="leading-relaxed">PR Outgoing | Approved </p>
+                <div class="md:w-1/4 w-full px-2">
+                    <div class="border-b-2 border-gray-200 px-4 py-2 flex flex-wrap gap-3">
+                        <img style="width:50px;height:50px;object-fit:contain;" src="/images/dashboard/pr_rec.gif" alt="">
+                        <div>
+                            <h2 class="title-font font-medium text-3xl text-gray-900">{{ this.PR_Received }}</h2>
+                            <p class="leading-relaxed">PR | <span class="text-green-500"> Received </span> </p>
+                        </div>
                     </div>
                 </div>
-                <div class="md:w-1/3 w-full px-2">
-                    <div class="border-b-2 border-gray-200 px-4 py-2">
-                    <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="text-indigo-500 w-12 h-12 mb-3 inline-block" viewBox="0 0 24 24">
-                        <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"></path>
-                        <circle cx="9" cy="7" r="4"></circle>
-                        <path d="M23 21v-2a4 4 0 00-3-3.87m-4-12a4 4 0 010 7.75"></path>
-                    </svg>
-                    <h2 class="title-font font-medium text-3xl text-gray-900">1.3K</h2>
-                    <p class="leading-relaxed">PR Outgoing | Returned </p>
+                <div class="md:w-1/4 w-full px-2">
+                    <div class="border-b-2 border-gray-200 px-4 py-2 flex flex-wrap gap-3">
+                        <img style="height:50px;object-fit:contain;" src="/images/dashboard/pr_app.gif"/>
+                        <div>
+                            <h2 class="title-font font-medium text-3xl text-gray-900">{{ this.PR_Approved }}</h2>
+                            <p class="leading-relaxed">PR | <span class="text-yellow-500"> Approved </span> </p>
+                        </div>
                     </div>
                 </div>
-                <div class="md:w-1/3 w-full px-2">
-                    <div class="border-b-2 border-gray-200 px-4 py-2">
-                    <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="text-indigo-500 w-12 h-12 mb-3 inline-block" viewBox="0 0 24 24">
-                        <path d="M3 18v-6a9 9 0 0118 0v6"></path>
-                        <path d="M21 19a2 2 0 01-2 2h-1a2 2 0 01-2-2v-3a2 2 0 012-2h3zM3 19a2 2 0 002 2h1a2 2 0 002-2v-3a2 2 0 00-2-2H3z"></path>
-                    </svg>
-                    <h2 class="title-font font-medium text-3xl text-gray-900">74</h2>
-                    <p class="leading-relaxed">PR - PO | Converted </p>
-                    </div>
+                <div class="md:w-1/4 w-full px-2">
+                    <div class="border-b-2 border-gray-200 px-4 py-2 flex flex-wrap gap-3">
+                        <img style="height:50px;object-fit:contain;" src="/images/dashboard/po_rec.gif"/>
+                        <div>
+                            <h2 class="title-font font-medium text-3xl text-gray-900">{{ this.PO_Received }}</h2>
+                            <p class="leading-relaxed">PO | <span class="text-yellow-500"> Received </span> </p>
+                        </div>
+                    </div>  
+                </div>
+                <div class="md:w-1/4 w-full px-2">
+                    <div class="border-b-2 border-gray-200 px-4 py-2 flex flex-wrap gap-3">
+                        <img style="height:50px;object-fit:contain;" src="/images/dashboard/po_app.gif"/>
+                        <div>
+                            <h2 class="title-font font-medium text-3xl text-gray-900">{{ this.PO_Approved }}</h2>
+                            <p class="leading-relaxed">PO | <span class="text-green-500"> Approved </span> </p>
+                        </div>
+                    </div>  
                 </div>
             </div>
         </div>
@@ -44,6 +49,30 @@
     export default {
         components: { 
         },
-        
+        data(){
+            return {
+                PR_Data: null,
+                PR_Approved: null,
+                PR_Received: null,
+                PO_Data: null,
+                PO_Received: null,
+                PO_Approved: null,
+            }
+        },
+        methods: {
+            getUtilitiesCounts(){
+                axios.get('/getUtilitiesCounts',{
+              }).then(function(response){
+                    this.PR_Received = response.data[0];
+                    this.PR_Approved = response.data[1];
+                    this.PO_Received = response.data[2];
+                    this.PO_Approved = response.data[3];
+                }.bind(this));
+            }
+        },
+        created(){
+            console.log("UtilitiesCounts.vue");
+            this.getUtilitiesCounts();
+        }
     };
 </script>

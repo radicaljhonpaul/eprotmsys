@@ -21,15 +21,16 @@ class OfficeController extends Controller
     {
         //
         return Inertia::render('Dashboards/OfficeDash',[
-            'UsersDetails' => UsersDetails::select('id','fname','lname','contact','cluster','section','division','position','gender')->where('id', Auth::id())->get(),
+            'UsersDetails' => UsersDetails::select('id','fname','lname','contact','cluster','division','office','position','gender')->where('id', Auth::id())->get(),
         ]);
     }
 
     public function getSpecificUser(Request $request)
     {
-        $data = UsersDetails::select('id','fname','lname')->where('division', $request->division_id)
-        ->where('section', $request->section_id)
+        $data = UsersDetails::select('id','fname','lname')
+        ->where('division', $request->division_id)
         ->where('cluster', $request->cluster_id)
+        ->where('office', $request->office_id)
         ->get();
         return $data;
     }
@@ -57,10 +58,10 @@ class OfficeController extends Controller
             'title' => ['required'],
         ])->validate();
   
-        Article::create($request->all());
+        // Article::create($request->all());
   
-        return redirect()->back()
-                    ->with('message', 'Article Created Successfully.');
+        // return redirect()->back()
+        //             ->with('message', 'Article Created Successfully.');
     }
     
     /**

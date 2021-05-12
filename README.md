@@ -30,3 +30,12 @@ If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Lar
 
 // Install vue3-apex charts for dashboard
 // Done Routing and Mutation from PR to PO
+
+- May 12, 2021
+// Mutation of PR to PO
+// New Structure | from Division Section Cluster -to- Division Cluster Offices
+// Commented SMS Notif
+// Make MyLib.js for JS common functions
+// Routes for Dashboard
+// Dashboard Components | AvgDocs,AvgProcessignTime,ReceivedsDocs,ReceivedsDocsCharts,UtilitiesCounts
+// Custom Components | DocActions,DocDestination,DocLocation,DocTypes,Paginations,NotificationList

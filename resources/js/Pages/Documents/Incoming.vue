@@ -93,14 +93,12 @@
 											</td>
 											
 											<!-- if there are exactly 2 ka logs -->
-											<!-- v-if="docs.documents_status_log_tbl.length > 1" -->
 											<td v-if="docs.documents_status_log_tbl.length > 0" class="px-3 py-2 whitespace-nowrap text-red-500" style="font-size:.55rem;line-height:1rem;">
-												<p v-if="docs.documents_status_log_tbl[0] != null" v-html=" retDivSecClus(docs.documents_status_log_tbl[0].division,docs.documents_status_log_tbl[0].section,docs.documents_status_log_tbl[0].cluster,1)"></p>
+												<doc-location v-if="docs.documents_status_log_tbl[0] != null" :Division="docs.documents_status_log_tbl[0].division" :Cluster="docs.documents_status_log_tbl[0].cluster" :Office="docs.documents_status_log_tbl[0].office" :Type="1"></doc-location>
 												<p class="text-xs text-gray-900">{{ frontEndDateFormat(docs.documents_status_log_tbl[0].created_at) }} </p>
 											</td>
-											<!-- v-if="docs.documents_status_log_tbl.length > 1" -->
 											<td v-if="docs.documents_status_log_tbl.length > 0" class="px-3 py-2 whitespace-nowrap text-yellow-500" style="font-size:.55rem;line-height:1rem;">
-												<p v-if="docs.documents_status_log_tbl[0] != null && docs.documents_status_log_tbl[0].forwarded_to != null" v-html=" retDiv(docs.documents_status_log_tbl[0].forwarded_to)"></p>
+												<doc-destination v-if="docs.documents_status_log_tbl[0] != null && docs.documents_status_log_tbl[0].forwarded_to != null" :Destination="history.forwarded_to"></doc-destination>	
 												<p v-if="docs.documents_status_log_tbl[0] != null && docs.documents_status_log_tbl[0].forwarded_to != null" class="text-xs text-gray-900">{{ frontEndDateFormat(docs.documents_status_log_tbl[0].updated_at) }} </p>
 												<p v-if="docs.documents_status_log_tbl[0].forwarded_to == null" class="text-xs text-gray-900">
 													<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-500 text-white">
@@ -115,7 +113,6 @@
 												<a v-if="docs.final_status == 'Processing'" @click="ForwardingModal = true, passDtrakNo(docs.dtrack_no), viewParticulars(docs)" class="text-green-500 hover:text-green-700 cursor-pointer">Forward <i class="fas fa-file-export"></i> </a>
 											</td>
 										</tr>
-										<!-- More items... -->
 									</tbody>
 								</table>
 							</div>
@@ -182,7 +179,7 @@
 								<label class="block text-purple-800">
 									Received from
 								</label>
-								<span class="text-gray-500" v-html="this.retDiv(this.LogDocData.doc_current_location)"></span>	
+								<doc-destination class="text-gray-500" :Destination="this.LogDocData.doc_current_location"></doc-destination>	
 							</div>
 						</div>
 					</section>
@@ -289,7 +286,7 @@
 										{{ frontEndDateFormat(history.created_at) }}
 									</td>
 									<td class="px-2 py-2 whitespace-nowrap">
-										<span v-html=" retDivSecClus(history.division,history.section,history.cluster,1)"></span>	
+										<doc-location :Division="history.division" :Cluster="history.cluster" :Office="history.office" :Type="1"></doc-location>
 									</td>
 									<td class="px-2 py-2 whitespace-nowrap">
 										<span v-if="history.doc_notes != null"> {{ history.doc_notes }} </span>
@@ -301,7 +298,7 @@
 										<span class="text-red-500" v-if="history.document_status == null"> No Action </span>
 									</td>
 									<td class="px-2 py-2 whitespace-nowrap">
-										<span v-if="history.forwarded_to" v-html=" retDiv(history.forwarded_to)"></span>	
+										<doc-destination v-if="history.forwarded_to" class="text-gray-500" :Destination="history.forwarded_to"></doc-destination>	
 										<span v-if="!history.forwarded_to" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-500 text-white">
 											Pending
 										</span>
@@ -353,7 +350,7 @@
 					<div class="flex flex-wrap px-5 py-2">
 						<div class="w-full sm:w-1/2 md:w-1/2 lg:w-1/2 xl:w-1/2 mb-2 px-2">
 						<!-- -->
-							<section  v-if="SpecificDocData.doc_type == 'Purchase Request' && SpecificDocData.doc_current_location == '4,20,0' && SpecificDocData.doc_current_status == 'For PR Numbering'" class="flex justify-between items-center">
+							<section  v-if="SpecificDocData.doc_type == 'Purchase Request' && SpecificDocData.doc_current_location == '3,0,54' && SpecificDocData.doc_current_status == 'For PR Numbering'" class="flex justify-between items-center">
 								<div class="w-full block">
 									<div class="block text-purple-500 my-2 text-base">
 										Approved PR <br/>
@@ -367,7 +364,8 @@
 								</div>
 							</section>
 
-							<section  v-if="SpecificDocData.doc_type == 'Purchase Request' && SpecificDocData.doc_current_location == '4,20,0' && SpecificDocData.doc_current_status == 'For Purchase Order (PO)'" class="flex justify-between items-center">
+							<!-- For PO -->
+							<section  v-if="SpecificDocData.doc_type == 'Purchase Request' && SpecificDocData.doc_current_location == '3,0,54' && SpecificDocData.doc_current_status == 'For Purchase Order (PO)'" class="flex justify-between items-center">
 								<div class="w-full block">
 									<div class="block text-purple-500 my-2 text-base">
 										For PO <br/>
@@ -386,25 +384,25 @@
 									<div class="block text-purple-500 my-2 text-base">
 										Destination
 									</div>
-									<div class="block text-gray-500 mb-2">
-										<label for="doctype" class="text-xs">Division</label>
-										<select class="mt-1 py-2 bg-gray-50 border-b-2 border-t-0 border-l-0 border-r-0 rounded-xs w-full text-gray-800 focus:outline-none focus:ring-0" v-model="ForwardDocForm.ForwardDocDivisionData" @change='getSection(this.ForwardDocForm.ForwardDocDivisionData);getSpecificUser()' required>
-											<option v-for='divData in Division_List' :key="divData.value" :value='divData.id'>{{ divData.name }}</option>
-										</select>
-									</div>
-									
-									<div class="block text-gray-500 mb-2">
-										<label for="doctype" class="text-xs">Section</label>
-										<select class="mt-1 py-2 bg-gray-50 border-b-2 border-t-0 border-l-0 border-r-0 rounded-xs w-full text-gray-800 focus:outline-none focus:ring-0" v-model="ForwardDocForm.ForwardDocSectionData" @change='getCluster(this.ForwardDocForm.ForwardDocSectionData);getSpecificUser()'>
-											<option value='0'>None</option>
-											<option v-for='secData in Section_List' :key="secData.value" :value='secData.id'>{{ secData.name }}</option>
+
+									<div class="block text-gray-500">
+										<label for="division" class="text-xs">Division</label>
+										<select id="division" name="division" class="mt-1 py-2 bg-gray-50 border-b-2 border-t-0 border-l-0 border-r-0 rounded-xs w-full text-gray-800 focus:outline-none focus:ring-0" v-model="ForwardDocForm.ForwardDocDivisionData" @change='getOfficesCluster(ForwardDocForm.ForwardDocClusterData,ForwardDocForm.ForwardDocDivisionData),getSpecificUser()' required>
+											<option v-for='divData in Division_List' :key="divData" :value='divData.id'>{{ divData.name }}</option>
 										</select>
 									</div>
 
-									<div v-if="Cluster_List.length > 0 && ForwardDocForm.ForwardDocDivisionData == 4" class="block text-gray-500 mb-2">
-										<label for="doctype" class="text-xs">Cluster</label>
-										<select class="mt-1 py-2 bg-gray-50 border-b-2 border-t-0 border-l-0 border-r-0 rounded-xs w-full text-gray-800 focus:outline-none focus:ring-0" v-model="ForwardDocForm.ForwardDocClusterData" @change='getSpecificUser()'>
-											<option v-for='clusData in Cluster_List' :key="clusData.value" :value='clusData.id'>{{ clusData.name }}</option>
+									<div class="block text-gray-500" v-if="ForwardDocForm.ForwardDocDivisionData == 2 || ForwardDocForm.ForwardDocDivisionData == 3">
+										<label for="cluster" class="text-xs">Section/Cluster</label>
+										<select id="cluster" name="cluster" class="mt-1 py-2 bg-gray-50 border-b-2 border-t-0 border-l-0 border-r-0 rounded-xs w-full text-gray-800 focus:outline-none focus:ring-0" v-model="ForwardDocForm.ForwardDocClusterData" @change='getOffices(ForwardDocForm.ForwardDocClusterData,ForwardDocForm.ForwardDocDivisionData),getSpecificUser()'>
+											<option v-for='clusData in Cluster_List' :key="clusData" :value='clusData.id'>{{ clusData.name }}</option>
+										</select>
+									</div>
+
+									<div class="block text-gray-500">
+										<label for="office" class="text-xs">Office</label>
+										<select id="office" name="office" class="mt-1 py-2 bg-gray-50 border-b-2 border-t-0 border-l-0 border-r-0 rounded-xs w-full text-gray-800 focus:outline-none focus:ring-0" v-model="ForwardDocForm.ForwardDocOfficeData" @change="getSpecificUser()" required>
+											<option v-for='officeData in Office_List' :key="officeData" :value='officeData.id'>{{ officeData.name }}</option>
 										</select>
 									</div>
 
@@ -423,9 +421,7 @@
 									<div class="block text-gray-500 mb-2">
 										<label for="doctype" class="text-xs">Action</label>
 										<select class="mt-1 py-2 bg-gray-50 border-b-2 border-t-0 border-l-0 border-r-0 rounded-xs w-full text-gray-800 focus:outline-none focus:ring-0" v-model='ForwardDocForm.ForwardDocAction' required>
-											<option v-for="option in Doc_Action_Options" :key="option.value" :value="option.value">
-												{{ option.text }}
-											</option>
+											<doc-actions></doc-actions>
 										</select>
 									</div>
 								</div>
@@ -511,13 +507,21 @@
 	import UploadImages from "vue-upload-drop-images"
 	import Mylib from '@/CustomFunctions/Mylib.js';
     import Pagination from '../../CustomComponents/Pagination.vue'
-	
+	import DocActions from '../../CustomComponents/DocActions.vue'
+	import DocTypes from '../../CustomComponents/DocTypes.vue'
+	import DocLocation from '../../CustomComponents/DocLocation.vue'
+	import DocDestination from '../../CustomComponents/DocDestination.vue'
+
     export default {
         components: {
             OfficeLayout,
             Modal,
 			UploadImages,
 			Pagination,
+			DocActions,
+			DocTypes,
+			DocLocation,
+			DocDestination,
         },
 		props: ['Documents','UsersDetails','IncomingDocuments'],
 		data() {
@@ -536,8 +540,8 @@
 					AddAttachment: false,
 					ForwardDocNote: null,
 					ForwardDocDivisionData: null,
-					ForwardDocSectionData: 0,
 					ForwardDocClusterData: 0,
+					ForwardDocOfficeData: 0,
 					ForwardDocAction: null,
 					CreateDocfile: [],
 					DtrakNoHolder: "",
@@ -555,7 +559,7 @@
 				LogDocData: null,
 				ToggleErrorLogForm: null,
 				Division_List: [],
-				Section_List: [],
+				Office_List: [],
 				Cluster_List: [],
 				SpecificUser: [],
 				Doc_Action_Options: [
@@ -650,24 +654,28 @@
 				return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
 			},
 			// Methods for Dependent Dropdown
-            getDivision: function(){
-				Mylib.getDivision(this);
+            getOfficesDivision: function(){
+				Mylib.getOfficesDivision(this);
             },
-			getSection: function(division) {
-				Mylib.getSection(this,division);
+			getOfficesCluster: function(cluster,division) {
+				console.log("getOfficesCluster");
+				console.log(cluster+' '+division);
+				Mylib.getOfficesCluster(this,cluster,division);
+				this.getOffices(cluster,division);
             },
-			getCluster: function(section) {
-				Mylib.getCluster(this,section);
+			getOffices: function(cluster,division) {
+				console.log("getOffices");
+				// console.log(cluster,division);
+				Mylib.getOffices(this,cluster,division);
             },
 			getSpecificUser: function() {
-
 				console.log("SpecificUser");
-				console.log(this.ForwardDocForm.ForwardDocDivisionData+' '+this.ForwardDocForm.ForwardDocSectionData+' '+this.ForwardDocForm.ForwardDocClusterData);
+				console.log(this.ForwardDocForm.ForwardDocDivisionData+' '+this.ForwardDocForm.ForwardDocOfficeData+' '+this.ForwardDocForm.ForwardDocClusterData);
                 axios.get('/getSpecificUser',{
                  params: {
                    division_id: this.ForwardDocForm.ForwardDocDivisionData,
-                   section_id: this.ForwardDocForm.ForwardDocSectionData,
                    cluster_id: this.ForwardDocForm.ForwardDocClusterData,
+                   office_id: this.ForwardDocForm.ForwardDocOfficeData,
                  }
               }).then(function(response){
                     this.SpecificUser = response.data;
@@ -693,12 +701,6 @@
 						}
 					}
 				}
-			},
-			retDiv(currentLocation){
-				return Mylib.retDiv(currentLocation);
-			},
-			retDivSecClus(div,sec,clus,type){
-				return Mylib.retDivSecClus(div,sec,clus,type);
 			},
 			submitLogDocumentModal(){
 				this.$inertia.post(route('office.logdoc'), this.LogForm, {
@@ -751,7 +753,7 @@
             },
 		},
 		created: function(){
-			this.getDivision();
+			this.getOfficesDivision();
         }
     };
 </script>

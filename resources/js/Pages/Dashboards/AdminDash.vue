@@ -1,15 +1,13 @@
 <template>
-    <office-layout>
-    	<!-- <h1 class="text-red-500">ADMIN</h1> -->
-    </office-layout>
+    <h1 class="text-red-500">ADMIN</h1>
 </template>
 
 <script>
-    import OfficeLayout from '@/Layouts/OfficeLayout'
+    import AppLayout from '@/Layouts/AppLayout'
 
     export default {
         components: {
-            OfficeLayout,
+            AppLayout,
         },
     };
 </script>

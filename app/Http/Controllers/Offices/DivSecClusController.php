@@ -5,27 +5,40 @@ namespace App\Http\Controllers\Offices;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use App\Models\Division;
-use App\Models\Section;
-use App\Models\Cluster;
+use App\Models\OfficesOffice;
+use App\Models\OfficesCluster;
+use App\Models\OfficesDivision;
 
 class DivSecClusController extends Controller
 {
-    public function getDivision()
+    
+    public function getOfficesDivision()
     {
-        $data = Division::get();
+        $data = OfficesDivision::get();
         return $data;
     }
 
-    public function getSection(Request $request)
+    public function getOfficesCluster(Request $request)
     {
-        $data = Section::where('division_id_fk', $request->division_id)->get();
+        // return $request;
+        $data = OfficesCluster::where('offices_division_id_fk', $request->division_id)->get();
         return $data;
     }
     
-    public function getCluster(Request $request)
+    public function getOffices(Request $request)
     {
-        $data = Cluster::where('section_id_fk', $request->section_id)->get();
-        return $data;
+        $q = OfficesOffice::query();
+
+        if($request->has('division_id'))
+        {
+            $q->where('offices_division_id_fk', $request->division_id);
+        }
+      
+        if ($request->has('cluster_id'))
+        {
+            // return "sulod";
+            $q->where('offices_cluster_id_fk', $request->cluster_id);
+        }
+        return $q->get();
     }
 }

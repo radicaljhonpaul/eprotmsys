@@ -20,9 +20,9 @@ use App\Models\NotificationsTbl;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use App\Models\Division;
-use App\Models\Section;
-use App\Models\Cluster;
+use App\Models\OfficesDivision;
+use App\Models\OfficesCluster;
+use App\Models\OfficesOffice;
 // Events
 use App\Events\CreateDocument;
 use App\Events\LogDocument;
@@ -43,18 +43,17 @@ class DocumentController extends Controller
             'Documents' => DocumentsTbl::with('DocumentsParticularsTbl')
                 ->with(['DocumentsStatusLogTbl' => function($docsStat){
                     return $docsStat->with('ImgLogsTbl')->orderByDesc('id')->get();
-                    // ->orderByDesc('id')->limit(2)
                 }])
                 ->with('DocumentsMutationLogTbl')
                 ->with(['UsersDetails' => function($query){
-                    return $query->select('id','fname','mname','lname','position','contact','cluster','section','division','user_id_fk')
-                        ->with(['Division' => function($div){
+                    return $query->select('id','fname','mname','lname','position','contact','cluster','office','division','user_id_fk')
+                        ->with(['OfficesDivision' => function($div){
                             return $div->select('id','name');
                         }])
-                        ->with(['Section' => function($sec){
+                        ->with(['OfficesCluster' => function($sec){
                             return $sec->select('id','name');
                         }])
-                        ->with(['Cluster' => function($clus){
+                        ->with(['OfficesOffice' => function($clus){
                             return $clus->select('id','name');
                         }]);
                 }])
@@ -76,65 +75,36 @@ class DocumentController extends Controller
         }])
         ->with('DocumentsMutationLogTbl')
         ->with(['UsersDetails' => function($query){
-            return $query->select('id','fname','mname','lname','position','contact','cluster','section','division','user_id_fk')
-                ->with(['Division' => function($div){
+            return $query->select('id','fname','mname','lname','position','contact','cluster','office','division','user_id_fk')
+                ->with(['OfficesDivision' => function($div){
                     return $div->select('id','name');
                 }])
-                ->with(['Section' => function($sec){
-                    return $sec->select('id','name');
-                }])
-                ->with(['Cluster' => function($clus){
+                ->with(['OfficesCluster' => function($clus){
                     return $clus->select('id','name');
+                }])
+                ->with(['OfficesOffice' => function($off){
+                    return $off->select('id','name');
                 }]);
         }])
         ->where('dtrack_no',$request->DtrackNo)
         ->get();
     }
-    // Incoming Documents (For Optimization)
-    // public function incoming(Request $request)
-    // {
-    //     ob_start('ob_gzhandler');
-    //     $UsersDetails = UsersDetails::select('id','division','section','cluster')->where('user_id_fk',Auth::id())->get();
-    //     $origin = $UsersDetails[0]->division.','.$UsersDetails[0]->section.','.$UsersDetails[0]->cluster;
-
-    //     return DocumentsTbl::with('DocumentsParticularsTbl')
-    //         ->with(['DocumentsStatusLogTbl' => function($docsStat){
-    //             return $docsStat->with('ImgLogsTbl')->orderByDesc('id')->limit(2)->get();
-    //         }])
-    //         ->with(['UsersDetails' => function($query){
-    //             return $query->select('id','fname','mname','lname','position','contact','cluster','section','division','user_id_fk')
-    //                 ->with(['Division' => function($div){
-    //                     return $div->select('id','name');
-    //                 }])
-    //                 ->with(['Section' => function($sec){
-    //                     return $sec->select('id','name');
-    //                 }])
-    //                 ->with(['Cluster' => function($clus){
-    //                     return $clus->select('id','name');
-    //                 }]);
-    //         }])
-    //         ->where('is_received',0)
-    //         ->where('forwarded_to',$origin)
-    //         ->get();
-    //     ob_end_flush();
-    // }
 
     // Custom funct - Logged
     public function logged(Request $request)
     {
         ob_start('ob_gzhandler');
-        $UsersDetails = UsersDetails::select('id','division','section','cluster')->where('user_id_fk',Auth::id())->get();
-        $origin = $UsersDetails[0]->division.','.$UsersDetails[0]->section.','.$UsersDetails[0]->cluster;
-        // return $origin;
+        $UsersDetails = UsersDetails::select('id','division','office','cluster')->where('user_id_fk',Auth::id())->get();
+        $origin = $UsersDetails[0]->division.','.$UsersDetails[0]->cluster.','.$UsersDetails[0]->office;
+
         return Inertia::render('Documents/Incoming', [
             'Documents' => DocumentsTbl::with('DocumentsParticularsTbl')
                 ->with(['DocumentsStatusLogTbl' => function($docsStat){
                     return $docsStat->with('ImgLogsTbl')->orderBy('id', 'desc')->get();
-                    // ->where('status','received')
                 }])
                 ->with('DocumentsMutationLogTbl')
                 ->with(['UsersDetails' => function($query){
-                    return $query->select('id','fname','mname','lname','position','contact','cluster','section','division','user_id_fk')
+                    return $query->select('id','fname','mname','lname','position','contact','cluster','office','division','user_id_fk')
                         ->with(['User' => function($user){
                             return $user->select('id','profile_photo_path');
                         }])
@@ -152,15 +122,15 @@ class DocumentController extends Controller
                 return $docsStat->with('ImgLogsTbl')->orderByDesc('id')->limit(2)->get();
             }])
             ->with(['UsersDetails' => function($query){
-                return $query->select('id','fname','mname','lname','position','contact','cluster','section','division','user_id_fk')
-                    ->with(['Division' => function($div){
+                return $query->select('id','fname','mname','lname','position','contact','cluster','office','division','user_id_fk')
+                    ->with(['OfficesDivision' => function($div){
                         return $div->select('id','name');
                     }])
-                    ->with(['Section' => function($sec){
-                        return $sec->select('id','name');
-                    }])
-                    ->with(['Cluster' => function($clus){
+                    ->with(['OfficesCluster' => function($clus){
                         return $clus->select('id','name');
+                    }])
+                    ->with(['OfficesOffice' => function($off){
+                        return $off->select('id','name');
                     }]);
             }])
             ->where('is_received',0)
@@ -178,8 +148,9 @@ class DocumentController extends Controller
             // Save Latest Document Status Before Receiving
             $DocumentsStatusLogTbl_Previous = DocumentsStatusLogTbl::where('dtrack_id_fk',$request->logDtrackNo)->latest()->limit(1)->get();
             // Get Users Details
-            $Current_User = UsersDetails::select('id','division','section','cluster','fname','lname')->where('user_id_fk',Auth::id())->get();
-            $location = $Current_User[0]->division.','.$Current_User[0]->section.','.$Current_User[0]->cluster;
+            $Current_User = UsersDetails::select('id','division','cluster','office','fname','lname')->where('user_id_fk',Auth::id())->get();
+
+            $location = $Current_User[0]->division.','.$Current_User[0]->cluster.','.$Current_User[0]->office;
             
             $document = DocumentsTbl::select('id','dtrack_no','doc_type','updated_at')->where('dtrack_no', $request->logDtrackNo)->latest()->get();
             // Update Document Table
@@ -189,8 +160,8 @@ class DocumentController extends Controller
             $documentsStatusLogs->doc_id = $document[0]->id;
             $documentsStatusLogs->dtrack_id_fk = $request->logDtrackNo;
             $documentsStatusLogs->division = $Current_User[0]->division;
-            $documentsStatusLogs->section = $Current_User[0]->section;
             $documentsStatusLogs->cluster = $Current_User[0]->cluster;
+            $documentsStatusLogs->office = $Current_User[0]->office;
             $documentsStatusLogs->status = "received";
             $documentsStatusLogs->save();
     
@@ -201,7 +172,7 @@ class DocumentController extends Controller
             $Origin_data = [
                 "id" => $Origin_UsersDetails[0]->id,
                 'type' => "Logged a Document",
-                "message" => "Greetings ".$this->retGender($Origin_UsersDetails[0]->gender)." ". ucwords($Origin_UsersDetails[0]->lname) .", the document with the DTRAK No. ".$request->logDtrackNo." has been received by Division: ".$this->retDivSecClus($Current_User[0]->division,$Current_User[0]->section,$Current_User[0]->cluster)."\n Received Date: ".Carbon::parse($document[0]->updated_at)->format('Y-m-d h:i:s'),
+                "message" => "Greetings ".$this->retGender($Origin_UsersDetails[0]->gender)." ". ucwords($Origin_UsersDetails[0]->lname) .", the document with the DTRAK No. ".$request->logDtrackNo." has been received by Division: ".$this->retDivClusOff($Current_User[0]->division,$Current_User[0]->cluster,$Current_User[0]->office)."\n Received Date: ".Carbon::parse($document[0]->updated_at)->format('Y-m-d h:i:s'),
             ];
 
             $event_type = "Logged a Document";
@@ -215,11 +186,11 @@ class DocumentController extends Controller
             
             // SMS & Notification for Previous User
             // Get the Previous User
-            $Prev_UsersDetails = UsersDetails::select('id','contact','fname','lname','gender')->where('division', $DocumentsStatusLogTbl_Previous[0]->division)->where('section', $DocumentsStatusLogTbl_Previous[0]->section)->where('cluster', $DocumentsStatusLogTbl_Previous[0]->cluster)->get();
+            $Prev_UsersDetails = UsersDetails::select('id','contact','fname','lname','gender')->where('division', $DocumentsStatusLogTbl_Previous[0]->division)->where('cluster', $DocumentsStatusLogTbl_Previous[0]->cluster)->where('office', $DocumentsStatusLogTbl_Previous[0]->office)->get();
             $Prev_data = [
                 "id" => $Prev_UsersDetails[0]->id,
                 'type' => "Logged a Document",
-                "message" => "Greetings ".$this->retGender($Prev_UsersDetails[0]->gender)." ". ucwords($Prev_UsersDetails[0]->lname) .", the document with the DTRAK No. ".$request->logDtrackNo." has been received by Division: ".$this->retDivSecClus($Current_User[0]->division,$Current_User[0]->section,$Current_User[0]->cluster)."\n Received Date: ".Carbon::parse($document[0]->updated_at)->format('Y-m-d h:i:s'),
+                "message" => "Greetings ".$this->retGender($Prev_UsersDetails[0]->gender)." ". ucwords($Prev_UsersDetails[0]->lname) .", the document with the DTRAK No. ".$request->logDtrackNo." has been received by Division: ".$this->retDivClusOff($Current_User[0]->division,$Current_User[0]->cluster,$Current_User[0]->office)."\n Received Date: ".Carbon::parse($document[0]->updated_at)->format('Y-m-d h:i:s'),
             ];
             $this->storeNotification($event_type, $Prev_data['message'], Auth::id(), $Prev_UsersDetails[0]->id, $request->logDtrackNo);
             broadcast(new LogDocument($Prev_data))->toOthers();
@@ -239,13 +210,12 @@ class DocumentController extends Controller
         DB::beginTransaction();
         try {
             // Check if FOR PO na
-            $UsersDetails = UsersDetails::select('id','division','section','cluster','fname','lname','contact','gender')->where('user_id_fk',Auth::id())->get();
-            $location = $UsersDetails[0]->division.','.$UsersDetails[0]->section.','.$UsersDetails[0]->cluster;
-            $forwarded_to = $request->ForwardDocDivisionData.','.$request->ForwardDocSectionData.','.$request->ForwardDocClusterData;
+            $UsersDetails = UsersDetails::select('id','division','cluster','office','fname','lname','contact','gender')->where('user_id_fk',Auth::id())->get();
+            $location = $UsersDetails[0]->division.','.$UsersDetails[0]->cluster.','.$UsersDetails[0]->office;
+            $forwarded_to = $request->ForwardDocDivisionData.','.$request->ForwardDocClusterData.','.$request->ForwardDocOfficeData;
             
             $current_id = DocumentsStatusLogTbl::select('id')->where('dtrack_id_fk', $request->DtrakNoHolder)->orderByDesc('id')->limit(1)->get();
             $EndUser = DocumentsTbl::select('id','doc_end_user')->where('dtrack_no',$request->DtrakNoHolder)->get();
-            
             // If PO Numbering na
             if($request->DocumentMutationTo != null){
 
@@ -269,8 +239,8 @@ class DocumentController extends Controller
                 $documentsStatusLogs->dtrack_id_fk = $request->DtrakNoHolder;
                 $documentsStatusLogs->doc_notes = $request->ForwardDocNote;
                 $documentsStatusLogs->division = $UsersDetails[0]->division;
-                $documentsStatusLogs->section = $UsersDetails[0]->section;
                 $documentsStatusLogs->cluster = $UsersDetails[0]->cluster;
+                $documentsStatusLogs->office = $UsersDetails[0]->office;
                 $documentsStatusLogs->forwarded_to = $forwarded_to;
                 $documentsStatusLogs->receiver_id = $request->SpecificUserData;
                 $documentsStatusLogs->status = "forwarded";
@@ -282,12 +252,13 @@ class DocumentController extends Controller
                     $this->storeDocAttachements($request->CreateDocfile, $location, $documentsStatusLogs->id, $request->DtrakNoHolder);
                 }else;
             }else{
+            // If dili pa PO Numbering
                 
                 $document = DocumentsTbl::select('id','dtrack_no','doc_type','updated_at')->where('dtrack_no', $request->DtrakNoHolder)->latest()->get();
                 // Check if PO and if Naa na sa RD or ARD
-                if($location == '1,0,0' || $location == '2,0,0' && $document[0]->doc_type == 'Purchase Order'){
+                if($location == '1,0,1' || $location == '1,0,2' && $document[0]->doc_type == 'Purchase Order'){
                     // Update Document
-                    DocumentsTbl::where('id', $document[0]->id)->where('dtrack_no', $request->DtrakNoHolder)->update(['doc_current_location' => $location, 'is_received' => 0, 'doc_current_status' => 'Accomplished PO', 'forwarded_to' => $forwarded_to]);
+                    DocumentsTbl::where('id', $document[0]->id)->where('dtrack_no', $request->DtrakNoHolder)->update(['doc_current_location' => $location, 'is_received' => 0, 'doc_current_status' => 'Accomplished PO', 'forwarded_to' => $forwarded_to, 'final_status' => 'Completed']);
                 }else{
                     // Update Document
                     DocumentsTbl::where('id', $document[0]->id)->where('dtrack_no', $request->DtrakNoHolder)->update(['doc_current_location' => $location, 'is_received' => 0, 'doc_current_status' => $request->ForwardDocAction, 'forwarded_to' => $forwarded_to]);
@@ -323,11 +294,13 @@ class DocumentController extends Controller
             }else{
                 $gender = 'Ms.';
             }
+
             $data = [
                 "id" => $Origin_End_User[0]->doc_end_user,
                 'type' => "Received and Route a Document",
-                "message" => "Greetings ".$gender." ". ucwords($Origin_End_UsersDetails[0]->lname) .", the document with the DTRAK No. ".$request->DtrakNoHolder." has been forwarded to ".$this->retDivSecClus($request->ForwardDocDivisionData,$request->ForwardDocSectionData,$request->ForwardDocClusterData)."\n Forward Date: ".Carbon::parse($document[0]->updated_at)->format('Y-m-d h:i:s'),
+                "message" => "Greetings ".$gender." ". ucwords($Origin_End_UsersDetails[0]->lname) .", the document with the DTRAK No. ".$request->DtrakNoHolder." has been forwarded to ".$this->retDivClusOff($request->ForwardDocDivisionData,$request->ForwardDocClusterData,$request->ForwardDocOfficeData)."\n Forward Date: ".Carbon::parse($document[0]->updated_at)->format('Y-m-d h:i:s'),
             ];
+
             $event_type = "Received and Route a Document";
             $this->storeNotification($event_type, $data['message'], Auth::id(), $Origin_End_User[0]->doc_end_user, $request->DtrakNoHolder);
             broadcast(new LogDocument($data))->toOthers();
@@ -344,7 +317,7 @@ class DocumentController extends Controller
             $receiver_data = [
                 "id" => $request->SpecificUserData,
                 'type' => "Received and Route a Document",
-                "message" => "Greetings ".$receiver_gender." ". ucwords($Receiver_End_UsersDetails[0]->lname) .", the document with the DTRAK No. ".$request->DtrakNoHolder." has been forwarded to you. From: ".$gender." ". ucwords($UsersDetails[0]->lname).", ".$this->retDivSecClus($request->ForwardDocDivisionData,$request->ForwardDocSectionData,$request->ForwardDocClusterData)."\n Forward Date: ".Carbon::parse($document[0]->updated_at)->format('Y-m-d h:i:s'),
+                "message" => "Greetings ".$receiver_gender." ". ucwords($Receiver_End_UsersDetails[0]->lname) .", the document with the DTRAK No. ".$request->DtrakNoHolder." has been forwarded to you. From: ".$gender." ". ucwords($UsersDetails[0]->lname).", ".$this->retDivClusOff($request->ForwardDocDivisionData,$request->ForwardDocClusterData,$request->ForwardDocOfficeData)."\n Forward Date: ".Carbon::parse($document[0]->updated_at)->format('Y-m-d h:i:s'),
             ];
             $this->storeNotification($event_type, $data['message'], Auth::id(), $request->SpecificUserData, $request->DtrakNoHolder);
             broadcast(new RouteDocument($receiver_data))->toOthers();
@@ -354,6 +327,7 @@ class DocumentController extends Controller
             $message = "Greetings ".$receiver_gender." ". ucwords($Receiver_End_UsersDetails[0]->lname) .", you have a pending document to be received.\n Document:" .$document[0]->doc_type."\n DTRAK No:" .$document[0]->dtrack_no."\n Date Forwarded:" .Carbon::parse($document[0]->updated_at)->format('Y-m-d h:i:s')."\n\n A message from - doh.eprotrailmis.co | powered by: KM-ICT";
             $phone = $UsersDetails[0]->contact;
             // $this->semaphoreAPI($phone,$message,$semaphore_apicode);
+
             DB::commit();
             return Redirect::route('office.logged');
             
@@ -369,15 +343,15 @@ class DocumentController extends Controller
     {
         
         ob_start('ob_gzhandler');
-        $UsersDetails = UsersDetails::select('id','division','section','cluster')->where('user_id_fk',Auth::id())->get();
-        $origin = $UsersDetails[0]->division.','.$UsersDetails[0]->section.','.$UsersDetails[0]->cluster;
+        $UsersDetails = UsersDetails::select('id','division','office','cluster')->where('user_id_fk',Auth::id())->get();
+        $origin = $UsersDetails[0]->division.','.$UsersDetails[0]->cluster.','.$UsersDetails[0]->office;
 
         // Get all 
         return Inertia::render('Documents/Outgoing', [
             'Documents' => DocumentsStatusLogTbl::with('DocumentsTbl')
                 ->with(['DocumentsTbl' => function($query){
                     return $query->with(['UsersDetails' => function($udetails){
-                        $udetails->select('id','fname','mname','lname','position','contact','cluster','section','division','user_id_fk')
+                        $udetails->select('id','fname','mname','lname','position','contact','cluster','office','division','user_id_fk')
                         ->with(['User' => function($user){
                             return $user->select('id','profile_photo_path');
                         }])
@@ -385,15 +359,14 @@ class DocumentController extends Controller
                     }])
                     ->with(['DocumentsStatusLogTbl' => function($docsStat){
                         return $docsStat->with('ImgLogsTbl')->orderByDesc('id')->get();
-                        // ->limit(2)
                     }])
                     ->with('DocumentsParticularsTbl')
                     ->get();
                 }])
                 ->orderBy('id','desc')
                 ->where('division',$UsersDetails[0]->division)
-                ->where('section',$UsersDetails[0]->section)
                 ->where('cluster',$UsersDetails[0]->cluster)
+                ->where('office',$UsersDetails[0]->office)
                 ->where('status', "forwarded")
                 ->paginate(5),
 
@@ -403,7 +376,7 @@ class DocumentController extends Controller
 
     }
     /**
-     * Show the form for creating a new resource.
+     * Show the form for creating a new Document
      *
      * @return \Illuminate\Http\Response
      */
@@ -411,21 +384,22 @@ class DocumentController extends Controller
     {
         DB::beginTransaction();
         try {
-            $UsersDetails = UsersDetails::select('id','division','section','cluster','fname','lname')->where('user_id_fk',Auth::id())->get();
-            $origin = $UsersDetails[0]->division.'_'.$UsersDetails[0]->section.'_'.$UsersDetails[0]->cluster;
-            // Documents
+            $UsersDetails = UsersDetails::select('id','division','cluster','office','fname','lname')->where('user_id_fk',Auth::id())->get();
+            // Origin - Path of Attachment
+            $DocOrigin = $UsersDetails[0]->division.','.$UsersDetails[0]->cluster.','.$UsersDetails[0]->office;
+            $ForwardedTo =  $request->CreateDocDivisionData.','.$request->CreateDocClusterData.','.$request->CreateDocOfficeData;
+            // Insert Documents Tbl
             $documents = new DocumentsTbl;
             $documents->dtrack_no = $request->CreateDtrackNo;
             $documents->doc_type = $request->CreateDocType;
             $documents->doc_end_user = Auth::id();
             $documents->doc_current_status = $request->CreateDocAction;
-            // get location (div,sec,clus)
-            $documents->doc_current_location = $UsersDetails[0]->division.','.$UsersDetails[0]->section.','.$UsersDetails[0]->cluster;
-            $documents->forwarded_to = $request->CreateDocDivisionData.','.$request->CreateDocSectionData.','.$request->CreateDocClusterData;
+            // get location (div,clus,office)
+            $documents->doc_current_location = $DocOrigin;
+            $documents->forwarded_to = $ForwardedTo;
             $documents->save();
             
             $current_doc = $documents->id;
-
             // Documents Logs
             $documentsStatusLogs = new DocumentsStatusLogTbl;
             $documentsStatusLogs->doc_id = $current_doc;
@@ -433,15 +407,15 @@ class DocumentController extends Controller
             $documentsStatusLogs->dtrack_id_fk = $request->CreateDtrackNo;
             $documentsStatusLogs->doc_notes = $request->CreateDocNote;
             $documentsStatusLogs->division = $UsersDetails[0]->division;
-            $documentsStatusLogs->section = $UsersDetails[0]->section;
             $documentsStatusLogs->cluster = $UsersDetails[0]->cluster;
-            $documentsStatusLogs->forwarded_to = $request->CreateDocDivisionData.','.$request->CreateDocSectionData.','.$request->CreateDocClusterData;
+            $documentsStatusLogs->office = $UsersDetails[0]->office;
+            $documentsStatusLogs->forwarded_to = $ForwardedTo;
             $documentsStatusLogs->receiver_id = $request->SpecificUserData;
             $documentsStatusLogs->status = "origin";
             $documentsStatusLogs->save();
 
             if($request->CreateDocfile != null && sizeof($request->CreateDocfile) > 0){
-                $this->storeDocAttachements($request->CreateDocfile, $origin, $documentsStatusLogs->id, $request->CreateDtrackNo);
+                $this->storeDocAttachements($request->CreateDocfile, $DocOrigin, $documentsStatusLogs->id, $request->CreateDtrackNo);
             }else;
 
             if($request->CreateDocType == "Purchase Request"){
@@ -474,8 +448,8 @@ class DocumentController extends Controller
         ob_start('ob_gzhandler');
         // 3 Props
         if($request->RedirectComponent == 'Documents/Incoming'){
-            $UsersDetails = UsersDetails::select('id','division','section','cluster')->where('user_id_fk',Auth::id())->get();
-            $origin = $UsersDetails[0]->division.','.$UsersDetails[0]->section.','.$UsersDetails[0]->cluster;
+            $UsersDetails = UsersDetails::select('id','division','office','cluster')->where('user_id_fk',Auth::id())->get();
+            $origin = $UsersDetails[0]->division.','.$UsersDetails[0]->cluster.','.$UsersDetails[0]->office;
             return Inertia::render('Documents/Incoming', [
                 'Documents' => DocumentsTbl::with('DocumentsParticularsTbl')
                     ->with(['DocumentsStatusLogTbl' => function($docsStat){
@@ -483,7 +457,7 @@ class DocumentController extends Controller
                         // ->where('status','received')
                     }])
                     ->with(['UsersDetails' => function($query){
-                        return $query->select('id','fname','mname','lname','position','contact','cluster','section','division','user_id_fk')
+                        return $query->select('id','fname','mname','lname','position','contact','cluster','office','division','user_id_fk')
                             ->with(['User' => function($user){
                                 return $user->select('id','profile_photo_path');
                             }])
@@ -499,6 +473,7 @@ class DocumentController extends Controller
                     ->where('is_received',1)
                     ->where('doc_current_location',$origin)
                     ->paginate(5),
+                    
                 'UsersDetails' => UsersDetails::where('user_id_fk',Auth::id())->get(),
 
                 'IncomingDocuments' => DocumentsTbl::with('DocumentsParticularsTbl')
@@ -506,15 +481,15 @@ class DocumentController extends Controller
                     return $docsStat->with('ImgLogsTbl')->orderByDesc('id')->limit(2)->get();
                 }])
                 ->with(['UsersDetails' => function($query){
-                    return $query->select('id','fname','mname','lname','position','contact','cluster','section','division','user_id_fk')
-                        ->with(['Division' => function($div){
+                    return $query->select('id','fname','mname','lname','position','contact','cluster','office','division','user_id_fk')
+                        ->with(['OfficesDivision' => function($div){
                             return $div->select('id','name');
                         }])
-                        ->with(['Section' => function($sec){
-                            return $sec->select('id','name');
-                        }])
-                        ->with(['Cluster' => function($clus){
+                        ->with(['OfficesCluster' => function($clus){
                             return $clus->select('id','name');
+                        }])
+                        ->with(['OfficesOffice' => function($off){
+                            return $off->select('id','name');
                         }]);
                 }])
                 ->where('is_received',0)
@@ -533,15 +508,15 @@ class DocumentController extends Controller
                         return $docsStat->with('ImgLogsTbl')->orderByDesc('id')->get();
                     }])
                     ->with(['UsersDetails' => function($query){
-                        return $query->select('id','fname','mname','lname','position','contact','cluster','section','division','user_id_fk')
-                            ->with(['Division' => function($div){
+                        return $query->select('id','fname','mname','lname','position','contact','cluster','office','division','user_id_fk')
+                            ->with(['OfficesDivision' => function($div){
                                 return $div->select('id','name');
                             }])
-                            ->with(['Section' => function($sec){
-                                return $sec->select('id','name');
-                            }])
-                            ->with(['Cluster' => function($clus){
+                            ->with(['OfficesCluster' => function($clus){
                                 return $clus->select('id','name');
+                            }])
+                            ->with(['OfficesOffice' => function($off){
+                                return $off->select('id','name');
                             }]);
                     }])
                     ->where(function($q) use ($request) {
@@ -560,15 +535,15 @@ class DocumentController extends Controller
 
         // 2 Props
         if($request->RedirectComponent == 'Documents/Outgoing'){
-            $UsersDetails = UsersDetails::select('id','division','section','cluster')->where('user_id_fk',Auth::id())->get();
-            $origin = $UsersDetails[0]->division.','.$UsersDetails[0]->section.','.$UsersDetails[0]->cluster;
+            $UsersDetails = UsersDetails::select('id','division','office','cluster')->where('user_id_fk',Auth::id())->get();
+            $origin = $UsersDetails[0]->division.','.$UsersDetails[0]->cluster.','.$UsersDetails[0]->office;
     
             // Get all 
             return Inertia::render($request->RedirectComponent, [
                 'Documents' => DocumentsStatusLogTbl::with('DocumentsTbl')
                     ->with(['DocumentsTbl' => function($query){
                         return $query->with(['UsersDetails' => function($udetails){
-                            $udetails->select('id','fname','mname','lname','position','contact','cluster','section','division','user_id_fk')
+                            $udetails->select('id','fname','mname','lname','position','contact','cluster','office','division','user_id_fk')
                             ->with(['User' => function($user){
                                 return $user->select('id','profile_photo_path');
                             }])
@@ -576,22 +551,20 @@ class DocumentController extends Controller
                         }])
                         ->with(['DocumentsStatusLogTbl' => function($docsStat){
                             return $docsStat->with('ImgLogsTbl')->orderByDesc('id')->get();
-                            // ->limit(2)
                         }])
                         ->with('DocumentsParticularsTbl')
                         ->get();
                     }])
                     ->where('dtrack_id_fk', 'LIKE', '%' . $request->SearchDoc . '%')
                     ->where('division',$UsersDetails[0]->division)
-                    ->where('section',$UsersDetails[0]->section)
                     ->where('cluster',$UsersDetails[0]->cluster)
+                    ->where('office',$UsersDetails[0]->office)
                     ->where('status', "forwarded")
                     ->paginate(5),
     
                 'UsersDetails' => UsersDetails::where('user_id_fk',Auth::id())->get(),
             ]);
         };
-
         ob_end_flush();
     }
 
@@ -659,33 +632,35 @@ class DocumentController extends Controller
         }
     }
 
-    public function retDivSecClus($div,$sec,$clus){
+    public function retDivClusOff($div,$clus,$off)
+    {
         $DivHolder = null;
-        $SecHolder = null;
         $ClusHolder = null;
+        $OffHolder = null;
         if($div > 0){
-            $Div = Division::where('id', $div)->get();
+            $Div = OfficesDivision::where('id', $div)->get();
             $DivHolder = $Div[0]->name;
         }else;
-
-        if($sec > 0){
-            $Sec = Section::where('id', $sec)->get();
-            $SecHolder = $Sec[0]->name;
-        }else{
-            $SecHolder = "N/A";
-        }
-
+        
         if($clus > 0){
-            $Clus = Cluster::where('id', $clus)->get();
+            $Clus = OfficesCluster::where('id', $clus)->get();
             $ClusHolder = $Clus[0]->name;
         }else{
             $ClusHolder = "N/A";
         }
 
-        return "Division: " .$DivHolder."\n Section: ".$SecHolder."\n Cluster: ".$ClusHolder;
+        if($off > 0){
+            $Off = OfficesOffice::where('id', $off)->get();
+            $OffHolder = $Off[0]->name;
+        }else{
+            $OffHolder = "N/A";
+        }
+
+        return "Division: " .$DivHolder."\n Cluster: ".$ClusHolder."\n Office: ".$OffHolder;
     }
 
-    public function retGender($gender){
+    public function retGender($gender)
+    {
         if($gender == 'Male'){
             return $gender = 'Mr.';
         }else{

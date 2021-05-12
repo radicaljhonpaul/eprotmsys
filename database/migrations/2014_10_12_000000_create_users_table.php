@@ -35,6 +35,7 @@ class CreateUsersTable extends Migration
         //     $table->string('lname');
         //     $table->string('gender');
         //     $table->string('contact');
+        //     $table->string('office', 50);
         //     $table->string('cluster', 50);
         //     $table->string('section', 50);
         //     $table->string('division', 50);

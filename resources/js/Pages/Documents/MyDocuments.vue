@@ -96,13 +96,13 @@
 											
 											<!-- if there are exactly 2 ka logs -->
 											<td v-if="item.documents_status_log_tbl.length > 1" class="px-3 py-2 whitespace-nowrap" style="font-size:.55rem;line-height:1rem;">
-												<p class="text-red-500" v-if="item.documents_status_log_tbl[1] != null" v-html=" retDivSecClus(item.documents_status_log_tbl[1].division,item.documents_status_log_tbl[1].section,item.documents_status_log_tbl[1].cluster,1)"></p>
+												<doc-location class="text-red-500" v-if="item.documents_status_log_tbl[1] != null" :Division="item.documents_status_log_tbl[1].division" :Cluster="item.documents_status_log_tbl[1].cluster" :Office="item.documents_status_log_tbl[1].office" :Type="1"></doc-location>
 											</td>
 											<td v-if="item.documents_status_log_tbl.length > 1" class="px-3 py-2 whitespace-nowrap" style="font-size:.55rem;line-height:1rem;">
-												<p class="text-yellow-500"  v-if="item.documents_status_log_tbl[0] != null" v-html=" retDivSecClus(item.documents_status_log_tbl[0].division,item.documents_status_log_tbl[0].section,item.documents_status_log_tbl[0].cluster,1)"></p>
+												<doc-location class="text-yellow-500" v-if="item.documents_status_log_tbl[0] != null" :Division="item.documents_status_log_tbl[0].division" :Cluster="item.documents_status_log_tbl[0].cluster" :Office="item.documents_status_log_tbl[0].office" :Type="1"></doc-location>
 											</td>
 											<td v-if="item.documents_status_log_tbl.length > 1" class="px-3 py-2 whitespace-nowrap" style="font-size:.55rem;line-height:1rem;">
-												<p class="text-pink-500" v-if="item.documents_status_log_tbl[0] != null && item.documents_status_log_tbl[0].forwarded_to != null"  v-html="retDivSecClus(item.documents_status_log_tbl[0].forwarded_to,'','',2)"></p>
+												<doc-destination class="text-pink-500" v-if="item.documents_status_log_tbl[0] != null && item.documents_status_log_tbl[0].forwarded_to != null" :Destination="item.documents_status_log_tbl[0].forwarded_to"></doc-destination>
 												<p v-if="item.documents_status_log_tbl[0] != null && item.documents_status_log_tbl[0].forwarded_to == null">
 													<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-500 text-white">
 														Pending
@@ -112,13 +112,13 @@
 
 											<!-- if there are exactly 1 ka logs -->
 											<td v-if="item.documents_status_log_tbl.length == 1" class="px-3 py-2 whitespace-nowrap" style="font-size:.55rem;line-height:1rem;">
-												<p class="text-red-500" v-if="item.documents_status_log_tbl[0] != null" v-html=" retDivSecClus(item.documents_status_log_tbl[0].division,item.documents_status_log_tbl[0].section,item.documents_status_log_tbl[0].cluster,1)"></p>
+												<doc-location class="text-red-500" v-if="item.documents_status_log_tbl[0] != null" :Division="item.documents_status_log_tbl[0].division" :Cluster="item.documents_status_log_tbl[0].cluster" :Office="item.documents_status_log_tbl[0].office" :Type="1"></doc-location>
 											</td>
 											<td v-if="item.documents_status_log_tbl.length == 1" class="px-3 py-2 whitespace-nowrap" style="font-size:.55rem;line-height:1rem;">
-												<p class="text-yellow-500" v-if="item.documents_status_log_tbl[0] != null" v-html=" retDivSecClus(item.documents_status_log_tbl[0].division,item.documents_status_log_tbl[0].section,item.documents_status_log_tbl[0].cluster,1)"></p>
+												<doc-location class="text-yellow-500" v-if="item.documents_status_log_tbl[0] != null" :Division="item.documents_status_log_tbl[0].division" :Cluster="item.documents_status_log_tbl[0].cluster" :Office="item.documents_status_log_tbl[0].office" :Type="1"></doc-location>
 											</td>
 											<td v-if="item.documents_status_log_tbl.length == 1" class="px-3 py-2 whitespace-nowrap" style="font-size:.55rem;line-height:1rem;">
-												<p class="text-pink-500" v-if="item.documents_status_log_tbl[0] != null && item.documents_status_log_tbl[0].forwarded_to != null"  v-html="retDivSecClus(item.documents_status_log_tbl[0].forwarded_to,'','',2)"></p>
+												<doc-destination class="text-pink-500" v-if="item.documents_status_log_tbl[0] != null && item.documents_status_log_tbl[0].forwarded_to != null" :Destination="item.documents_status_log_tbl[0].forwarded_to"></doc-destination>
 											</td>
 
 											<td class="px-3 py-2 whitespace-nowrap text-center text-sm font-medium">
@@ -170,9 +170,7 @@
 						<div class="block text-purple-500 mb-2">
 							<label for="doctype" class="text-base">Document Type</label>
 							<select name="doctype" class="mt-1 py-2 bg-gray-50 border-b-2 border-t-0 border-l-0 border-r-0 rounded-xs w-full text-gray-800 focus:outline-none focus:ring-0" id="doctype" v-model="CreateDocForm.CreateDocType" required>
-								<option v-for="option in DocTypeOptions" :key="option.value" :value="option.value">
-									{{ option.text }}
-								</option>
+								<doc-types></doc-types>
 							</select>
 						</div>
 
@@ -180,28 +178,29 @@
 							Destination
 						</div>
 
-						<div class="flex gap-2">
-							<div class="block text-gray-500 mb-2 w-1/2">
-								<label for="doctype" class="text-xs">Division</label>
-								<select class="mt-1 py-2 bg-gray-50 border-b-2 border-t-0 border-l-0 border-r-0 rounded-xs w-full text-gray-800 focus:outline-none focus:ring-0" v-model="CreateDocForm.CreateDocDivisionData" @change='getSection(this.CreateDocForm.CreateDocDivisionData),getSpecificUser()' required>
-								<option v-for='divData in Division_List' :key="divData.value" :value='divData.id'>{{ divData.name }}</option>
-								</select>
-							</div>
-							
-							<div class="block text-gray-500 mb-2 w-1/2">
-								<label for="doctype" class="text-xs">Section</label>
-								<select class="mt-1 py-2 bg-gray-50 border-b-2 border-t-0 border-l-0 border-r-0 rounded-xs w-full text-gray-800 focus:outline-none focus:ring-0" v-model="CreateDocForm.CreateDocSectionData" @change='getCluster(this.CreateDocForm.CreateDocSectionData),getSpecificUser()'>
-								<option v-for='secData in Section_List' :key="secData.value" :value='secData.id'>{{ secData.name }}</option>
-								</select>
-							</div>
-						</div>
-						<div v-if="Cluster_List.length > 0 && CreateDocForm.CreateDocDivisionData == 4" class="block text-gray-500 mb-2">
-							<label for="doctype" class="text-xs">Cluster</label>
-							<select class="mt-1 py-2 bg-gray-50 border-b-2 border-t-0 border-l-0 border-r-0 rounded-xs w-full text-gray-800 focus:outline-none focus:ring-0" v-model="CreateDocForm.CreateDocClusterData" @change='getSpecificUser()'>
-							<option v-for='clusData in Cluster_List' :key="clusData.value" :value='clusData.id'>{{ clusData.name }}</option>
+						<!-- Official Destinations -->
+						<div class="grid grid-cols-6 gap-2">
+						<div class="col-span-6 sm:col-span-3 text-gray-500">
+							<label for="division" class="text-xs">Division</label>
+							<select id="division" name="division" class="mt-1 py-2 bg-gray-50 border-b-2 border-t-0 border-l-0 border-r-0 rounded-xs w-full text-gray-800 focus:outline-none focus:ring-0" v-model="CreateDocForm.CreateDocDivisionData" @change='getOfficesCluster(CreateDocForm.CreateDocClusterData,CreateDocForm.CreateDocDivisionData),getSpecificUser()' required>
+								<option v-for='divData in Division_List' :key="divData" :value='divData.id'>{{ divData.name }}</option>
 							</select>
 						</div>
 
+						<div class="col-span-6 sm:col-span-3 text-gray-500" v-if="CreateDocForm.CreateDocDivisionData == 2 || CreateDocForm.CreateDocDivisionData == 3">
+							<label for="cluster" class="text-xs">Section/Cluster</label>
+							<select id="cluster" name="cluster" class="mt-1 py-2 bg-gray-50 border-b-2 border-t-0 border-l-0 border-r-0 rounded-xs w-full text-gray-800 focus:outline-none focus:ring-0" v-model="CreateDocForm.CreateDocClusterData" @change='getOffices(CreateDocForm.CreateDocClusterData,CreateDocForm.CreateDocDivisionData),getSpecificUser()'>
+								<option v-for='clusData in Cluster_List' :key="clusData" :value='clusData.id'>{{ clusData.name }}</option>
+							</select>
+						</div>
+
+						<div v-bind:class="{ 'col-span-6 sm:col-span-3 text-gray-500': CreateDocForm.CreateDocDivisionData != 2 || CreateDocForm.CreateDocDivisionData != 3, 'col-span-6 sm:col-span-6 text-gray-500': CreateDocForm.CreateDocDivisionData == 2 || CreateDocForm.CreateDocDivisionData == 3}">
+							<label for="office" class="text-xs">Office</label>
+							<select id="office" name="office" class="mt-1 py-2 bg-gray-50 border-b-2 border-t-0 border-l-0 border-r-0 rounded-xs w-full text-gray-800 focus:outline-none focus:ring-0" v-model="CreateDocForm.CreateDocOfficeData" @change="getSpecificUser()" required>
+								<option v-for='officeData in Office_List' :key="officeData" :value='officeData.id'>{{ officeData.name }}</option>
+							</select>
+						</div>
+						</div>
 						<div class="block text-gray-500 mb-2">
 							<label for="doctype" class="text-xs">Specific User</label>
 							<select class="mt-1 py-2 bg-gray-50 border-b-2 border-t-0 border-l-0 border-r-0 rounded-xs w-full text-gray-800 focus:outline-none focus:ring-0" v-model='CreateDocForm.SpecificUserData' required>
@@ -214,9 +213,7 @@
 						<div class="block text-gray-500 mb-2">
 							<label for="doctype" class="text-xs">Action</label>
 							<select class="mt-1 py-2 bg-gray-50 border-b-2 border-t-0 border-l-0 border-r-0 rounded-xs w-full text-gray-800 focus:outline-none focus:ring-0" v-model='CreateDocForm.CreateDocAction' required>
-								<option v-for="option in Doc_Action_Options" :key="option.value" :value="option.value">
-									{{ option.text }}
-								</option>
+								<doc-actions></doc-actions>
 							</select>
 						</div>
 					</div>
@@ -444,11 +441,10 @@
 							<tbody class="bg-white divide-y divide-gray-200">
 								<tr v-for="history in SpecificDocData.documents_status_log_tbl" :key="history" class="text-gray-500" style="font-size:.65rem;line-height:1rem;">
 									<td class="px-2 py-2 whitespace-nowrap">
-										<!-- {{ frontEndDateFormat(history.created_at) }} -->
 										<span v-html=" frontEndDateFormat(history.created_at) "></span>
 									</td>
 									<td class="px-2 py-2 whitespace-nowrap">
-										<span v-html=" retDivSecClus(history.division,history.section,history.cluster,1)"></span>	
+										<doc-location :Division="history.division" :Cluster="history.cluster" :Office="history.office" :Type="1"></doc-location>
 									</td>
 									<td class="px-2 py-2 whitespace-nowrap">
 										<span v-if="history.doc_notes != null"> {{ history.doc_notes }} </span>
@@ -460,7 +456,7 @@
 										<span class="text-red-500" v-if="history.document_status == null"> No Action </span>
 									</td>
 									<td class="px-2 py-2 whitespace-nowrap">
-										<span v-if="history.forwarded_to" v-html=" retDiv(history.forwarded_to)"></span>	
+										<doc-destination v-if="history.forwarded_to" :Destination="history.forwarded_to"></doc-destination>	
 										<span v-if="!history.forwarded_to" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-500 text-white">
 											Pending
 										</span>
@@ -508,7 +504,10 @@
 	import moment from 'moment'
 	import Mylib from '@/CustomFunctions/Mylib.js';	
     import Pagination from '../../CustomComponents/Pagination.vue'
-
+	import DocActions from '../../CustomComponents/DocActions.vue'
+	import DocTypes from '../../CustomComponents/DocTypes.vue'
+	import DocLocation from '../../CustomComponents/DocLocation.vue'
+	import DocDestination from '../../CustomComponents/DocDestination.vue'
 
     export default {
         components: {
@@ -516,6 +515,10 @@
             Modal,
 			UploadImages,
 			Pagination,
+			DocActions,
+			DocTypes,
+			DocLocation,
+			DocDestination,
         },
 		props: ['Documents','UsersDetails'],
 		data() {
@@ -528,7 +531,7 @@
 					CreateDtrackNo: null,
 					CreateDocType: null,
 					CreateDocDivisionData: null,
-					CreateDocSectionData: 0,
+					CreateDocOfficeData: 0,
 					CreateDocClusterData: 0,
 					CreateDocAction: false,
 					AddNote: false,
@@ -553,263 +556,14 @@
 				image: null,
 				preview_list: [],
 				image_list: [],
-				DocTypeOptions: [
-					{ text:'Accomplishment Report', value: 'Accomplishment Report' },
-					{ text:'Accomplishment Receipt Equipment', value: 'Accomplishment Receipt Equipment' },
-					{ text:'Acknowledgement Receipt', value: 'Acknowledgement Receipt' },
-					{ text:'Activity Design', value: 'Activity Design' },
-					{ text:'Administrative Order', value: 'Administrative Order' },
-					{ text:'Advertising Invoice', value: 'Advertising Invoice' },
-					{ text:'Advertising Quotation', value: 'Advertising Quotation' },
-					{ text:'Advisory', value: 'Advisory' },
-					{ text:'Affidavit of Non-Disclosure', value: 'Affidavit of Non-Disclosure' },
-					{ text:'Agency Procurement Request', value: 'Agency Procurement Request' },
-					{ text:'Annual Procurement Plan', value: 'Annual Procurement Plan' },
-					{ text:'Application', value: 'Application' },
-					{ text:'Application for Permit to Construct - Birthing Home', value: 'Application for Permit to Construct - Birthing Home' },
-					{ text:'Application for Accreditation - Drug Abuse Treatment & Rehab Center', value: 'Application for Accreditation - Drug Abuse Treatment & Rehab Center' },
-					{ text:'Application for Accreditation - Drug Testing Laboratory', value: 'Application for Accreditation - Drug Testing Laboratory' },
-					{ text:'Application for Accreditation - Medical Facility for OW & Seafarers', value: 'Application for Accreditation - Medical Facility for OW & Seafarers' },
-					{ text:'Application for Accreditation - Stem Cell', value: 'Application for Accreditation - Stem Cell' },
-					{ text:'Application for Clearance to Operate - HMO', value: 'Application for Clearance to Operate - HMO' },
-					{ text:'Application for LTO - Ambulatory Surgical Clinic', value: 'Application for LTO - Ambulatory Surgical Clinic' },
-					{ text:'Application for LTO - Birthing Homes', value: 'Application for LTO - Birthing Homes' },
-					{ text:'Application for LTO - Dialysis Clinic', value: 'Application for LTO - Dialysis Clinic' },
-					{ text:'Application for LTO - Hospital', value: 'Application for LTO - Hospital' },
-					{ text:'Application for LTO - Infirmary', value: 'Application for LTO - Infirmary' },
-					{ text:'Application for LTO - Kidney Transplant', value: 'Application for LTO - Kidney Transplant' },
-					{ text:'Application for Permit to Construct - Blood Testing', value: 'Application for Permit to Construct - Blood Testing' },
-					{ text:'Application for Permit to Construct - Dialysis Clinic', value: 'Application for Permit to Construct - Dialysis Clinic' },
-					{ text:'Application for Permit to Construct - Drug Testing Laboratory', value: 'Application for Permit to Construct - Drug Testing Laboratory' },
-					{ text:'Application for Permit to Construct - Hospital', value: 'Application for Permit to Construct - Hospital' },
-					{ text:'Application for Permit to Construct - Infirmary', value: 'Application for Permit to Construct - Infirmary' },
-					{ text:'Application for Permit to Construct - Medical Faciltiy for OW & Seafarers', value: 'Application for Permit to Construct - Medical Faciltiy for OW & Seafarers' },
-					{ text:'Application for Permti to Construct - Ambulatory Surgical Clinic', value: 'Application for Permti to Construct - Ambulatory Surgical Clinic' },
-					{ text:'Appln. for LTO/Accreditation', value: 'Appln. for LTO/Accreditation' },
-					{ text:'Appointment Paper', value: 'Appointment Paper' },
-					{ text:'Assets/Liabilities', value: 'Assets/Liabilities' },
-					{ text:'Authority to Operate Blood Testing', value: 'Authority to Operate Blood Testing' },
-					{ text:'Bidding Documents', value: 'Bidding Documents' },
-					{ text:'Budget Utilization Request', value: 'Budget Utilization Request' },
-					{ text:'C.T.O. Application', value: 'C.T.O. Application' },
-					{ text:'CAF', value: 'CAF' },
-					{ text:'Canvass', value: 'Canvass' },
-					{ text:'Cert of No Pending Admini Case', value: 'Cert of No Pending Admini Case' },
-					{ text:'Certificate - SSRS', value: 'Certificate - SSRS' },
-					{ text:'Certificate of Employment', value: 'Certificate of Employment' },
-					{ text:'Certificate of Registration', value: 'Certificate of Registration' },
-					{ text:'Certificate of Undertaking', value: 'Certificate of Undertaking' },
-					{ text:'Certificate Project Acceptance', value: 'Certificate Project Acceptance' },
-					{ text:'Certificate System Acceptance', value: 'Certificate System Acceptance' },
-					{ text:'Certificate Training/Diploma', value: 'Certificate Training/Diploma' },
-					{ text:'Certificates', value: 'Certificates' },
-					{ text:'Certification - TWG Honorarium', value: 'Certification - TWG Honorarium' },
-					{ text:'Certification for Reimbursement', value: 'Certification for Reimbursement' },
-					{ text:'Charge Account Order Slip', value: 'Charge Account Order Slip' },
-					{ text:'CHT Reports', value: 'CHT' },
-					{ text:'Clearance', value: 'Clearance' },
-					{ text:'Clearance - PNDF Exemption', value: 'Clearance - PNDF Exemption' },
-					{ text:'Clearance Certificate', value: 'Clearance Certificate' },
-					{ text:'Clearing House of Purchase Req', value: 'Clearing House of Purchase Req' },
-					{ text:'COBAC Resolution', value: 'COBAC Resolution' },
-					{ text:'Complaints', value: 'Complaints' },
-					{ text:'Compliance', value: 'Compliance' },
-					{ text:'Compliance Requirements', value: 'Compliance Requirements' },
-					{ text:'Confirmatory Result', value: 'Confirmatory Result' },
-					{ text:'Contract', value: 'Contract' },
-					{ text:'Contract - Advertisement', value: 'Contract - Advertisement' },
-					{ text:'Contract of Service', value: 'Contract of Service' },
-					{ text:'Credit Slip Form', value: 'Credit Slip Form' },
-					{ text:'Daily Monitoring & Endorsement', value: 'Daily Monitoring & Endorsement' },
-					{ text:'Delivery Receipt', value: 'Delivery Receipt' },
-					{ text:'Department Circular', value: 'Department Circular' },
-					{ text:'Department Memorandum', value: 'Department Memorandum' },
-					{ text:'Department Order', value: 'Department Order' },
-					{ text:'Department Personnel Order', value: 'Department Personnel Order' },
-					{ text:'Disbursement Voucher', value: 'Disbursement Voucher' },
-					{ text:'DTR', value: 'DTR' },
-					{ text:'EDPMS Report', value: 'EDPMS Report' },
-					{ text:'Endorsement', value: 'Endorsement' },
-					{ text:'Executive Order', value: 'Executive Order' },
-					{ text:'Flash Report', value: 'Flash Report' },
-					{ text:'Fuel Request Form', value: 'Fuel Request Form' },
-					{ text:'Fund Transfer', value: 'Fund Transfer' },
-					{ text:'FYI (For your information)', value: 'FYI (For your information)' },
-					{ text:'Gate / Building Pass', value: 'Gate / Building Pass' },
-					{ text:'HEARS', value: 'HEARS' },
-					{ text:'HEARS Update', value: 'HEARS Update' },
-					{ text:'Incidental Report', value: 'Incidental Report' },
-					{ text:'Inspection & Acceptance Report', value: 'Inspection & Acceptance Report' },
-					{ text:'Inspection Report', value: 'Inspection Report' },
-					{ text:'Inventory & Inspection Report', value: 'Inventory & Inspection Report' },
-					{ text:'Inventory Checklist', value: 'Inventory Checklist' },
-					{ text:'Inventory Report', value: 'Inventory Report' },
-					{ text:'Invitation', value: 'Invitation' },
-					{ text:'Invoice Receipt - Equipment', value: 'Invoice Receipt - Equipment' },
-					{ text:'Invoice Receipt of Property', value: 'Invoice Receipt of Property' },
-					{ text:'IPCR', value: 'IPCR' },
-					{ text:'Job Hiring (Announcement)', value: 'Job Hiring (Announcement)' },
-					{ text:'Job Order', value: 'Job Order' },
-					{ text:'Leave Application', value: 'Leave Application' },
-					{ text:'Legal Decision', value: 'Legal Decision' },
-					{ text:'Legislative Advisory', value: 'Legislative Advisory' },
-					{ text:'Letter', value: 'Letter' },
-					{ text:'Letter - Complaint', value: 'Letter - Complaint' },
-					{ text:'Letter - Endorsement', value: 'Letter - Endorsement' },
-					{ text:'Letter - For Information', value: 'Letter - For Information' },
-					{ text:'Letter - Inquiry', value: 'Letter - Inquiry' },
-					{ text:'Letter - Invitation', value: 'Letter - Invitation' },
-					{ text:'Letter - Referral', value: 'Letter - Referral' },
-					{ text:'Letter - Request', value: 'Letter - Request' },
-					{ text:'Letter for Inclusion', value: 'Letter for Inclusion' },
-					{ text:'License to Operate', value: 'License to Operate' },
-					{ text:'Liquidation Report', value: 'Liquidation Report' },
-					{ text:'Logistic Request Form', value: 'Logistic Request Form' },
-					{ text:'Mail', value: 'Mail' },
-					{ text:'Mailing Envelope for Mail', value: 'Mailing Envelope for Mail' },
-					{ text:'Manual', value: 'Manual' },
-					{ text:'Meal Provision Request Form', value: 'Meal Provision Request Form' },
-					{ text:'Memo of Understanding (MOU)', value: 'Memo of Understanding (MOU)' },
-					{ text:'Memorandum', value: 'Memorandum' },
-					{ text:'Memorandum Circular', value: 'Memorandum Circular' },
-					{ text:'Memorandum of Agreement (MOA)', value: 'Memorandum of Agreement (MOA)' },
-					{ text:'Memorandum of Understanding', value: 'Memorandum of Understanding' },
-					{ text:'Memorandum Receipt', value: 'Memorandum Receipt' },
-					{ text:'Monthly Report of Attendance', value: 'Monthly Report of Attendance' },
-					{ text:'Monthly Statistical Report', value: 'Monthly Statistical Report' },
-					{ text:'MSW Annual Narrative Report', value: 'MSW Annual Narrative Report' },
-					{ text:'MSW Annual Psychosocial Report', value: 'MSW Annual Psychosocial Report' },
-					{ text:'MSW Annual Statistical Report', value: 'MSW Annual Statistical Report' },
-					{ text:'News Clippings', value: 'News Clippings' },
-					{ text:'Notice of Award', value: 'Notice of Award' },
-					{ text:'Notice of Meeting', value: 'Notice of Meeting' },
-					{ text:'Obligation Request', value: 'Obligation Request' },
-					{ text:'Office Memorandum', value: 'Office Memorandum' },
-					{ text:'Office Order', value: 'Office Order' },
-					{ text:'OPCR', value: 'OPCR' },
-					{ text:'Other Documents', value: 'Other Documents' },
-					{ text:'Payroll', value: 'Payroll' },
-					{ text:'Permit to construct', value: 'Permit to construct' },
-					{ text:'PES', value: 'PES' },
-					{ text:'Petty Cash Voucher', value: 'Petty Cash Voucher' },
-					{ text:'PLDT', value: 'PLDT' },
-					{ text:'PO PROCESSING', value: 'PO PROCESSING' },
-					{ text:'Position Paper', value: 'Position Paper' },
-					{ text:'Post Mission Report', value: 'Post Mission Report' },
-					{ text:'Post Travel Report', value: 'Post Travel Report' },
-					{ text:'PPMP', value: 'PPMP' },
-					{ text:'PR with CANVASS', value: 'PR with CANVASS' },
-					{ text:'Pre-Repair Inspection', value: 'Pre-Repair Inspection' },
-					{ text:'Pre/Post Repair Inspection Rep', value: 'Pre/Post Repair Inspection Rep' },
-					{ text:'Price Report', value: 'Price Report' },
-					{ text:'Proposal', value: 'Proposal' },
-					{ text:'Provision Request Form', value: 'Provision Request Form' },
-					{ text:'Purchase Order', value: 'Purchase Order' },
-					{ text:'Purchase Request', value: 'Purchase Request' },
-					{ text:'Radio Base Checklist', value: 'Radio Base Checklist' },
-					{ text:'Regional Personnel Order', value: 'Regional Personnel Order' },
-					{ text:'Reimbursement', value: 'Reimbursement' },
-					{ text:'Remote Collection Permit', value: 'Remote Collection Permit' },
-					{ text:'Renewal/Initial', value: 'Renewal/Initial' },
-					{ text:'Replenishment', value: 'Replenishment' },
-					{ text:'Replenishment of Mailing', value: 'Replenishment of Mailing' },
-					{ text:'Reports', value: 'Reports' },
-					{ text:'Request and Issue Slip', value: 'Request and Issue Slip' },
-					{ text:'Request Financial Assistance', value: 'Request Financial Assistance' },
-					{ text:'Request for Action', value: 'Request for Action' },
-					{ text:'Request for Action Slip - QMS', value: 'Request for Action Slip - QMS' },
-					{ text:'Request for Quotation', value: 'Request for Quotation' },
-					{ text:'Request for Tagging', value: 'Request for Tagging' },
-					{ text:'Resolutions', value: 'Resolutions' },
-					{ text:'Sales Invoice', value: 'Sales Invoice' },
-					{ text:'Service Level Agreement', value: 'Service Level Agreement' },
-					{ text:'Service Order', value: 'Service Order' },
-					{ text:'Service Record', value: 'Service Record' },
-					{ text:'Service Request', value: 'Service Request' },
-					{ text:'Statement of Account', value: 'Statement of Account' },
-					{ text:'Supplemental APP', value: 'Supplemental APP' },
-					{ text:'Supplies Availability Inquiry', value: 'Supplies Availability Inquiry' },
-					{ text:'TACT Clearance', value: 'TACT Clearance' },
-					{ text:'TACT FORM', value: 'TACT FORM' },
-					{ text:'Terms of Reference', value: 'Terms of Reference' },
-					{ text:'Travel Authority', value: 'Travel Authority' },
-					{ text:'Travel Liquidation', value: 'Travel Liquidation' },
-					{ text:'Travel Reimbursement', value: 'Travel Reimbursement' },
-					{ text:'Utilization Report', value: 'Utilization Report' },
-					{ text:'Vehicle Request', value: 'Vehicle Request' },
-					{ text:'Vehicle Request Form', value: 'Vehicle Request Form' },
-					{ text:'VOUCHERS', value: 'VOUCHERS' },
-					{ text:'Waste Material Report', value: 'Waste Material Report' },
-					{ text:'WFP', value: 'WFP' },
-				],
 				SpecificDocData: [],
 				OriginFname: "",
 				OriginLname: "",
 				Division_List: [],
-				Section_List: [],
+				Office_List: [],
 				Cluster_List: [],
 				SpecificUser: [],
-				Doc_Action_Options: [
-					{ text:"For Abstract as Read", value: "For Abstract as Read" },
-					{ text:"For Action", value: "For Action" },
-					{ text:"For Action Taken", value: "For Action Taken" },
-					{ text:"For Approval", value: "For Approval" },
-					{ text:"For ARD's approval", value: "For ARD's approval" },
-					{ text:"For awarding", value: "For awarding" },
-					{ text:"For CAF", value: "For CAF" },
-					{ text:"For Canvass", value: "For Canvass" },
-					{ text:"For Certification", value: "For Certification" },
-					{ text:"For Clearance", value: "For Clearance" },
-					{ text:"For Comment", value: "For Comment" },
-					{ text:"For Confirmation", value: "For Confirmation" },
-					{ text:"For Coordination", value: "For Coordination" },
-					{ text:"For Correction", value: "For Correction" },
-					{ text:"For Delivery", value: "For Delivery" },
-					{ text:"For Discussion / Meeting", value: "For Discussion / Meeting" },
-					{ text:"For Dissemination", value: 'For Dissemination' },
-					{ text:"For Distribution", value: "For Distribution" },
-					{ text:"For Draft Message", value: "For Draft Message" },
-					{ text:"For Draft Reply", value: "For Draft Reply" },
-					{ text:"For Evaluation", value: "For Evaluation" },
-					{ text:"For Filling", value: "For Filling" },
-					{ text:"For Filling Up Forms", value: "For Filling Up Forms" },
-					{ text:"For Finalization", value: "For Finalization" },
-					{ text:"For Information", value: "For Information" },
-					{ text:"For Initial", value: "For Initial" },
-					{ text:"For Inspection", value: "For Inspection" },
-					{ text:"For Internet Posting", value: "For Internet Posting" },
-					{ text:"For Intranet Posting", value: "For Intranet Posting" },
-					{ text:"For Legal Action", value: "For Legal Action" },
-					{ text:"For Mailing", value: "For Mailing" },
-					{ text:"For Monitoring", value: "For Monitoring" },
-					{ text:"For Mode of Procurement", value: "For Mode of Procurement" },
-					{ text:"For Newspaper Publication", value: "For Newspaper Publication" },
-					{ text:"For Payment", value: "For Payment" },
-					{ text:"For PO preparation", value: "For PO preparation" },
-					{ text:"For PR Numbering", value: "For PR Numbering" },
-					{ text:"For Processing", value: "For Processing" },
-					{ text:"For Processing - CA", value: "For Processing - CA" },
-					{ text:"For Processing - LTO", value: "For Processing - LTO" },
-					{ text:"For Purchase Order (PO)", value: "For Purchase Order (PO)" },
-					{ text:"For RD's approval", value: "For RD's approval" },
-					{ text:"For Re-canvass", value: "For Re-canvass" },
-					{ text:"For Re-Evaluation", value: "For Re-Evaluation" },
-					{ text:"For Recommendation", value: "For Recommendation" },
-					{ text:"For RFQ", value: "For RFQ" },
-					{ text:"For Registry", value: "For Registry" },
-					{ text:"For Release", value: "For Release" },
-					{ text:"For Resolution", value: "For Resolution" },
-					{ text:"For Review", value: "For Review" },
-					{ text:"For Revision", value: "For Revision" },
-					{ text:"For Shopping", value: "For Shopping" },
-					{ text:"For Signature", value: "For Signature" },
-					{ text:"For Stock Availability Inquiry", value: "For Stock Availability Inquiry" },
-					{ text:"For Submission", value: "For Submission" },
-					{ text:"PR w/ canvass for opening", value: "PR w/ canvass for opening" },
-					{ text:"Receiving for approval", value: "Receiving for approval" },
-					{ text:"Receiving for Processing", value: "Receiving for Processing" },
-					{ text:"Receiving for signature", value: "Receiving for signature" },
-				],
+
 			};
 		},
 		computed: {
@@ -853,12 +607,6 @@
 			viewParticulars(data){
 				Mylib.viewParticulars(this,data);
 			},
-			retDiv(currentLocation){
-				return Mylib.retDiv(currentLocation);
-			},
-			retDivSecClus(div,sec,clus,type){
-				return Mylib.retDivSecClus(div,sec,clus,type);
-			},
 			formatAmount(value) {
 				return Mylib.formatAmount(value);
 			},
@@ -866,22 +614,27 @@
 				return Mylib.frontEndDateFormat(date_data);
         	},
 			// Methods for Dependent Dropdown
-            getDivision: function(){
-				Mylib.getDivision(this);
+            getOfficesDivision: function(){
+				Mylib.getOfficesDivision(this);
             },
-			getSection: function(division) {
-				Mylib.getSection(this,division);
+			getOfficesCluster: function(cluster,division) {
+				console.log("getOfficesCluster");
+				console.log(cluster+' '+division);
+				Mylib.getOfficesCluster(this,cluster,division);
+				this.getOffices(cluster,division);
             },
-			getCluster: function(section) {
-				Mylib.getCluster(this,section);
+			getOffices: function(cluster,division) {
+				console.log("getOffices");
+				// console.log(cluster,division);
+				Mylib.getOffices(this,cluster,division);
             },
 			getSpecificUser: function() {
 				console.log("SpecificUser");
                 axios.get('/getSpecificUser',{
                  params: {
                    division_id: this.CreateDocForm.CreateDocDivisionData,
-                   section_id: this.CreateDocForm.CreateDocSectionData,
                    cluster_id: this.CreateDocForm.CreateDocClusterData,
+                   office_id: this.CreateDocForm.CreateDocOfficeData,
                  }
               }).then(function(response){
                     this.SpecificUser = response.data;
@@ -959,7 +712,7 @@
 			},
 		},
 		created: function(){
-            this.getDivision();
+            this.getOfficesDivision();
         },
     };
 </script>

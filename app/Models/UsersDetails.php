@@ -28,19 +28,21 @@ class UsersDetails extends Model
     {
         return $this->hasOne(User::class, 'id', 'user_id_fk');
     }
-
-    public function Division()
+    
+    
+    
+    public function OfficesDivision()
     {
-        return $this->hasOne(Division::class, 'id', 'division');
+        return $this->hasOne(OfficesDivision::class, 'id', 'division');
     }
 
-    public function Section()
+    public function OfficesCluster()
     {
-        return $this->hasOne(Section::class, 'id', 'section');
+        return $this->hasOne(OfficesCluster::class, 'id', 'section');
     }
     
-    public function Cluster()
+    public function OfficesOffice()
     {
-        return $this->hasOne(Cluster::class, 'id', 'cluster');
+        return $this->hasOne(OfficesOffice::class, 'id', 'cluster');
     }
 }

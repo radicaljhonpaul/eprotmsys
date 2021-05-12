@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
 use Laravel\Jetstream\Jetstream;
+use Illuminate\Support\Facades\DB;
 
 class CreateNewUser implements CreatesNewUsers
 {
@@ -59,13 +60,14 @@ class CreateNewUser implements CreatesNewUsers
             $UserDetails->lname = $input['lname'];
             $UserDetails->gender = $input['gender'];
             $UserDetails->contact = $input['contact'];
+            $UserDetails->office = $input['office'];
             $UserDetails->cluster = $input['cluster'];
-            $UserDetails->section = $input['section'];
             $UserDetails->division = $input['division'];
             $UserDetails->position = $input['position'];
             $UserDetails->save(); 
         }else;
-
+    
         return $user_data;
+
     }
 }

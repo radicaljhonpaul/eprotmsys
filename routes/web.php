@@ -33,9 +33,10 @@ Route::get('/', function () {
 });
 
 
-Route::get('getDivision', [DivSecClusController::class, 'getDivision']);
-Route::get('getSection', [DivSecClusController::class, 'getSection']);
-Route::get('getCluster', [DivSecClusController::class, 'getCluster']);
+Route::get('getOfficesDivision', [DivSecClusController::class, 'getOfficesDivision']);
+Route::get('getOfficesCluster', [DivSecClusController::class, 'getOfficesCluster']);
+Route::get('getOffices', [DivSecClusController::class, 'getOffices']);
+
 Route::get('getSpecificUser', [OfficeController::class, 'getSpecificUser']);
 
 Route::group(['middleware' => ['auth:sanctum', 'verified']], function(){
@@ -45,9 +46,11 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function(){
 
     // Needs to be auth when accessing dashboard
     Route::get('getMostReceivedDocs', [DashboardController::class, 'getMostReceivedDocs']);
-    Route::get('getPRAppOverRec', [DashboardController::class, 'getPRAppOverRec']);
-    Route::get('getPOAppOverRec', [DashboardController::class, 'getPOAppOverRec']);
-    Route::get('getAPTperDocs', [DashboardController::class, 'getAPTperDocs']);
+    Route::get('getUtilitiesCounts', [DashboardController::class, 'getUtilitiesCounts']);
+    Route::get('getAPTAllReceivedDocs', [DashboardController::class, 'getAPTAllReceivedDocs']);
+    // Route::get('getPRAppOverRec', [DashboardController::class, 'getPRAppOverRec']);
+    // Route::get('getPOAppOverRec', [DashboardController::class, 'getPOAppOverRec']);
+    // Route::get('getAPTperDocs', [DashboardController::class, 'getAPTperDocs']);
 
 	// Office index
 	Route::group(['prefix' => 'office', 'as' => 'office.', 'middleware' => ['role:office'] ], function(){
@@ -64,9 +67,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function(){
         Route::post('/routedoc', [DocumentController::class, 'routedoc'])->name('routedoc');
         Route::post('/logdoc', [DocumentController::class, 'logdoc'])->name('logdoc');
         Route::post('/createdoc', [DocumentController::class, 'create'])->name('createdoc');
-        
 		Route::resource('index', OfficeController::class)->names('dashboard');
-
 	});
 
     // Admin index
