@@ -1,7 +1,7 @@
 <template>
 	<office-layout>
 		<div class="py-6">
-			<div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+			<div class="w-full px-2 mx-auto sm:px-6 lg:px-8">
 				<span class="text-lg font-bold text-gray-900">
 					Logged Documents
 				</span>
@@ -16,14 +16,17 @@
 								<button @click="resetSearchDocuments()" class="flex items-center justify-center px-4 py-2 border-b-2 bg-white text-purple-600 hover:bg-purple-600 hover:text-white focus:outline-none border-purple-600">
 									<i class="fas fa-window-restore"></i>
 								</button>
+								<button @click="LogDocumentModal = true" class="flex items-center justify-center px-4 py-2 border-b-2 bg-white text-purple-600 hover:bg-purple-600 hover:text-white focus:outline-none border-purple-600 lg:hidden disabled:text-gray-500" :disabled="IncomingDocuments.length == 0">
+									<i class="fas fa-file-import"></i> &nbsp; <div style="padding-top: 0.1em; padding-bottom: 0.1rem" class="text-xs px-2 bg-red-500 text-white rounded-full">{{ IncomingDocuments.length }}</div>
+								</button>
 							</div>
 						</div>
 					</div>
-					<div class="mt-5 flex lg:mt-0 lg:ml-4">
-						<span class="sm:ml-3">
+					<div class="hidden lg:mt-0 lg:ml-4 lg:block">
+						<span class="lg:ml-3">
 							<button v-if="IncomingDocuments.length > 0" @click="LogDocumentModal = true" type="button" class="inline-flex items-center px-4 py-2 border-2 border-transparent rounded-md shadow-sm text-sm font-medium bg-white text-purple-600 hover:bg-purple-700 hover:text-white focus:outline-none border-purple-700">
 								<i class="fas fa-file-import"></i> &nbsp;	
-								Incoming Docs &nbsp; <div style="padding-top: 0.1em; padding-bottom: 0.1rem" class="text-xs px-2 bg-red-500 text-white rounded-full">{{ IncomingDocuments.length }}</div>
+								Incoming Docs  
 							</button>
  
 							<button v-if="IncomingDocuments.length == 0" @click="LogDocumentModal = true" type="button" class="inline-flex items-center px-4 py-2 border-2 border-transparent rounded-md shadow-sm text-sm font-medium bg-gray-500 text-white focus:outline-none border-gray-700" disabled>
@@ -35,93 +38,104 @@
 					</div>
 				</div>
 
-				<div class="flex flex-col">
-					<div class="-my-2 mx-10 overflow-x-auto sm:-mx-6 lg:-mx-8">
-						<div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-							<div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
-								<table class="table-auto min-w-full divide-y divide-gray-200">
-									<thead class="text-xs bg-purple-600 text-white">
-										<tr>
-										<th scope="col" class="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">
-											End-User
-										</th>
-										<th scope="col" class="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">
-											Document
-										</th>
-										<th scope="col" class="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">
-											Received
-										</th>
-										<th scope="col" class="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">
-											Forwarded
-										</th>
-										<th scope="col" class="relative px-3 py-3">
-											<span class="sr-only">View</span>
-										</th>
-										</tr>
-									</thead>
-									<tbody class="bg-white divide-y divide-gray-200">
-										<tr v-if="!Documents.data.length">
-											<td colspan="6" class="text-center border font-bold text-red-500 text-lg py-5">
-												No Data Available
-											</td>
-										</tr>
-										<tr v-show="Documents.data.length > 0" v-for="docs in Documents.data" :key="docs.created_at">
-											<td class="px-3 py-2 whitespace-nowrap">
-												<div class="flex items-center">
-													<div class="flex-shrink-0 h-10 w-10">
+				<div class="w-full lg:flex lg:items-center lg:justify-between mt-2 mb-2">
+					<table class="w-full flex flex-row flex-no-wrap sm:bg-white overflow-hidden sm:shadow-lg my-5 border-2 border-purple-600 lg:border-0">
+						<thead class="flex-1 sm:flex-none text-xs bg-purple-600 text-white divide-y divide-purple-800">
+							<tr v-show="Documents.data.length > 0" v-for="docs in Documents.data" :key="docs" class="flex flex-col flex-no-wrap sm:table-row mb-2 sm:mb-0">
+								<th class="h-24 px-3 py-2 text-left lg:h-full">End-User</th>
+								<th class="h-24 px-3 py-2 text-left lg:h-full">Document</th>
+								<th class="h-16 px-3 py-2 text-left lg:h-full">Previous</th>
+								<th class="h-16 px-3 py-2 text-left lg:h-full">Current</th>
+								<th class="h-16 px-3 py-2 text-left lg:h-full">Destination</th>
+								<th class="h-12 px-3 py-2 text-left lg:h-full">Action </th>
+							</tr>
+							<tr v-if="Documents.data.length == 0" class="flex flex-col flex-no-wrap sm:table-row mb-2 sm:mb-0">
+								<th class="h-24 px-3 py-2 text-left lg:h-full">End-User</th>
+								<th class="h-24 px-3 py-2 text-left lg:h-full">Document</th>
+								<th class="h-16 px-3 py-2 text-left lg:h-full">Previous</th>
+								<th class="h-16 px-3 py-2 text-left lg:h-full">Current</th>
+								<th class="h-16 px-3 py-2 text-left lg:h-full">Destination</th>
+								<th class="h-12 px-3 py-2 text-left lg:h-full">Action </th>
+							</tr>
+						</thead>
+						<tbody class="flex-1 sm:flex-none bg-white divide-y divide-purple-800 lg:divide-y lg:divide-gray-200">
+							<tr v-if="!Documents.data.length">
+								<td colspan="6" class="text-center border font-bold text-red-500 text-lg py-5">
+									No Data Available
+								</td>
+							</tr>
+							<tr v-show="Documents.data.length > 0" v-for="docs in Documents.data" :key="docs" class="flex flex-col flex-no-wrap sm:table-row mb-2 sm:mb-0">
+								<td class="h-24 px-3 py-2 lg:h-full">
+									<div class="flex items-center">
+										<div class="flex-shrink-0 h-10 w-10">
+											<img class="h-10 w-10 rounded-full" :src="'/storage/'+docs.users_details.user.profile_photo_path" alt="">
+										</div>
+										<div class="ml-4">
+											<div class="text-sm font-medium text-gray-900">
+												<span v-if="docs.users_details.gender == 'Male'">
+													Mr.
+												</span>	
+												<span v-else>
+													Ms.
+												</span>	
+												{{ docs.users_details.lname }}
+											</div>
+										</div>
+									</div>
+								</td>
+								<td class="h-24 px-3 py-2 lg:h-full">
+									<div class="text-xs text-gray-900">{{ docs.doc_type }} </div>
+									<div class="text-xs text-gray-500">{{ docs.documents_particulars_tbl.length }} Particulars</div>
+									<div class="text-xs text-purple-600">DTRAK No. {{ docs.dtrack_no }}</div>
+									<span v-if="docs.doc_current_status == 'Accomplished PR - Processing for PO'" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-500 text-white">
+										Accomplished PR
+									</span>
+									<span v-if="docs.doc_current_status == 'Accomplished PO'" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-500 text-white">
+										Accomplished PO
+									</span>		
+								</td>
 
-														<img class="h-10 w-10 rounded-full" :src="'/storage/'+docs.users_details.user.profile_photo_path" alt="">
-													</div>
-													<div class="ml-4">
-														<div class="text-sm font-medium text-gray-900">
-															<span v-if="docs.users_details.gender == 'Male'">
-																Mr.
-															</span>	
-															<span v-else>
-																Ms.
-															</span>	
-															{{ docs.users_details.lname }}
-														</div>
-													</div>
-												</div>
-											</td>
-											<td class="px-3 py-2 whitespace-nowrap">
-												<div class="text-xs text-gray-900">{{ docs.doc_type }} </div>
-												<div class="text-xs text-gray-500">{{ docs.documents_particulars_tbl.length }} Particulars</div>
-												<div class="text-xs text-purple-600">DTRAK No. {{ docs.dtrack_no }}</div>
-												<p class="text-xs text-gray-900">{{ frontEndDateFormat(docs.created_at) }} </p>
-											</td>
-											
-											<!-- if there are exactly 2 ka logs -->
-											<td v-if="docs.documents_status_log_tbl.length > 0" class="px-3 py-2 whitespace-nowrap text-red-500" style="font-size:.55rem;line-height:1rem;">
-												<doc-location v-if="docs.documents_status_log_tbl[0] != null" :Division="docs.documents_status_log_tbl[0].division" :Cluster="docs.documents_status_log_tbl[0].cluster" :Office="docs.documents_status_log_tbl[0].office" :Type="1"></doc-location>
-												<p class="text-xs text-gray-900">{{ frontEndDateFormat(docs.documents_status_log_tbl[0].created_at) }} </p>
-											</td>
-											<td v-if="docs.documents_status_log_tbl.length > 0" class="px-3 py-2 whitespace-nowrap text-yellow-500" style="font-size:.55rem;line-height:1rem;">
-												<doc-destination v-if="docs.documents_status_log_tbl[0] != null && docs.documents_status_log_tbl[0].forwarded_to != null" :Destination="history.forwarded_to"></doc-destination>	
-												<p v-if="docs.documents_status_log_tbl[0] != null && docs.documents_status_log_tbl[0].forwarded_to != null" class="text-xs text-gray-900">{{ frontEndDateFormat(docs.documents_status_log_tbl[0].updated_at) }} </p>
-												<p v-if="docs.documents_status_log_tbl[0].forwarded_to == null" class="text-xs text-gray-900">
-													<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-500 text-white">
-														Pending
-													</span>
-												</p>
-											</td>
+								<!-- if there are exactly 2 ka logs -->
+								<td v-if="docs.documents_status_log_tbl.length > 1" class="h-16 px-3 py-2 lg:h-full" style="font-size:.55rem;line-height:1rem;">
+									<doc-location class="text-red-500" v-if="docs.documents_status_log_tbl[1] != null" :Division="docs.documents_status_log_tbl[1].division" :Cluster="docs.documents_status_log_tbl[1].cluster" :Office="docs.documents_status_log_tbl[1].office" :Type="1"></doc-location>
+								</td>
+								<td v-if="docs.documents_status_log_tbl.length > 1" class="h-16 px-3 py-2 lg:h-full" style="font-size:.55rem;line-height:1rem;">
+									<doc-location class="text-yellow-500" v-if="docs.documents_status_log_tbl[0] != null" :Division="docs.documents_status_log_tbl[0].division" :Cluster="docs.documents_status_log_tbl[0].cluster" :Office="docs.documents_status_log_tbl[0].office" :Type="1"></doc-location>
+								</td>
+								<td v-if="docs.documents_status_log_tbl.length > 1" class="h-16 px-3 py-2 lg:h-full" style="font-size:.55rem;line-height:1rem;">
+									<doc-destination class="text-pink-500" v-if="docs.documents_status_log_tbl[0] != null && docs.documents_status_log_tbl[0].forwarded_to != null" :Destination="docs.documents_status_log_tbl[0].forwarded_to"></doc-destination>
+									<p v-if="docs.documents_status_log_tbl[0] != null && docs.documents_status_log_tbl[0].forwarded_to == null">
+										<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-500 text-white">
+											Pending
+										</span>
+									</p>
+								</td>
 
-											<td class="px-3 py-2 whitespace-nowrap text-center text-sm font-medium">
-												<a @click="ViewingModal = true, viewParticulars(docs)" class="text-purple-500 hover:text-purple-700 cursor-pointer">View <i class="fas fa-eye"></i> </a>
-												<hr v-if="docs.final_status == 'Processing'" class="border-gray-500 my-2">
-												<a v-if="docs.final_status == 'Processing'" @click="ForwardingModal = true, passDtrakNo(docs.dtrack_no), viewParticulars(docs)" class="text-green-500 hover:text-green-700 cursor-pointer">Forward <i class="fas fa-file-export"></i> </a>
-											</td>
-										</tr>
-									</tbody>
-								</table>
-							</div>
-						</div>
+								<!-- if there are exactly 1 ka logs -->
+								<td v-if="docs.documents_status_log_tbl.length == 1" class="h-16 px-3 py-2 lg:h-full" style="font-size:.55rem;line-height:1rem;">
+									<doc-location class="text-red-500" v-if="docs.documents_status_log_tbl[0] != null" :Division="docs.documents_status_log_tbl[0].division" :Cluster="docs.documents_status_log_tbl[0].cluster" :Office="docs.documents_status_log_tbl[0].office" :Type="1"></doc-location>
+								</td>
+								<td v-if="docs.documents_status_log_tbl.length == 1" class="h-16 px-3 py-2 lg:h-full" style="font-size:.55rem;line-height:1rem;">
+									<doc-location class="text-yellow-500" v-if="docs.documents_status_log_tbl[0] != null" :Division="docs.documents_status_log_tbl[0].division" :Cluster="docs.documents_status_log_tbl[0].cluster" :Office="docs.documents_status_log_tbl[0].office" :Type="1"></doc-location>
+								</td>
+								<td v-if="docs.documents_status_log_tbl.length == 1" class="h-16 px-3 py-2 lg:h-full" style="font-size:.55rem;line-height:1rem;">
+									<doc-destination class="text-pink-500" v-if="docs.documents_status_log_tbl[0] != null && docs.documents_status_log_tbl[0].forwarded_to != null" :Destination="docs.documents_status_log_tbl[0].forwarded_to"></doc-destination>
+								</td>
 
-						<div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-							<pagination :links="Documents.links" :current_page="Documents.current_page" :prev_url="Documents.prev_page_url" :next_url="Documents.next_page_url" :total_page="Documents.last_page" :path="Documents.path"></pagination>
-						</div>
-					</div>
+								<td class="h-12 text-left px-3 py-2 lg:h-full text-sm font-medium">
+									<div class="inline-flex gap-2">
+										<a @click="ViewingModal = true, viewParticulars(docs)" class="text-purple-500 hover:text-purple-700 cursor-pointer">View <i class="fas fa-eye"></i> </a>
+										<hr v-if="docs.final_status == 'Processing'" class="border-gray-500 my-2">
+										<a v-if="docs.final_status == 'Processing'" @click="ForwardingModal = true, passDtrakNo(docs.dtrack_no), viewParticulars(docs)" class="text-green-500 hover:text-green-700 cursor-pointer">Forward <i class="fas fa-file-export"></i> </a>
+									</div>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<div class="py-2 align-middle inline-block min-w-full">
+					<pagination :links="Documents.links" :current_page="Documents.current_page" :prev_url="Documents.prev_page_url" :next_url="Documents.next_page_url" :total_page="Documents.last_page" :path="Documents.path"></pagination>
 				</div>
 			</div>
 		</div>
@@ -214,7 +228,7 @@
 							<div class="text-xs text-gray-500 font-light ml-auto">Created On: {{ frontEndDateFormat(SpecificDocData.created_at) }}</div>	
 						</div>
 					</section>
-					<section class="flex gap-x-4 px-5 mt-2" v-if="ToggleDocsHistory_Particulars">
+					<section class="flex gap-x-4 px-5 mt-2  overflow-x-auto" v-if="ToggleDocsHistory_Particulars">
 						<!-- This example requires Tailwind CSS v2.0+ -->
 						<div class="py-2 align-middle inline-block min-w-full">
 							<section class="border-b text-gray-500 flex justify-between items-center">
@@ -259,7 +273,7 @@
 						</div>
 					</section>
 
-					<section class="px-5 mt-2" v-if="!ToggleDocsHistory_Particulars">
+					<section class="px-5 mt-2 overflow-x-auto" v-if="!ToggleDocsHistory_Particulars">
 						<table class="table-auto min-w-full divide-y divide-gray-200">
 							<thead class="text-xs bg-gray-50">
 								<tr>

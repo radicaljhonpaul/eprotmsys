@@ -91,6 +91,24 @@
               background-color: #48bb78;
             }
 
+            @media (min-width: 640px) {
+              table {
+                display: inline-table !important;
+              }
+
+              thead tr:not(:first-child) {
+                display: none;
+              }
+            }
+
+            td:not(:last-child) {
+              border-bottom: 0;
+            }
+
+            th:not(:last-child) {
+              border-bottom: 2px solid rgba(0, 0, 0, .1);
+            }
+
         </style>
 
         <!-- Scripts -->

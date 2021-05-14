@@ -149,9 +149,7 @@ class DocumentController extends Controller
             $DocumentsStatusLogTbl_Previous = DocumentsStatusLogTbl::where('dtrack_id_fk',$request->logDtrackNo)->latest()->limit(1)->get();
             // Get Users Details
             $Current_User = UsersDetails::select('id','division','cluster','office','fname','lname')->where('user_id_fk',Auth::id())->get();
-
             $location = $Current_User[0]->division.','.$Current_User[0]->cluster.','.$Current_User[0]->office;
-            
             $document = DocumentsTbl::select('id','dtrack_no','doc_type','updated_at')->where('dtrack_no', $request->logDtrackNo)->latest()->get();
             // Update Document Table
             DocumentsTbl::where('dtrack_no', $request->logDtrackNo)->where('final_status', 'Processing')->update(['doc_current_location' => $location, 'is_received' => 1, 'forwarded_to' => null]);

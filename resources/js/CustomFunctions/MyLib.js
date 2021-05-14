@@ -46,7 +46,7 @@ let formatAmount = (value) => {
 };
 
 let frontEndDateFormat = (date_data) => {
-  return moment(date_data).format('MMMM Do YYYY, h:mm:ss a');
+  return moment(date_data).format('MMM Do YYYY, h:mm:ss a');
 };
 
 let getOfficesDivision = (that) => {
