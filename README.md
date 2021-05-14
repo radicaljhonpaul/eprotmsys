@@ -39,3 +39,6 @@ If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Lar
 // Routes for Dashboard
 // Dashboard Components | AvgDocs,AvgProcessignTime,ReceivedsDocs,ReceivedsDocsCharts,UtilitiesCounts
 // Custom Components | DocActions,DocDestination,DocLocation,DocTypes,Paginations,NotificationList
+
+- May 14, 2021
+// Mobile Responsiveness My Docs, Logged and Forwarded

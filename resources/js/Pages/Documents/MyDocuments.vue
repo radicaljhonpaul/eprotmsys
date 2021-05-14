@@ -1,7 +1,7 @@
 <template>
 	<office-layout>
 		<div class="py-6">
-			<div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+			<div class="w-full px-2 mx-auto sm:px-6 lg:px-8">
 				<span class="text-lg font-bold text-gray-900">
 					My Documents
 				</span>
@@ -16,12 +16,15 @@
 								<button @click="resetSearchDocuments()" class="flex items-center justify-center px-4 py-2 border-b-2 bg-white text-blue-600 hover:bg-blue-600 hover:text-white focus:outline-none border-blue-600">
 									<i class="fas fa-window-restore"></i>
 								</button>
+								<button @click="CreateDocumentModal = true" class="flex items-center justify-center px-4 py-2 border-b-2 bg-white text-blue-600 hover:bg-blue-600 hover:text-white focus:outline-none border-blue-600 lg:hidden">
+									<i class="fas fa-file-medical"></i>
+								</button>
 							</div>
 						</div>
 					</div>
-					<div class="mt-5 flex lg:mt-0 lg:ml-4">
-						<span class="sm:ml-3">
-							<button @click="CreateDocumentModal = true" type="button" class="inline-flex items-center px-4 py-2 border-2 border-transparent rounded-md shadow-sm text-sm font-medium bg-white text-blue-600 hover:bg-blue-700 hover:text-white focus:outline-none border-blue-700">
+					<div class="hidden lg:mt-0 lg:ml-4 lg:block">
+						<span class="lg:ml-3">
+							<button @click="CreateDocumentModal = true" type="button" class="inline-flex items-center w-full px-4 py-2 border-2 border-transparent rounded-md shadow-sm text-sm font-medium bg-white text-blue-600 hover:bg-blue-700 hover:text-white focus:outline-none border-blue-700">
 								<i class="fas fa-file-signature"></i> &nbsp;	
 								Create Docs
 							</button>
@@ -29,112 +32,83 @@
 					</div>
 				</div>
 
-				<div class="flex flex-col">
-					<div class="-my-2 mx-10 overflow-x-auto sm:-mx-6 lg:-mx-8">
-						<div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-							<div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
-								<table class="table-auto min-w-full divide-y divide-gray-200">
-									<thead class="text-xs bg-blue-600 text-white">
-										<tr>
-											<th scope="col" class="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">
-												End-User
-											</th>
-											<th scope="col" class="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">
-												Document
-											</th>
-											<th scope="col" class="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">
-												Previous
-											</th>
-											<th scope="col" class="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">
-												Current
-											</th>
-											<th scope="col" class="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">
-												Destination
-											</th>
-											<th scope="col" class="relative px-3 py-3">
-												<span class="sr-only">View</span>
-											</th>
-										</tr>
-									</thead>
-									<tbody class="bg-white divide-y divide-gray-200">
-										<tr v-if="!Documents.data.length">
-											<td colspan="6" class="text-center border font-bold text-red-500 text-lg py-5">
-												No Data Available
-											</td>
-										</tr>
-										<tr v-show="Documents.data.length > 0" v-for="(item, index) in Documents.data" :key="index" class="">
-											<td class="px-3 py-2 whitespace-nowrap">
-												<div class="flex items-center">
-													<div class="flex-shrink-0 h-10 w-10">
-														<img class="h-10 w-10 rounded-full" :src="'/storage/'+$page.props.user.profile_photo_path" alt="">
-													</div>
-													<div class="ml-4">
-														<div class="text-sm font-medium text-gray-900">
-															<span v-if="item.users_details.gender == 'Male'">
-																Mr.
-															</span>	
-															<span v-else>
-																Ms.
-															</span>
-															{{ item.users_details.lname }}
-															<p class="text-blue-500 text-xs">{{ frontEndDateFormat(item.created_at) }}</p>	
-														</div>
-													</div>
-												</div>
-											</td>
-											<td class="px-3 py-2 whitespace-nowrap">
-												<div class="text-xs text-gray-900">{{ item.doc_type }} </div>
-												<div class="text-xs text-gray-500">{{ item.documents_particulars_tbl.length }} Particulars</div>
-												<div class="text-xs text-blue-600">DTRAK No. {{ item.dtrack_no }}</div>
-												<span v-if="item.doc_current_status == 'Accomplished PR - Processing for PO'" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-500 text-white">
-													Accomplished PR
-												</span>
-												<span v-if="item.doc_current_status == 'Accomplished PO'" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-500 text-white">
-													Accomplished PO
-												</span>		
-											</td>
-											
-											<!-- if there are exactly 2 ka logs -->
-											<td v-if="item.documents_status_log_tbl.length > 1" class="px-3 py-2 whitespace-nowrap" style="font-size:.55rem;line-height:1rem;">
-												<doc-location class="text-red-500" v-if="item.documents_status_log_tbl[1] != null" :Division="item.documents_status_log_tbl[1].division" :Cluster="item.documents_status_log_tbl[1].cluster" :Office="item.documents_status_log_tbl[1].office" :Type="1"></doc-location>
-											</td>
-											<td v-if="item.documents_status_log_tbl.length > 1" class="px-3 py-2 whitespace-nowrap" style="font-size:.55rem;line-height:1rem;">
-												<doc-location class="text-yellow-500" v-if="item.documents_status_log_tbl[0] != null" :Division="item.documents_status_log_tbl[0].division" :Cluster="item.documents_status_log_tbl[0].cluster" :Office="item.documents_status_log_tbl[0].office" :Type="1"></doc-location>
-											</td>
-											<td v-if="item.documents_status_log_tbl.length > 1" class="px-3 py-2 whitespace-nowrap" style="font-size:.55rem;line-height:1rem;">
-												<doc-destination class="text-pink-500" v-if="item.documents_status_log_tbl[0] != null && item.documents_status_log_tbl[0].forwarded_to != null" :Destination="item.documents_status_log_tbl[0].forwarded_to"></doc-destination>
-												<p v-if="item.documents_status_log_tbl[0] != null && item.documents_status_log_tbl[0].forwarded_to == null">
-													<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-500 text-white">
-														Pending
-													</span>
-												</p>
-											</td>
-
-											<!-- if there are exactly 1 ka logs -->
-											<td v-if="item.documents_status_log_tbl.length == 1" class="px-3 py-2 whitespace-nowrap" style="font-size:.55rem;line-height:1rem;">
-												<doc-location class="text-red-500" v-if="item.documents_status_log_tbl[0] != null" :Division="item.documents_status_log_tbl[0].division" :Cluster="item.documents_status_log_tbl[0].cluster" :Office="item.documents_status_log_tbl[0].office" :Type="1"></doc-location>
-											</td>
-											<td v-if="item.documents_status_log_tbl.length == 1" class="px-3 py-2 whitespace-nowrap" style="font-size:.55rem;line-height:1rem;">
-												<doc-location class="text-yellow-500" v-if="item.documents_status_log_tbl[0] != null" :Division="item.documents_status_log_tbl[0].division" :Cluster="item.documents_status_log_tbl[0].cluster" :Office="item.documents_status_log_tbl[0].office" :Type="1"></doc-location>
-											</td>
-											<td v-if="item.documents_status_log_tbl.length == 1" class="px-3 py-2 whitespace-nowrap" style="font-size:.55rem;line-height:1rem;">
-												<doc-destination class="text-pink-500" v-if="item.documents_status_log_tbl[0] != null && item.documents_status_log_tbl[0].forwarded_to != null" :Destination="item.documents_status_log_tbl[0].forwarded_to"></doc-destination>
-											</td>
-
-											<td class="px-3 py-2 whitespace-nowrap text-center text-sm font-medium">
-												<a @click="ViewingModal = true, viewParticulars(item)" class="text-blue-600 hover:text-blue-800 cursor-pointer">View <i class="fas fa-eye"></i> </a>
-											</td>
-										</tr>
-										<!-- More items... -->
-									</tbody>
-								</table>
+				<div class="w-full lg:flex lg:items-center lg:justify-between mt-2 mb-2">
+					<table class="w-full flex flex-row flex-no-wrap sm:bg-white overflow-hidden sm:shadow-lg my-5 border-2 border-blue-600 lg:border-0">
+						<thead class="flex-1 sm:flex-none text-xs bg-blue-600 text-white divide-y divide-blue-800">
+							<div v-if="Documents.data.length > 0">
+								<tr v-for="(item, index) in Documents.data" :key="index" class="flex flex-col flex-no-wrap sm:table-row mb-2 sm:mb-0">
+									<th class="h-24 px-3 py-2 text-left lg:h-full">Document</th>
+									<th class="h-16 px-3 py-2 text-left lg:h-full">Previous</th>
+									<th class="h-16 px-3 py-2 text-left lg:h-full">Current</th>
+									<th class="h-16 px-3 py-2 text-left lg:h-full">Destination</th>
+									<th class="h-12 px-3 py-2 text-left lg:h-full">Action </th>
+								</tr>
 							</div>
-						</div>
+							<div v-if="Documents.data.length == 0">
+								<tr class="flex flex-col flex-no-wrap sm:table-row mb-2 sm:mb-0">
+									<th class="h-24 px-3 py-2 text-left lg:h-full">Document</th>
+									<th class="h-16 px-3 py-2 text-left lg:h-full">Previous</th>
+									<th class="h-16 px-3 py-2 text-left lg:h-full">Current</th>
+									<th class="h-16 px-3 py-2 text-left lg:h-full">Destination</th>
+									<th class="h-12 px-3 py-2 text-left lg:h-full">Action </th>
+								</tr>
+							</div>
+						</thead>
+						<tbody class="flex-1 sm:flex-none bg-white divide-y divide-blue-800 lg:divide-y lg:divide-gray-200">
+							<tr v-if="!Documents.data.length">
+								<td colspan="6" class="text-center border font-bold text-red-500 text-lg py-5">
+									No Data Available
+								</td>
+							</tr>
+							<tr v-show="Documents.data.length > 0" v-for="(item, index) in Documents.data" :key="index" class="flex flex-col flex-no-wrap sm:table-row mb-2 sm:mb-0">
+								<td class="h-24 px-3 py-2 lg:h-full">
+									<div class="text-xs text-gray-900">{{ item.doc_type }} </div>
+									<div class="text-xs text-gray-500">{{ item.documents_particulars_tbl.length }} Particulars</div>
+									<div class="text-xs text-blue-600">DTRAK No. {{ item.dtrack_no }}</div>
+									<span v-if="item.doc_current_status == 'Accomplished PR - Processing for PO'" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-500 text-white">
+										Accomplished PR
+									</span>
+									<span v-if="item.doc_current_status == 'Accomplished PO'" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-500 text-white">
+										Accomplished PO
+									</span>		
+								</td>
 
-						<div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-							<pagination :links="Documents.links" :current_page="Documents.current_page" :prev_url="Documents.prev_page_url" :next_url="Documents.next_page_url" :total_page="Documents.last_page" :path="Documents.path"></pagination>
-						</div>
-					</div>
+								<!-- if there are exactly 2 ka logs -->
+								<td v-if="item.documents_status_log_tbl.length > 1" class="h-16 px-3 py-2 lg:h-full" style="font-size:.55rem;line-height:1rem;">
+									<doc-location class="text-red-500" v-if="item.documents_status_log_tbl[1] != null" :Division="item.documents_status_log_tbl[1].division" :Cluster="item.documents_status_log_tbl[1].cluster" :Office="item.documents_status_log_tbl[1].office" :Type="1"></doc-location>
+								</td>
+								<td v-if="item.documents_status_log_tbl.length > 1" class="h-16 px-3 py-2 lg:h-full" style="font-size:.55rem;line-height:1rem;">
+									<doc-location class="text-yellow-500" v-if="item.documents_status_log_tbl[0] != null" :Division="item.documents_status_log_tbl[0].division" :Cluster="item.documents_status_log_tbl[0].cluster" :Office="item.documents_status_log_tbl[0].office" :Type="1"></doc-location>
+								</td>
+								<td v-if="item.documents_status_log_tbl.length > 1" class="h-16 px-3 py-2 lg:h-full" style="font-size:.55rem;line-height:1rem;">
+									<doc-destination class="text-pink-500" v-if="item.documents_status_log_tbl[0] != null && item.documents_status_log_tbl[0].forwarded_to != null" :Destination="item.documents_status_log_tbl[0].forwarded_to"></doc-destination>
+									<p v-if="item.documents_status_log_tbl[0] != null && item.documents_status_log_tbl[0].forwarded_to == null">
+										<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-500 text-white">
+											Pending
+										</span>
+									</p>
+								</td>
+
+								<!-- if there are exactly 1 ka logs -->
+								<td v-if="item.documents_status_log_tbl.length == 1" class="h-16 px-3 py-2 lg:h-full" style="font-size:.55rem;line-height:1rem;">
+									<doc-location class="text-red-500" v-if="item.documents_status_log_tbl[0] != null" :Division="item.documents_status_log_tbl[0].division" :Cluster="item.documents_status_log_tbl[0].cluster" :Office="item.documents_status_log_tbl[0].office" :Type="1"></doc-location>
+								</td>
+								<td v-if="item.documents_status_log_tbl.length == 1" class="h-16 px-3 py-2 lg:h-full" style="font-size:.55rem;line-height:1rem;">
+									<doc-location class="text-yellow-500" v-if="item.documents_status_log_tbl[0] != null" :Division="item.documents_status_log_tbl[0].division" :Cluster="item.documents_status_log_tbl[0].cluster" :Office="item.documents_status_log_tbl[0].office" :Type="1"></doc-location>
+								</td>
+								<td v-if="item.documents_status_log_tbl.length == 1" class="h-16 px-3 py-2 lg:h-full" style="font-size:.55rem;line-height:1rem;">
+									<doc-destination class="text-pink-500" v-if="item.documents_status_log_tbl[0] != null && item.documents_status_log_tbl[0].forwarded_to != null" :Destination="item.documents_status_log_tbl[0].forwarded_to"></doc-destination>
+								</td>
+
+								<td class="h-12 text-left px-3 py-2 lg:h-full lg:text-center text-sm font-medium">
+									<a @click="ViewingModal = true, viewParticulars(item)" class="text-blue-600 hover:text-blue-800 cursor-pointer">View <i class="fas fa-eye"></i> </a>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<div class="py-2 align-middle inline-block min-w-full">
+					<pagination :links="Documents.links" :current_page="Documents.current_page" :prev_url="Documents.prev_page_url" :next_url="Documents.next_page_url" :total_page="Documents.last_page" :path="Documents.path"></pagination>
 				</div>
 			</div>
 		</div>
@@ -371,7 +345,7 @@
 						</div>
 					</section>
 					<!-- Particulars -->
-					<section class="flex gap-x-4 px-5 mt-2" v-if="!ToggleDocsHistory_Particulars">
+					<section class="flex gap-x-4 px-5 mt-2 overflow-x-auto" v-if="!ToggleDocsHistory_Particulars">
 						<!-- This example requires Tailwind CSS v2.0+ -->
 						<div class="py-2 align-middle inline-block min-w-full">
 							<section class="border-b text-gray-500 flex justify-between items-center">
@@ -417,7 +391,7 @@
 					</section>
 
 					<!-- History -->
-					<section class="px-5 mt-2" v-if="ToggleDocsHistory_Particulars">
+					<section class="px-5 mt-2 overflow-x-auto" v-if="ToggleDocsHistory_Particulars">
 						<table class="table-auto min-w-full divide-y divide-gray-200">
 							<thead class="text-xs bg-gray-50">
 								<tr>

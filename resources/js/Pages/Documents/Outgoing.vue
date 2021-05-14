@@ -1,7 +1,7 @@
 <template>
 	<office-layout>
 		<div class="py-6">
-			<div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+			<div class="w-full px-2 mx-auto sm:px-6 lg:px-8">
 				<span class="text-lg font-bold text-gray-900">
 					Forwarded Documents
 				</span>
@@ -24,89 +24,73 @@
 				</div>
 
                 <!-- Table -->
-				<div class="flex flex-col">
-					<div class="-my-2 mx-10 overflow-x-auto sm:-mx-6 lg:-mx-8">
-						<div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-							<div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
-								<table class="table-auto min-w-full divide-y divide-gray-200">
-									<thead class="text-xs bg-green-600 text-white">
-										<tr>
-										<th scope="col" class="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">
-											End-User
-										</th>
-										<th scope="col" class="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">
-											Document
-										</th>
-										<th scope="col" class="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">
-											Forwarded
-										</th>
-										<th scope="col" class="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">
-											Assessment
-										</th>
-										<th scope="col" class="relative px-3 py-3">
-											<span class="sr-only">View</span>
-										</th>
-										</tr>
-									</thead>
-									<tbody class="bg-white divide-y divide-gray-200">
-										<tr v-if="!Documents.data.length">
-											<td colspan="6" class="text-center border font-bold text-red-500 text-lg py-5">
-												No Data Available
-											</td>
-										</tr>
-										<tr v-show="Documents.data.length > 0" v-for="docs in Documents.data" :key="docs.created_at" class="">
-											<td class="px-3 py-2 whitespace-nowrap">
-												<div class="flex items-center">
-													<div class="flex-shrink-0 h-10 w-10">
+				<div class="w-full lg:flex lg:items-center lg:justify-between mt-2 mb-2">
+					<table class="w-full flex flex-row flex-no-wrap sm:bg-white overflow-hidden sm:shadow-lg my-5 border-2 border-green-600 lg:border-0">
+						<thead class="flex-1 sm:flex-none text-xs bg-green-600 text-white divide-y divide-green-800">
+							<tr v-show="Documents.data.length > 0" v-for="docs in Documents.data" :key="docs" class="flex flex-col flex-no-wrap sm:table-row mb-2 sm:mb-0">
+								<th class="h-24 px-3 py-2 text-left lg:h-full">End-User</th>
+								<th class="h-24 px-3 py-2 text-left lg:h-full">Document</th>
+								<th class="h-24 px-3 py-2 text-left lg:h-full">Forwarded</th>
+								<th class="h-16 px-3 py-2 text-left lg:h-full">Assessment</th>
+								<th class="h-12 px-3 py-2 text-left lg:h-full">Action </th>
+							</tr>
+							<tr v-if="Documents.data.length == 0" class="flex flex-col flex-no-wrap sm:table-row mb-2 sm:mb-0">
+								<th class="h-24 px-3 py-2 text-left lg:h-full">End-User</th>
+								<th class="h-24 px-3 py-2 text-left lg:h-full">Document</th>
+								<th class="h-24 px-3 py-2 text-left lg:h-full">Forwarded</th>
+								<th class="h-16 px-3 py-2 text-left lg:h-full">Assessment</th>
+								<th class="h-12 px-3 py-2 text-left lg:h-full">Action </th>
+							</tr>
+						</thead>
+						<tbody class="flex-1 sm:flex-none bg-white divide-y divide-green-800 lg:divide-y lg:divide-gray-200">
+							<tr v-if="!Documents.data.length">
+								<td colspan="6" class="text-center border font-bold text-red-500 text-lg py-5">
+									No Data Available
+								</td>
+							</tr>
+							<tr v-show="Documents.data.length > 0" v-for="docs in Documents.data" :key="docs" class="flex flex-col flex-no-wrap sm:table-row mb-2 sm:mb-0">
+								<td class="h-24 px-3 py-2 lg:h-full">
+									<div class="flex items-center">
+										<div class="flex-shrink-0 h-10 w-10">
 
-														<img class="h-10 w-10 rounded-full" :src="'/storage/'+docs.documents_tbl.users_details.user.profile_photo_path" alt="">
-													</div>
-													<div class="ml-4">
-														<div class="text-sm font-medium text-gray-900">
-															<span v-if="docs.documents_tbl.users_details.gender == 'Male'">
-																Mr.
-															</span>	
-															<span v-else>
-																Ms.
-															</span>	
-															{{ docs.documents_tbl.users_details.lname }}
-														</div>
-													</div>
-												</div>
-											</td>
-											<td class="px-3 py-2 whitespace-nowrap">
-												<div class="text-xs text-gray-900">{{ docs.documents_tbl.doc_type }} </div>
-												<div class="text-xs text-gray-500">{{ docs.documents_tbl.documents_particulars_tbl.length }} Particulars</div>
-												<div class="text-xs text-green-600">DTRAK No. {{ docs.documents_tbl.dtrack_no }}</div>
-												<p class="text-xs text-gray-900">{{ frontEndDateFormat(docs.created_at) }} </p>
-											</td>
-											
-											<!-- Details on Receiving Date etc -->
-											<td class="px-3 py-2 whitespace-nowrap text-gray-900">
-												<doc-destination style="font-size:.55rem;line-height:1rem;" :Destination="docs.forwarded_to"></doc-destination>	
-                                                <p class="text-xs">{{ frontEndDateFormat(docs.updated_at) }}</p>
-                                            </td>
-											<td class="px-3 py-2 whitespace-nowrap text-left text-xs font-medium">
-                                                <p class="text-xs text-gray-900">{{ dateDifference(docs.created_at,docs.updated_at) }} </p>
-                                            </td>
-
-											<td class="px-3 py-2 whitespace-nowrap text-left text-sm font-medium">
-												<a @click="ViewingModal = true, viewParticulars(docs.documents_tbl), toggleParticularsDocHistory()" class="text-green-500 hover:text-green-700 cursor-pointer">View <i class="fas fa-eye"></i> </a>
-											</td>
-										</tr>
-									</tbody>
-								</table>
-							</div>
-						</div>
-
-						<div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-							<pagination :links="Documents.links" :current_page="Documents.current_page" :prev_url="Documents.prev_page_url" :next_url="Documents.next_page_url" :total_page="Documents.last_page" :path="Documents.path"></pagination>
-						</div>
-					</div>
+											<img class="h-10 w-10 rounded-full" :src="'/storage/'+docs.documents_tbl.users_details.user.profile_photo_path" alt="">
+										</div>
+										<div class="ml-4">
+											<div class="text-sm font-medium text-gray-900">
+												<span v-if="docs.documents_tbl.users_details.gender == 'Male'">
+													Mr.
+												</span>	
+												<span v-else>
+													Ms.
+												</span>	
+												{{ docs.documents_tbl.users_details.lname }}
+											</div>
+										</div>
+									</div>
+								</td>
+								<td class="h-24 px-3 py-2 lg:h-full">
+									<div class="text-xs text-gray-900">{{ docs.documents_tbl.doc_type }} </div>
+									<div class="text-xs text-gray-500">{{ docs.documents_tbl.documents_particulars_tbl.length }} Particulars</div>
+									<div class="text-xs text-green-600">DTRAK No. {{ docs.documents_tbl.dtrack_no }}</div>
+									<p class="text-xs text-gray-900">{{ frontEndDateFormat(docs.created_at) }} </p>	
+								</td>
+								<!-- Details on Receiving Date etc -->
+								<td class="h-24 px-3 py-2 text-gray-900 lg:h-full">
+									<doc-destination style="font-size:.55rem;line-height:1rem;" :Destination="docs.forwarded_to"></doc-destination>	
+									<p class="text-xs">{{ frontEndDateFormat(docs.updated_at) }}</p>
+								</td>
+								<td class="h-16 px-3 py-2 lg:h-full text-gray-900">
+									<p class="text-xs text-gray-900">{{ dateDifference(docs.created_at,docs.updated_at) }} </p>
+								</td>
+								<td class="h-12 text-left px-3 py-2 lg:h-full text-sm font-medium">
+									<a @click="ViewingModal = true, viewParticulars(docs.documents_tbl), toggleParticularsDocHistory()" class="text-green-500 hover:text-green-700 cursor-pointer">View <i class="fas fa-eye"></i> </a>
+								</td>
+							</tr>
+						</tbody>
+					</table>
 				</div>
 			</div>
 		</div>
-
 
 		<!-- Modal for Viewing Document -->
 		<modal :show="ViewingModal" >
@@ -122,12 +106,12 @@
 							<div class="text-xs text-gray-500 font-light ml-auto">Created On: {{ frontEndDateFormat(SpecificDocData.created_at) }}</div>	
 						</div>
 					</section>
-					<section class="flex gap-x-4 px-5 mt-2" v-if="!ToggleDocsHistory_Particulars">
+					<section class="flex gap-x-4 px-5 mt-2 overflow-x-auto" v-if="!ToggleDocsHistory_Particulars">
 						<div class="py-2 align-middle inline-block min-w-full">
 							<section class="border-b text-gray-500 flex justify-between items-center">
 								<span class="text-1xl">Particulars</span><br>
 							</section>
-							<div class="overflow-hidden border border-gray-200 ">
+							<div class="border border-gray-200 ">
 								<table class="table-auto min-w-full divide-y divide-gray-200">
 									<thead class="bg-gray-50">
 										<tr>
@@ -151,8 +135,8 @@
 											</th>
 										</tr>
 									</thead>
-									<tbody class="bg-white divide-y divide-gray-200 text-purple-500 text-xs">
-										<tr v-for="(item, index) in SpecificDocData.documents_particulars_tbl" :key="item.created_at" class="hover:bg-purple-300 hover:text-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50">
+									<tbody class="bg-white divide-y divide-gray-200 text-green-500 text-xs">
+										<tr v-for="(item, index) in SpecificDocData.documents_particulars_tbl" :key="item.created_at" class="hover:bg-green-300 hover:text-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-opacity-50">
 											<td class="px-3 py-1">{{ forIndex(index) }}</td>
 											<td class="px-3 py-1">{{ item.Item }}</td>
 											<td class="px-3 py-1">{{ item.item_qty }}</td>
@@ -166,7 +150,7 @@
 						</div>
 					</section>
 
-					<section class="px-5 mt-2" v-if="ToggleDocsHistory_Particulars">
+					<section class="px-5 mt-2  overflow-x-auto" v-if="ToggleDocsHistory_Particulars">
 						<table class="table-auto min-w-full divide-y divide-gray-200">
 							<thead class="text-xs bg-gray-50">
 								<tr>

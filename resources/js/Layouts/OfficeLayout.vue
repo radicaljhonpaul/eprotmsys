@@ -25,11 +25,11 @@
                                 </jet-nav-link>
 
                                 <jet-nav-link :href="route('office.logged')" :active="route().current('office.logged')">
-                                    Logged Documents &nbsp; <i class="fas fa-file-import text-gray-800"></i>
+                                    Logged &nbsp; <i class="fas fa-file-import text-gray-800"></i>
                                 </jet-nav-link>
 
                                 <jet-nav-link :href="route('office.outgoing')" :active="route().current('office.outgoing')"> 
-                                    Forwarded Documents &nbsp; <i class="fas fa-file-export text-gray-800"></i>
+                                    Forwarded &nbsp; <i class="fas fa-file-export text-gray-800"></i>
                                 </jet-nav-link>
                             </div>
                         </div>
@@ -135,11 +135,11 @@
                         </jet-responsive-nav-link>
 
                         <jet-responsive-nav-link :href="route('office.logged')" :active="route().current('office.logged')">
-                            Logged Documents &nbsp; <i class="fas fa-file-import text-gray-800"></i>
+                            Logged &nbsp; <i class="fas fa-file-import text-gray-800"></i>
                         </jet-responsive-nav-link>
 
                         <jet-responsive-nav-link :href="route('office.outgoing')" :active="route().current('office.outgoing')"> 
-                            Forwarded Documents &nbsp; <i class="fas fa-file-export text-gray-800"></i>
+                            Forwarded &nbsp; <i class="fas fa-file-export text-gray-800"></i>
                         </jet-responsive-nav-link>
                     </div>
 
