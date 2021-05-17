@@ -42,3 +42,6 @@ If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Lar
 
 - May 14, 2021
 // Mobile Responsiveness My Docs, Logged and Forwarded
+
+- May 16, 2021
+// Notification List

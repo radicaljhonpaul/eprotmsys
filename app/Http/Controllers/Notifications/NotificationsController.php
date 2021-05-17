@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Notifications;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Auth;
@@ -17,26 +18,31 @@ class NotificationsController extends Controller
     //
     public function getUserNotifications()
     {
-        $data = NotificationsTbl::with('NotificationEventsTbl')
+        $data = NotificationsTbl::where('from', Auth::id())
+        ->orWhere('to', Auth::id())
+        ->get();
+
+        $array_id = [];
+        foreach ($data as $key) {
+            array_push($array_id, $key->id);
+        }
+
+        return NotificationsTbl::with('NotificationEventsTbl')
         ->with(['UsersDetails' => function($e){
             return $e->select('id','fname','lname','gender')->where('id', Auth::id())->get();
         }])
-        ->where('from', Auth::id())
-        ->orWhere('to', Auth::id())
-        // ->limit(5)
+        ->whereIn('id', $array_id)
+        ->where('is_open', 0)
         ->get();
-        
-        return $data;
     }
 
     public function readNotifications(Request $request)
     {
         DB::beginTransaction();
         try {
-            NotificationsTbl::where('id', $request->notif_id)->update(['is_open' => 'read']);
+            NotificationsTbl::where('id', $request->notif_id)->update(['is_open' => 1]);
             DB::commit();
-            return redirect()->back();
-
+            return 1;
         } catch (\Exception $e) {
             DB::rollback();
             return $e->getMessage();

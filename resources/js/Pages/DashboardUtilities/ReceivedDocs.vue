@@ -63,6 +63,7 @@
                 }, 0);
 
                 // Get Avg
+                console.log("DateDiffArray");
                 console.log(DateDiffArray);
 				return Mylib.dateAs(sum/DateDiffArray.length);
             }

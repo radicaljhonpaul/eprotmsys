@@ -83,150 +83,82 @@ let getOffices = (that,section,division) => {
 
 let dateDifference = (startDate,endDate) => {
   var duration = moment.duration(moment(endDate).diff(moment(startDate)));
-  var arr = [];
-  var days, hours, min, sec, milisec;
-  if(duration.asDays() < 1){
-      arr.push(1);
-      hours = duration.asHours();
-      arr.push(parseInt(hours));
-      if(hours % 1 > 0){
-          min = moment.duration(hours).asMinutes();
-          if(min % 1 > 0){
-              arr.push(parseInt(min));
+  var finalArr = [];
 
-              sec = moment.duration(min).asSeconds();
-              if(min % 1 > 0){
-                  arr.push(parseInt(sec));
-              }
-          }else;
-      }else;
+  console.log("duration");
+  console.log(duration);
+  console.log(duration.get('days'));
+  console.log(duration.get('hours'));
+  console.log(duration.get('minutes'));
+  console.log(duration.get('seconds'));
+  console.log(duration.get('milliseconds'));
 
-  }else{
-      arr.push(2);
-      arr.push(days);
-      hours = duration.asHours();
-      arr.push(parseInt(hours));
-      if(hours % 1 > 0){
-          min = moment.duration(hours).asMinutes();
-          if(min % 1 > 0){
-              arr.push(parseInt(min));
+  if(duration.get('days') > 0){
+    finalArr.push(duration.get('days')+' day(s) ');
+  }else;
 
-              sec = moment.duration(min).asSeconds();
-              if(min % 1 > 0){
-                  arr.push(parseInt(sec));
-              }
-          }else;
-      }else;
+  if(duration.get('hours') > 0){
+    finalArr.push(duration.get('hours')+' Hr(s) ');
+  }else;
+
+  if(duration.get('minutes') > 0){ 
+    finalArr.push(duration.get('minutes')+' min ');
+  }else;
+
+  if(duration.get('seconds') > 0){ 
+    finalArr.push(duration.get('seconds')+' sec ');
+  }else;
+
+  if(duration.get('milliseconds') > 0){ 
+    finalArr.push(duration.get('milliseconds')+' ms ');
+  }else;
+
+  var finalData="";
+  for(var i=0; i < finalArr.length; i++){
+    finalData = finalData.concat(finalArr[i]);
   }
-  console.log(arr);
 
-  if(arr[0] == 1){
-      return arr[1]+' Hrs, '+ arr[2]+' min, '+ arr[3]+' sec';
-  }else{
-      return arr[1]+' Days, '+ arr[2]+' Hrs,'+ arr[3]+' min';
-  }
+  return finalData;
 };
 
 let dateAs = (time) => {
   var duration = moment.duration(moment(time));
-  var arr = [];
-  var days, hours, min, sec, milisec;
-  if(duration.asDays() < 1){
-      arr.push(1);
-      hours = duration.asHours();
-      arr.push(parseInt(hours));
-      if(hours % 1 > 0){
-          min = moment.duration(hours).asMinutes();
-          if(min % 1 > 0){
-              arr.push(parseInt(min));
+  var finalArr = [];
 
-              sec = moment.duration(min).asSeconds();
-              if(min % 1 > 0){
-                  arr.push(parseInt(sec));
+  console.log("duration");
+  console.log(duration);
+  console.log(duration.get('days'));
+  console.log(duration.get('hours'));
+  console.log(duration.get('minutes'));
+  console.log(duration.get('seconds'));
+  console.log(duration.get('milliseconds'));
 
-                  milisec = moment.duration(sec).asMilliseconds();
-                  if(sec % 1 > 0){
-                      arr.push(parseInt(milisec));
-                  }
-              }
-          }else;
-      }else;
+  if(duration.get('days') > 0){
+    finalArr.push(duration.get('days')+' days ');
+  }else;
 
-  }else{
-      arr.push(2);
-      arr.push(days);
-      hours = duration.asHours();
-      arr.push(parseInt(hours));
-      if(hours % 1 > 0){
-          min = moment.duration(hours).asMinutes();
-          if(min % 1 > 0){
-              arr.push(parseInt(min));
+  if(duration.get('hours') > 0){
+    finalArr.push(duration.get('hours')+' Hrs ');
+  }else;
 
-              sec = moment.duration(min).asSeconds();
-              if(min % 1 > 0){
-                  arr.push(parseInt(sec));
+  if(duration.get('minutes') > 0){ 
+    finalArr.push(duration.get('minutes')+' min ');
+  }else;
 
-                  milisec = moment.duration(sec).asMilliseconds();
-                  if(sec % 1 > 0){
-                      arr.push(parseInt(milisec));
-                  }
-              }
-          }else;
-      }else;
+  if(duration.get('seconds') > 0){ 
+    finalArr.push(duration.get('seconds')+' sec ');
+  }else;
+
+  if(duration.get('milliseconds') > 0){ 
+    finalArr.push(duration.get('milliseconds')+' ms ');
+  }else;
+
+  var finalData="";
+  for(var i=0; i < finalArr.length; i++){
+    finalData = finalData.concat(finalArr[i]);
   }
-  console.log(arr);
-  if(arr[0] == 1){
-    var finalArr = [];
-    console.log("arr[0]");
-    if(arr[1] > 0){
-      finalArr.push(arr[1]+' Hrs ');
-    }else;
 
-    if(arr[2] > 0){
-      finalArr.push(arr[2]+' min ');
-    }else;
-
-    if(arr[3] > 0){
-      finalArr.push(arr[3]+' sec ');
-    }else;
-
-    if(arr[4] > 0){
-      finalArr.push(arr[4]+' ms ');
-    }else;
-
-    var finalData="";
-    for(var i=0; i < finalArr.length; i++){
-      finalData = finalData.concat(finalArr[i]);
-    }
-      return finalData;
-  }else{
-    console.log("arr[1]");
-    if(arr[1] > 0){
-      finalArr.push(arr[1]+' Days ');
-    }else;
-
-    if(arr[2] > 0){
-      finalArr.push(arr[2]+' Hrs ');
-    }else;
-
-    if(arr[3] > 0){
-      finalArr.push(arr[3]+' min ');
-    }else;
-
-    if(arr[4] > 0){
-      finalArr.push(arr[4]+' sec ');
-    }else;
-
-    if(arr[5] > 0){
-      finalArr.push(arr[5]+' ms ');
-    }else;
-
-    var finalData="";
-    for(var i=0; i < finalArr.length; i++){
-      finalData = finalData.concat(finalArr[i]);
-    }
-    return finalData;
-  }
+  return finalData;
 };
 
 var xport = {

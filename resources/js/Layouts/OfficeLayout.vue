@@ -113,12 +113,19 @@
 
                         <!-- Hamburger -->
                         <div class="-mr-2 flex items-center sm:hidden">
+                            <!-- Notif Dropdown -->
                             <button @click="showingNavigationDropdown = ! showingNavigationDropdown" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out">
                                 <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                                     <path :class="{'hidden': showingNavigationDropdown, 'inline-flex': ! showingNavigationDropdown }" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                                     <path :class="{'hidden': ! showingNavigationDropdown, 'inline-flex': showingNavigationDropdown }" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                                 </svg>
                             </button>
+                            <div class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out">
+                                <notification-list></notification-list>
+                            </div>
+
+                            
+
                         </div>
                     </div>
                 </div>
@@ -146,20 +153,20 @@
                     <!-- Responsive Settings Options -->
                     <div class="pt-4 pb-1 border-t border-gray-200">
                         <div class="flex items-center px-4">
-                            <div v-if="$page.props.jetstream.managesProfilePhotos" class="flex-shrink-0 mr-3" >
+                            <div v-if="$page.props.jetstream.managesProfilePhotos" class="flex-1-0 mr-3" >
                                 <img v-if="$page.props.user.profile_photo_path" class="h-8 w-8 border-2 border-gray-200 rounded-full object-cover" :src="'/storage/'+$page.props.user.profile_photo_path" :alt="$page.props.user.email" />
                                 <img v-if="$page.props.user.profile_photo_path == null && $page.props.UsersDetails[0].gender == 'Male'" class="h-8 w-8 border-2 border-gray-200 rounded-full object-cover" src="/images/no_profile_pic/male.gif">
                                 <img v-if="$page.props.user.profile_photo_path == null && $page.props.UsersDetails[0].gender == 'Female'" class="h-8 w-8 border-2 border-gray-200 rounded-full object-cover" src="/images/no_profile_pic/female.gif">
                             </div>
 
-                            <div>
+                            <div class="flex-1">
                                 <div class="font-medium text-base text-gray-800">
                                     {{ $page.props.UsersDetails[0].fname +' '+ $page.props.UsersDetails[0].lname}}
                                 </div>
                                 <div class="font-medium text-xs text-gray-500">{{ $page.props.UsersDetails[0].position }}</div>
                             </div>
                         </div>
-
+                        
                         <div class="mt-3 space-y-1">
                             <jet-responsive-nav-link :href="route('profile.show')" :active="route().current('profile.show')">
                                 Profile
