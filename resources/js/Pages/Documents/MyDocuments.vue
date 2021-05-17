@@ -35,24 +35,20 @@
 				<div class="w-full lg:flex lg:items-center lg:justify-between mt-2 mb-2">
 					<table class="w-full flex flex-row flex-no-wrap sm:bg-white overflow-hidden sm:shadow-lg my-5 border-2 border-blue-600 lg:border-0">
 						<thead class="flex-1 sm:flex-none text-xs bg-blue-600 text-white divide-y divide-blue-800">
-							<div v-if="Documents.data.length > 0">
-								<tr v-for="(item, index) in Documents.data" :key="index" class="flex flex-col flex-no-wrap sm:table-row mb-2 sm:mb-0">
-									<th class="h-24 px-3 py-2 text-left lg:h-full">Document</th>
-									<th class="h-16 px-3 py-2 text-left lg:h-full">Previous</th>
-									<th class="h-16 px-3 py-2 text-left lg:h-full">Current</th>
-									<th class="h-16 px-3 py-2 text-left lg:h-full">Destination</th>
-									<th class="h-12 px-3 py-2 text-left lg:h-full">Action </th>
-								</tr>
-							</div>
-							<div v-if="Documents.data.length == 0">
-								<tr class="flex flex-col flex-no-wrap sm:table-row mb-2 sm:mb-0">
-									<th class="h-24 px-3 py-2 text-left lg:h-full">Document</th>
-									<th class="h-16 px-3 py-2 text-left lg:h-full">Previous</th>
-									<th class="h-16 px-3 py-2 text-left lg:h-full">Current</th>
-									<th class="h-16 px-3 py-2 text-left lg:h-full">Destination</th>
-									<th class="h-12 px-3 py-2 text-left lg:h-full">Action </th>
-								</tr>
-							</div>
+							<tr v-show="Documents.data.length > 0" v-for="(item, index) in Documents.data" :key="index" class="flex flex-col flex-no-wrap sm:table-row mb-2 sm:mb-0">
+								<th class="h-24 px-3 py-2 text-left lg:h-full">Document</th>
+								<th class="h-16 px-3 py-2 text-left lg:h-full">Previous</th>
+								<th class="h-16 px-3 py-2 text-left lg:h-full">Current</th>
+								<th class="h-16 px-3 py-2 text-left lg:h-full">Destination</th>
+								<th class="h-12 px-3 py-2 text-left lg:h-full">Action </th>
+							</tr>
+							<tr v-if="Documents.data.length == 0" class="flex flex-col flex-no-wrap sm:table-row mb-2 sm:mb-0">
+								<th class="h-24 px-3 py-2 text-left lg:h-full">Document</th>
+								<th class="h-16 px-3 py-2 text-left lg:h-full">Previous</th>
+								<th class="h-16 px-3 py-2 text-left lg:h-full">Current</th>
+								<th class="h-16 px-3 py-2 text-left lg:h-full">Destination</th>
+								<th class="h-12 px-3 py-2 text-left lg:h-full">Action </th>
+							</tr>
 						</thead>
 						<tbody class="flex-1 sm:flex-none bg-white divide-y divide-blue-800 lg:divide-y lg:divide-gray-200">
 							<tr v-if="!Documents.data.length">
@@ -61,7 +57,7 @@
 								</td>
 							</tr>
 							<tr v-show="Documents.data.length > 0" v-for="(item, index) in Documents.data" :key="index" class="flex flex-col flex-no-wrap sm:table-row mb-2 sm:mb-0">
-								<td class="h-24 px-3 py-2 lg:h-full">
+								<td class="h-24 px-3 py-2 text-left lg:h-full">
 									<div class="text-xs text-gray-900">{{ item.doc_type }} </div>
 									<div class="text-xs text-gray-500">{{ item.documents_particulars_tbl.length }} Particulars</div>
 									<div class="text-xs text-blue-600">DTRAK No. {{ item.dtrack_no }}</div>
@@ -74,13 +70,13 @@
 								</td>
 
 								<!-- if there are exactly 2 ka logs -->
-								<td v-if="item.documents_status_log_tbl.length > 1" class="h-16 px-3 py-2 lg:h-full" style="font-size:.55rem;line-height:1rem;">
+								<td v-if="item.documents_status_log_tbl.length > 1" class="h-16 px-3 py-2 text-left lg:h-full" style="font-size:.55rem;line-height:1rem;">
 									<doc-location class="text-red-500" v-if="item.documents_status_log_tbl[1] != null" :Division="item.documents_status_log_tbl[1].division" :Cluster="item.documents_status_log_tbl[1].cluster" :Office="item.documents_status_log_tbl[1].office" :Type="1"></doc-location>
 								</td>
-								<td v-if="item.documents_status_log_tbl.length > 1" class="h-16 px-3 py-2 lg:h-full" style="font-size:.55rem;line-height:1rem;">
+								<td v-if="item.documents_status_log_tbl.length > 1" class="h-16 px-3 py-2 text-left lg:h-full" style="font-size:.55rem;line-height:1rem;">
 									<doc-location class="text-yellow-500" v-if="item.documents_status_log_tbl[0] != null" :Division="item.documents_status_log_tbl[0].division" :Cluster="item.documents_status_log_tbl[0].cluster" :Office="item.documents_status_log_tbl[0].office" :Type="1"></doc-location>
 								</td>
-								<td v-if="item.documents_status_log_tbl.length > 1" class="h-16 px-3 py-2 lg:h-full" style="font-size:.55rem;line-height:1rem;">
+								<td v-if="item.documents_status_log_tbl.length > 1" class="h-16 px-3 py-2 text-left lg:h-full" style="font-size:.55rem;line-height:1rem;">
 									<doc-destination class="text-pink-500" v-if="item.documents_status_log_tbl[0] != null && item.documents_status_log_tbl[0].forwarded_to != null" :Destination="item.documents_status_log_tbl[0].forwarded_to"></doc-destination>
 									<p v-if="item.documents_status_log_tbl[0] != null && item.documents_status_log_tbl[0].forwarded_to == null">
 										<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-500 text-white">
@@ -90,17 +86,17 @@
 								</td>
 
 								<!-- if there are exactly 1 ka logs -->
-								<td v-if="item.documents_status_log_tbl.length == 1" class="h-16 px-3 py-2 lg:h-full" style="font-size:.55rem;line-height:1rem;">
+								<td v-if="item.documents_status_log_tbl.length == 1" class="h-16 px-3 py-2 text-left lg:h-full" style="font-size:.55rem;line-height:1rem;">
 									<doc-location class="text-red-500" v-if="item.documents_status_log_tbl[0] != null" :Division="item.documents_status_log_tbl[0].division" :Cluster="item.documents_status_log_tbl[0].cluster" :Office="item.documents_status_log_tbl[0].office" :Type="1"></doc-location>
 								</td>
-								<td v-if="item.documents_status_log_tbl.length == 1" class="h-16 px-3 py-2 lg:h-full" style="font-size:.55rem;line-height:1rem;">
+								<td v-if="item.documents_status_log_tbl.length == 1" class="h-16 px-3 py-2 text-left lg:h-full" style="font-size:.55rem;line-height:1rem;">
 									<doc-location class="text-yellow-500" v-if="item.documents_status_log_tbl[0] != null" :Division="item.documents_status_log_tbl[0].division" :Cluster="item.documents_status_log_tbl[0].cluster" :Office="item.documents_status_log_tbl[0].office" :Type="1"></doc-location>
 								</td>
-								<td v-if="item.documents_status_log_tbl.length == 1" class="h-16 px-3 py-2 lg:h-full" style="font-size:.55rem;line-height:1rem;">
+								<td v-if="item.documents_status_log_tbl.length == 1" class="h-16 px-3 py-2 text-left lg:h-full" style="font-size:.55rem;line-height:1rem;">
 									<doc-destination class="text-pink-500" v-if="item.documents_status_log_tbl[0] != null && item.documents_status_log_tbl[0].forwarded_to != null" :Destination="item.documents_status_log_tbl[0].forwarded_to"></doc-destination>
 								</td>
 
-								<td class="h-12 text-left px-3 py-2 lg:h-full lg:text-center text-sm font-medium">
+								<td class="h-12 px-3 py-2 text-left lg:h-full lg:text-center text-sm font-medium">
 									<a @click="ViewingModal = true, viewParticulars(item)" class="text-blue-600 hover:text-blue-800 cursor-pointer">View <i class="fas fa-eye"></i> </a>
 								</td>
 							</tr>

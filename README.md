@@ -45,3 +45,5 @@ If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Lar
 
 - May 16, 2021
 // Notification List
+// Fixing Conflicts App.js - mix-manifest.json
+// Fix UI MyDocuments.vue
