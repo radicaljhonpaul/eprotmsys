@@ -53,3 +53,4 @@ If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Lar
 // Rap2hpoutre\FastExcel\FastExcel for exporting and Importing via PHP
 // Installed vue-excel-xlsx for exporting via javascript
 // Exporting functionalities
+//
