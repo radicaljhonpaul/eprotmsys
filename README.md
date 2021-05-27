@@ -47,3 +47,9 @@ If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Lar
 // Notification List
 // Fixing Conflicts App.js - mix-manifest.json
 // Fix UI MyDocuments.vue
+
+
+- May 25, 2021
+// Rap2hpoutre\FastExcel\FastExcel for exporting and Importing via PHP
+// Installed vue-excel-xlsx for exporting via javascript
+// Exporting functionalities

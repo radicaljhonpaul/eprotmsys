@@ -1,58 +1,59 @@
 <template>
-<div class="min-h-screen flex sm:justify-center items-center pt-6 sm:pt-0">
-    <div class="md:flex md:w-1/2 lg:w-1/2 xl:w-1/2">
-        <div class="md:flex-1 p-4 rounded self-center">
+<div class="lg:flex">
+    <div class="lg:w-1/2 xl:max-w-screen-sm">
+        <div class="py-12 bg-purple-100 lg:bg-white flex justify-center lg:justify-start lg:px-12">
+            <div class="cursor-pointer flex items-center">
+                <img class="fill-current" style="height:80px;width:80px;" src="/images/eprotrackmonsys.png">
+                <div class="text-2xl text-purple-800 tracking-wide ml-2 font-semibold">
+                    ePROTrailMIS
+                    <p class="text-xs text-gray-500 mt-0">e-PR/PO Trailing & Monitoring Information System</p>
+                </div>
+            </div>
+        </div>
+        <div class="mt-10 px-12 sm:px-24 md:px-48 lg:px-12 lg:mt-16 xl:px-24 xl:max-w-2xl">
             <jet-validation-errors class="mb-4" />
 
-            <h1 class="xs:text-xs xl:text-5xl lg:text-5xl text-gray-600 text-center font-sans font-family: font-bold leading-tight">
-                <img class="object-contain h-48 w-full" src="/images/eprotrackmonsys.png">
-                PROTrailMIS
-            </h1>
-
-            <p class="xs:text-xs xl:text-xl text-green-400 text-center font-sans leading-tight my-8 hover:font-bold hover:border-purple-800 hover:text-purple-800">
-                <a :href="route('register')">
-                    Don't have an account?
-                </a>
-            </p>
-
-        </div>
-    </div>
-
-    <div class="md:flex md:w-1/2 lg:w-1/2 xl:w-1/2">
-        <div class="max-w-md w-full space-y-8">
             <div v-if="status" class="mb-4 font-medium text-sm text-green-600">
                 {{ status }}
             </div>
 
-            <form @submit.prevent="submit">
-                <div class="text-gray-600">
-                    <jet-label for="email" value="Email" />
-                    <jet-input id="email" type="email" class="mt-1 block w-full" v-model="form.email" required autofocus />
+            <div class="mt-12">
+                <form @submit.prevent="submit">
+                    <div>
+                        <div for="email" class="text-sm font-bold text-gray-700 tracking-wide">Email Address</div>
+                        <input id="email" class="w-full text-lg py-2 border-b border-purple-300 focus:outline-none text-purple-500 focus:border-purple-500" type="email" v-model="form.email" placeholder="ceojhonpaul@gmail.com" required autofocus>
+                    </div>
+                    <div class="mt-8">
+                        <div class="flex justify-between items-center">
+                            <div for="password" class="text-sm font-bold text-gray-700 tracking-wide">
+                                Password
+                            </div>
+                            <div>
+                                <span class="text-xs font-display font-semibold text-purple-600 hover:text-purple-800
+                                cursor-pointer">
+                                    <inertia-link v-if="canResetPassword" :href="route('password.request')">
+                                        Forgot your password?
+                                    </inertia-link>
+                                </span>
+                            </div>
+                        </div>
+                        <input id="password" class="w-full text-lg py-2 border-b border-purple-300 text-purple-500 focus:outline-none focus:border-purple-500" type="password" placeholder="Enter your password" v-model="form.password" required autocomplete="current-password">
+                    </div>
+                    <div class="mt-10">
+                        <button class="bg-purple-500 text-gray-100 p-4 w-full rounded-full tracking-wide
+                        font-semibold font-display focus:outline-none focus:shadow-outline hover:bg-purple-600
+                        shadow-lg" type="submit" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                            Sign In <i class="fas fa-sign-in"></i>
+                        </button>
+                    </div>
+                </form>
+                <div class="mt-12 text-sm font-display font-semibold text-gray-700 text-center">
+                    Don't have an account ? <a class="cursor-pointer text-purple-600 hover:text-purple-800" :href="route('register')">Sign up</a>
                 </div>
-
-                <div class="mt-4 text-gray-600">
-                    <jet-label for="password" value="Password" />
-                    <jet-input id="password" type="password" class="mt-1 block w-full" v-model="form.password" required autocomplete="current-password" />
-                </div>
-
-                <div class="block mt-4">
-                    <label class="flex items-center">
-                        <jet-checkbox name="remember" v-model:checked="form.remember" />
-                        <span class="ml-2 text-sm text-gray-600">Remember me</span>
-                    </label>
-                </div>
-
-                <div class="flex items-center justify-end mt-4">
-                    <inertia-link v-if="canResetPassword" :href="route('password.request')" class="underline text-sm text-gray-600 hover:text-gray-900">
-                        Forgot your password?
-                    </inertia-link>
-
-                    <jet-button class="ml-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                        Log in
-                    </jet-button>
-                </div>
-            </form>
+            </div>
         </div>
+    </div>
+    <div class="hidden lg:flex items-center justify-center flex-1 h-screen" style="background-image: url('/images/login/Docs.jpg'); background-repeat: no-repeat; background-size: cover;">
     </div>
 </div>
 </template>

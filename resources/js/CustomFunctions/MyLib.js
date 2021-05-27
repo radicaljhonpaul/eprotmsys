@@ -20,6 +20,8 @@ let closeModal = (that, type) => {
       that.ForwardingModal = false;
     }else if(type == 4){
       that.CreateDocumentModal = false;
+    }else if(type == 5){
+      that.FilteringModal = false;
     }
 };
 
@@ -85,13 +87,9 @@ let dateDifference = (startDate,endDate) => {
   var duration = moment.duration(moment(endDate).diff(moment(startDate)));
   var finalArr = [];
 
-  console.log("duration");
-  console.log(duration);
-  console.log(duration.get('days'));
-  console.log(duration.get('hours'));
-  console.log(duration.get('minutes'));
-  console.log(duration.get('seconds'));
-  console.log(duration.get('milliseconds'));
+  if(startDate == endDate){
+    return "0 sec";
+  }
 
   if(duration.get('days') > 0){
     finalArr.push(duration.get('days')+' day(s) ');
@@ -125,14 +123,6 @@ let dateAs = (time) => {
   var duration = moment.duration(moment(time));
   var finalArr = [];
 
-  console.log("duration");
-  console.log(duration);
-  console.log(duration.get('days'));
-  console.log(duration.get('hours'));
-  console.log(duration.get('minutes'));
-  console.log(duration.get('seconds'));
-  console.log(duration.get('milliseconds'));
-
   if(duration.get('days') > 0){
     finalArr.push(duration.get('days')+' days ');
   }else;
@@ -161,6 +151,106 @@ let dateAs = (time) => {
   return finalData;
 };
 
+let locationForExporting = (destination) => {
+  if(destination == null){
+    return "Not Applicable";
+  }else{
+    var data_arr = destination.split(',');
+
+    var division = [
+        "",
+        "RD/ARD",
+        "LHSD",
+        "MSD",
+        "RLED",
+    ]
+
+    var cluster = [
+        "",
+        "GOVERNANCE CLUSTER",
+        "INFECTIOUS CLUSTER",
+        "FAMILY HEALTH CLUSTER",
+        "NonCom/NVBSP/ENVIRONMENTAL CLUSTER",
+        "FINANCE SECTION",
+    ]
+
+    var office = [
+        "",
+        "RD's Office",
+        "ARD's Office",
+        "Planning",
+        "PACD",
+        "Legal",
+        "QMS",
+        "RESU-HEMS",
+        "RESEARCH",
+        "PolyClinic",
+        "PDOHO-ADN",
+        "CDOHO",
+        "PDOHO-ADS",
+        "PDOHO-PDI",
+        "PDOHO-SDN",
+        "PDOHO-SDS",
+        "LHSD Division Chief Office",
+        "Governance Cluster Head Office",
+        "BHW",
+        "IP-GIDA",
+        "LIPH",
+        "UHC & HLGP",
+        "PD",
+        "MAIP",
+        "HFEP",
+        "Helpline Desk",
+        "Infectious Cluster",
+        "Rabies & Leprosy",
+        "HIV",
+        "TB",
+        "Filariasis/Schisto/STH/FWBD",
+        "Malaria",
+        "EREID",
+        "Dengue",
+        "Hospital Operations",
+        "Family Health Cluster Head Office",
+        "MNCHN",
+        "FP",
+        "EPI and Child Injury",
+        "NBS",
+        "Adolescent",
+        "Nutrition",
+        "Oral Health",
+        "Sr. Citizen",
+        "NonCom/NVBSP/Environmental Cluster Head Office",
+        "NonCommunicable Diseases",
+        "Person with Disability",
+        "Environmental & Occupational Health",
+        "NVBSP",
+        "MSD Division Chief Office",
+        "Health Promotion",
+        "HRDMU",
+        "KMICT/Records",
+        "BACSec",
+        "Procurement Unit",
+        "Finance Receiving Office",
+        "Cashier",
+        "Accounting",
+        "Budget",
+        "Supply Unit",
+        "Transport",
+        "General Services",
+        "GAD",
+        "RLED Division Chief"
+    ]
+
+    if(data_arr[1] == 0){
+        return division[data_arr[0]] +"-"+ office[data_arr[2]];
+    }else if(data_arr[2] == 0){
+        return division[data_arr[0]] +"-"+ cluster[data_arr[1]];
+    }else{
+        return division[data_arr[0]] +"-"+ cluster[data_arr[1]] +"-"+ office[data_arr[2]];
+    }
+  }
+};
+
 var xport = {
   closeModal: closeModal,
   viewParticulars: viewParticulars,
@@ -172,6 +262,7 @@ var xport = {
   getOfficesCluster: getOfficesCluster,
   getOffices: getOffices,
   dateAs: dateAs,
+  locationForExporting: locationForExporting,
 };
 
 export default xport;

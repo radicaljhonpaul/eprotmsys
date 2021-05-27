@@ -27,6 +27,7 @@ use App\Models\OfficesOffice;
 use App\Events\CreateDocument;
 use App\Events\LogDocument;
 use App\Events\RouteDocument;
+use Rap2hpoutre\FastExcel\FastExcel;
 
 class DocumentController extends Controller
 {
@@ -95,7 +96,7 @@ class DocumentController extends Controller
     {
         ob_start('ob_gzhandler');
         $UsersDetails = UsersDetails::select('id','division','office','cluster')->where('user_id_fk',Auth::id())->get();
-        $origin = $UsersDetails[0]->division.','.$UsersDetails[0]->cluster.','.$UsersDetails[0]->office;
+        $location = $UsersDetails[0]->division.','.$UsersDetails[0]->cluster.','.$UsersDetails[0]->office;
 
         return Inertia::render('Documents/Incoming', [
             'Documents' => DocumentsTbl::with('DocumentsParticularsTbl')
@@ -112,7 +113,7 @@ class DocumentController extends Controller
                 }])
                 ->orderBy('updated_at','desc')
                 ->where('is_received',1)
-                ->where('doc_current_location',$origin)
+                ->where('doc_current_location',$location)
                 ->paginate(5),
 
             'UsersDetails' => UsersDetails::where('user_id_fk',Auth::id())->get(),
@@ -134,7 +135,7 @@ class DocumentController extends Controller
                     }]);
             }])
             ->where('is_received',0)
-            ->where('forwarded_to',$origin)
+            ->where('forwarded_to',$location)
             ->get(),
         ]);
         ob_end_flush();
@@ -144,15 +145,17 @@ class DocumentController extends Controller
     public function logdoc(Request $request)
     {
         DB::beginTransaction();
-        try {
+        try {$request;
             // Save Latest Document Status Before Receiving
             $DocumentsStatusLogTbl_Previous = DocumentsStatusLogTbl::where('dtrack_id_fk',$request->logDtrackNo)->latest()->limit(1)->get();
             // Get Users Details
             $Current_User = UsersDetails::select('id','division','cluster','office','fname','lname')->where('user_id_fk',Auth::id())->get();
             $location = $Current_User[0]->division.','.$Current_User[0]->cluster.','.$Current_User[0]->office;
             $document = DocumentsTbl::select('id','dtrack_no','doc_type','updated_at')->where('dtrack_no', $request->logDtrackNo)->latest()->get();
+            // Get the latest table with the same Dtrack Number
+            $latest_id = DocumentsTbl::select('id')->where('dtrack_no', $request->logDtrackNo)->latest('id')->limit(1)->get();
             // Update Document Table
-            DocumentsTbl::where('dtrack_no', $request->logDtrackNo)->where('final_status', 'Processing')->update(['doc_current_location' => $location, 'is_received' => 1, 'forwarded_to' => null]);
+            DocumentsTbl::where('id', $latest_id[0]->id)->update(['doc_current_location' => $location, 'is_received' => 1, 'forwarded_to' => null]);
             // Update Document Logs Table
             $documentsStatusLogs = new DocumentsStatusLogTbl;
             $documentsStatusLogs->doc_id = $document[0]->id;
@@ -216,12 +219,11 @@ class DocumentController extends Controller
             $EndUser = DocumentsTbl::select('id','doc_end_user')->where('dtrack_no',$request->DtrakNoHolder)->get();
             // If PO Numbering na
             if($request->DocumentMutationTo != null){
-
                 // Set PR to Completed
-                DocumentsTbl::where('dtrack_no', $request->DtrakNoHolder)->update(['doc_current_location' => $location, 'doc_current_status' => 'Accomplished PR - Processing for PO', 'forwarded_to' => $forwarded_to, 'final_status' => 'Completed']);
+                DocumentsTbl::where('dtrack_no', $request->DtrakNoHolder)->update(['doc_current_location' => $location, 'doc_current_status' => 'Approved PR', 'forwarded_to' => $forwarded_to, 'final_status' => 'Completed']);
 
                 // Update DocumentsMutationLogTbl
-                // DocumentsMutationLogTbl::where('dtrack_id_fk', $request->DtrakNoHolder)->update(['doc_to' => $request->DocumentMutationTo, 'doc_type_to' => 'Purchase Order']);
+                DocumentsMutationLogTbl::where('dtrack_id_fk', $request->DtrakNoHolder)->update(['doc_to' => $request->DocumentMutationTo, 'doc_type_to' => 'Purchase Order']);
                 $documents = new DocumentsTbl;
                 $documents->dtrack_no = $request->DtrakNoHolder;
                 $documents->doc_type = 'Purchase Order';
@@ -244,24 +246,28 @@ class DocumentController extends Controller
                 $documentsStatusLogs->status = "forwarded";
                 $documentsStatusLogs->save();
 
-
                 if($request->CreateDocfile != null && sizeof($request->CreateDocfile) > 0){
                     // Img Logs
                     $this->storeDocAttachements($request->CreateDocfile, $location, $documentsStatusLogs->id, $request->DtrakNoHolder);
                 }else;
+
             }else{
-            // If dili pa PO Numbering
-                
+                // If dili PO Numbering
+
                 $document = DocumentsTbl::select('id','dtrack_no','doc_type','updated_at')->where('dtrack_no', $request->DtrakNoHolder)->latest()->get();
+                // return $document[0]->doc_type;
                 // Check if PO and if Naa na sa RD or ARD
-                if($location == '1,0,1' || $location == '1,0,2' && $document[0]->doc_type == 'Purchase Order'){
+                if($location == '1,0,1' && $document[0]->doc_type == 'Purchase Order'){
                     // Update Document
-                    DocumentsTbl::where('id', $document[0]->id)->where('dtrack_no', $request->DtrakNoHolder)->update(['doc_current_location' => $location, 'is_received' => 0, 'doc_current_status' => 'Accomplished PO', 'forwarded_to' => $forwarded_to, 'final_status' => 'Completed']);
-                }else{
+                    DocumentsTbl::where('id', $document[0]->id)->where('dtrack_no', $request->DtrakNoHolder)->update(['doc_current_location' => $location, 'is_received' => 0, 'doc_current_status' => 'Approved PO', 'forwarded_to' => $forwarded_to, 'final_status' => 'Completed']);
+                }elseif($location == '1,0,2' && $document[0]->doc_type == 'Purchase Order'){
+                    // return "ARD";
                     // Update Document
+                    DocumentsTbl::where('id', $document[0]->id)->where('dtrack_no', $request->DtrakNoHolder)->update(['doc_current_location' => $location, 'is_received' => 0, 'doc_current_status' => 'Approved PO', 'forwarded_to' => $forwarded_to, 'final_status' => 'Completed']);
+                }else{                    // Update Document
+                    // return "none of the above";
                     DocumentsTbl::where('id', $document[0]->id)->where('dtrack_no', $request->DtrakNoHolder)->update(['doc_current_location' => $location, 'is_received' => 0, 'doc_current_status' => $request->ForwardDocAction, 'forwarded_to' => $forwarded_to]);
                 }
-                
                 // Documents Logs
                 DocumentsStatusLogTbl::where('id', $current_id[0]->id)->update(['document_status' => $request->ForwardDocAction, 'doc_notes' => $request->ForwardDocNote, 'forwarded_to' => $forwarded_to, 'receiver_id' => $request->SpecificUserData, 'status' => 'forwarded']);
                 
@@ -339,11 +345,8 @@ class DocumentController extends Controller
     // Custom funct - Forwarded
     public function outgoing(Request $request)
     {
-        
         ob_start('ob_gzhandler');
         $UsersDetails = UsersDetails::select('id','division','office','cluster')->where('user_id_fk',Auth::id())->get();
-        $origin = $UsersDetails[0]->division.','.$UsersDetails[0]->cluster.','.$UsersDetails[0]->office;
-
         // Get all 
         return Inertia::render('Documents/Outgoing', [
             'Documents' => DocumentsStatusLogTbl::with('DocumentsTbl')
@@ -373,11 +376,43 @@ class DocumentController extends Controller
         ob_end_flush();
 
     }
-    /**
-     * Show the form for creating a new Document
-     *
-     * @return \Illuminate\Http\Response
-     */
+
+    // Custom funct - Documents Reporting/History
+    public function docsHistory(Request $request)
+    {
+        ob_start('ob_gzhandler');
+        // Documents History
+        $UsersDetails = UsersDetails::select('id','division','office','cluster')->where('user_id_fk',Auth::id())->get();
+        return Inertia::render('Documents/DocumentsHistory', [
+            'Documents' => DocumentsStatusLogTbl::leftJoin('documents', 'documents_status_logs.doc_id', '=', 'documents.id')
+                ->select('documents_status_logs.*','documents.doc_type',)
+                ->with('DocumentsTbl')
+                ->with(['DocumentsTbl' => function($query){
+                    return $query->with(['UsersDetails' => function($udetails){
+                        $udetails->select('id','fname','mname','lname','position','contact','cluster','office','division','user_id_fk')
+                        ->with(['User' => function($user){
+                            return $user->select('id','profile_photo_path');
+                        }])
+                        ->get();
+                    }])
+                    ->with(['DocumentsStatusLogTbl' => function($docsStat){
+                        return $docsStat->with('ImgLogsTbl')->orderByDesc('id')->get();
+                    }])
+                    ->with('DocumentsParticularsTbl')
+                    ->get();
+                }])
+                ->orderBy('id','desc')
+                ->where('division',$UsersDetails[0]->division)
+                ->where('cluster',$UsersDetails[0]->cluster)
+                ->where('office',$UsersDetails[0]->office)
+                ->paginate(5),
+                
+            'UsersDetails' => UsersDetails::where('user_id_fk',Auth::id())->get(),
+        ]);
+        ob_end_flush();
+    }
+
+    // Show the form for creating a new Document
     public function create(Request $request)
     {
         DB::beginTransaction();
@@ -416,7 +451,7 @@ class DocumentController extends Controller
                 $this->storeDocAttachements($request->CreateDocfile, $DocOrigin, $documentsStatusLogs->id, $request->CreateDtrackNo);
             }else;
 
-            if($request->CreateDocType == "Purchase Request"){
+            if($request->CreateDocType == "Purchase Request" && sizeof($request->CreateParticularsArray) > 0){
                 $this->storeDocParticulars($request->CreateParticularsArray, $request->CreateDtrackNo);
             }else;
 
@@ -439,7 +474,6 @@ class DocumentController extends Controller
             return $e->getMessage();
         }
     }
-
     
     public function searchDocuments(Request $request)
     {
@@ -538,7 +572,9 @@ class DocumentController extends Controller
     
             // Get all 
             return Inertia::render($request->RedirectComponent, [
-                'Documents' => DocumentsStatusLogTbl::with('DocumentsTbl')
+                'Documents' => DocumentsStatusLogTbl::leftJoin('documents', 'documents_status_logs.doc_id', '=', 'documents.id')
+                    ->select('documents_status_logs.*','documents.doc_type',)
+                    ->with('DocumentsTbl')
                     ->with(['DocumentsTbl' => function($query){
                         return $query->with(['UsersDetails' => function($udetails){
                             $udetails->select('id','fname','mname','lname','position','contact','cluster','office','division','user_id_fk')
@@ -554,6 +590,7 @@ class DocumentController extends Controller
                         ->get();
                     }])
                     ->where('dtrack_id_fk', 'LIKE', '%' . $request->SearchDoc . '%')
+                    ->orWhere('doc_type', 'LIKE', '%' . $request->SearchDoc . '%')
                     ->where('division',$UsersDetails[0]->division)
                     ->where('cluster',$UsersDetails[0]->cluster)
                     ->where('office',$UsersDetails[0]->office)
@@ -563,9 +600,88 @@ class DocumentController extends Controller
                 'UsersDetails' => UsersDetails::where('user_id_fk',Auth::id())->get(),
             ]);
         };
+
+        // 2 Props
+        if($request->RedirectComponent == 'Documents/DocumentsHistory'){
+            $UsersDetails = UsersDetails::select('id','division','office','cluster')->where('user_id_fk',Auth::id())->get();
+            return Inertia::render('Documents/DocumentsHistory', [
+                'Documents' => DocumentsStatusLogTbl::leftJoin('documents', 'documents_status_logs.doc_id', '=', 'documents.id')
+                    ->select('documents_status_logs.*','documents.doc_type',)
+                    ->with('DocumentsTbl')
+                    ->with(['DocumentsTbl' => function($query){
+                        return $query->with(['UsersDetails' => function($udetails){
+                            $udetails->select('id','fname','mname','lname','position','contact','cluster','office','division','user_id_fk')
+                            ->with(['User' => function($user){
+                                return $user->select('id','profile_photo_path');
+                            }])
+                            ->get();
+                        }])
+                        ->with(['DocumentsStatusLogTbl' => function($docsStat){
+                            return $docsStat->with('ImgLogsTbl')->orderByDesc('id')->get();
+                        }])
+                        ->with('DocumentsParticularsTbl')
+                        ->get();
+                    }])
+                    ->orderBy('id','desc')
+                    ->where('dtrack_id_fk', 'LIKE', '%' . $request->SearchDoc . '%')
+                    ->orWhere('doc_type', 'LIKE', '%' . $request->SearchDoc . '%')
+                    ->where('division',$UsersDetails[0]->division)
+                    ->where('cluster',$UsersDetails[0]->cluster)
+                    ->where('office',$UsersDetails[0]->office)
+                    ->paginate(5),
+                    
+                'UsersDetails' => UsersDetails::where('user_id_fk',Auth::id())->get(),
+            ]);
+        };
         ob_end_flush();
     }
 
+    public function getFilteredDocumentsHistory(Request $request)
+    {
+        ob_start('ob_gzhandler');
+        // Documents History
+        // return $request;
+        $UsersDetails = UsersDetails::select('id','division','office','cluster')->where('user_id_fk',Auth::id())->get();
+        $DocumentsHistory = DocumentsStatusLogTbl::leftJoin('documents', 'documents_status_logs.doc_id', '=', 'documents.id')
+        ->select('documents_status_logs.*','documents.doc_type',)
+        ->with('DocumentsTbl')
+        ->with(['DocumentsTbl' => function($query){
+            return $query->with(['UsersDetails' => function($udetails){
+                $udetails->select('id','fname','mname','lname','position','contact','cluster','office','division','user_id_fk')
+                ->with(['User' => function($user){
+                    return $user->select('id','profile_photo_path');
+                }])
+                ->get();
+            }])
+            ->with(['DocumentsStatusLogTbl' => function($docsStat){
+                return $docsStat->with('ImgLogsTbl')->orderByDesc('id')->get();
+            }])
+            ->with('DocumentsParticularsTbl')
+            ->get();
+        }])
+        ->where('division',$UsersDetails[0]->division)
+        ->where('cluster',$UsersDetails[0]->cluster)
+        ->where('office',$UsersDetails[0]->office);
+        
+        if($request->has('date_from') && $request->date_from != null) {
+            $DocumentsHistory->whereDate('created_at', '>=', date($request->date_from));
+        }
+
+        if ($request->has('date_to') && $request->date_to != null) {
+            $DocumentsHistory->whereDate('created_at', '<=', date($request->date_to));
+        }
+
+        if ($request->has('doc_type') && $request->doc_type != null) {
+            $DocumentsHistory->where('doc_type', 'LIKE', '%' . $request->doc_type . '%');
+        }
+
+        return Inertia::render('Documents/DocumentsHistory', [
+            'Documents' => $DocumentsHistory->paginate(5),
+            'UsersDetails' => UsersDetails::where('user_id_fk',Auth::id())->get(),
+        ]);
+        ob_end_flush();
+    }
+    
     public function storeNotification($event_type, $event_text, $from, $to, $dtrack_no)
     {
         /** Create Document 
@@ -665,7 +781,27 @@ class DocumentController extends Controller
             return $gender = 'Ms.';
         }
     }
-    /**
+
+    public function semaphoreAPI($number,$message,$apicode){
+        $ch = curl_init();
+        $parameters = array(
+            'apikey' => $apicode, //Your API KEY
+            'number' => $number,
+            'message' => $message,
+            'sendername' => 'SEMAPHORE'
+        );
+        curl_setopt( $ch, CURLOPT_URL,'https://semaphore.co/api/v4/messages' );
+        curl_setopt( $ch, CURLOPT_POST, 1 );
+
+        //Send the parameters set above with the request
+        curl_setopt( $ch, CURLOPT_POSTFIELDS, http_build_query( $parameters ) );
+        // Receive response from server
+        curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+        $output = curl_exec( $ch );
+        curl_close ($ch);
+    }
+
+/**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -721,22 +857,4 @@ class DocumentController extends Controller
         //
     }
 
-    public function semaphoreAPI($number,$message,$apicode){
-        $ch = curl_init();
-        $parameters = array(
-            'apikey' => $apicode, //Your API KEY
-            'number' => $number,
-            'message' => $message,
-            'sendername' => 'SEMAPHORE'
-        );
-        curl_setopt( $ch, CURLOPT_URL,'https://semaphore.co/api/v4/messages' );
-        curl_setopt( $ch, CURLOPT_POST, 1 );
-
-        //Send the parameters set above with the request
-        curl_setopt( $ch, CURLOPT_POSTFIELDS, http_build_query( $parameters ) );
-        // Receive response from server
-        curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-        $output = curl_exec( $ch );
-        curl_close ($ch);
-    }
 }

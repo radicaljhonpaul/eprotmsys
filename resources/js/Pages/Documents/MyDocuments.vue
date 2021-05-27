@@ -32,7 +32,7 @@
 					</div>
 				</div>
 
-				<div class="w-full lg:flex lg:items-center lg:justify-between mt-2 mb-2">
+				<div class="w-full lg:flex lg:items-center lg:justify-between mt-2">
 					<table class="w-full flex flex-row flex-no-wrap sm:bg-white overflow-hidden sm:shadow-lg my-5 border-2 border-blue-600 lg:border-0">
 						<thead class="flex-1 sm:flex-none text-xs bg-blue-600 text-white divide-y divide-blue-800">
 							<tr v-show="Documents.data.length > 0" v-for="(item, index) in Documents.data" :key="index" class="flex flex-col flex-no-wrap sm:table-row mb-2 sm:mb-0">
@@ -59,14 +59,10 @@
 							<tr v-show="Documents.data.length > 0" v-for="(item, index) in Documents.data" :key="index" class="flex flex-col flex-no-wrap sm:table-row mb-2 sm:mb-0">
 								<td class="h-24 px-3 py-2 text-left lg:h-full">
 									<div class="text-xs text-gray-900">{{ item.doc_type }} </div>
-									<div class="text-xs text-gray-500">{{ item.documents_particulars_tbl.length }} Particulars</div>
 									<div class="text-xs text-blue-600">DTRAK No. {{ item.dtrack_no }}</div>
-									<span v-if="item.doc_current_status == 'Accomplished PR - Processing for PO'" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-500 text-white">
-										Accomplished PR
+									<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-500 text-white">
+										{{ item.doc_current_status }}
 									</span>
-									<span v-if="item.doc_current_status == 'Accomplished PO'" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-500 text-white">
-										Accomplished PO
-									</span>		
 								</td>
 
 								<!-- if there are exactly 2 ka logs -->
@@ -96,14 +92,14 @@
 									<doc-destination class="text-pink-500" v-if="item.documents_status_log_tbl[0] != null && item.documents_status_log_tbl[0].forwarded_to != null" :Destination="item.documents_status_log_tbl[0].forwarded_to"></doc-destination>
 								</td>
 
-								<td class="h-12 px-3 py-2 text-left lg:h-full lg:text-center text-sm font-medium">
+								<td class="h-12 px-3 py-2 text-left lg:h-full text-sm font-medium">
 									<a @click="ViewingModal = true, viewParticulars(item)" class="text-blue-600 hover:text-blue-800 cursor-pointer">View <i class="fas fa-eye"></i> </a>
 								</td>
 							</tr>
 						</tbody>
 					</table>
 				</div>
-				<div class="py-2 align-middle inline-block min-w-full">
+				<div class="flex gap-2 pt-2 w-full overflow-x-auto">
 					<pagination :links="Documents.links" :current_page="Documents.current_page" :prev_url="Documents.prev_page_url" :next_url="Documents.next_page_url" :total_page="Documents.last_page" :path="Documents.path"></pagination>
 				</div>
 			</div>
@@ -328,95 +324,59 @@
 			<div class="py-2">
 				<form>
 					<!-- header -->
-					<section class="border-b border-gray-300 px-5 flex justify-between items-center">
-						<div class="text-gray-500">
-							<span class="text-2xl font-semibold">{{ SpecificDocData.doc_type }} </span><br>
-							<span class="text-xs font-light" >Origin: {{ this.OriginFname }}  {{ this.OriginLname }} </span><br>
+					<section class="flex flex-wrap border-b border-gray-300 px-5 items-center">
+						<div class="w-full lg:w-3/4 text-gray-500">
+							<p class="lg:text-2xl font-semibold">{{ SpecificDocData.doc_type }} </p>
+							<p class="text-xs font-light mt-0" >Origin: {{ this.OriginFname }}  {{ this.OriginLname }} </p>
 						</div>
-						<div class="block ml-auto">
+						<div class="w-full lg:w-1/4 ">
 							<div class="text-xs text-gray-500">Dtrack No. <span class="text-green-500">{{ SpecificDocData.dtrack_no }}</span> </div>
-							<span class="text-xs text-gray-500 font-light" v-if="SpecificDocData.documents_mutation_log_tbl != null && SpecificDocData.doc_type == 'Purchase Request'">PR No. <span class="text-green-500">{{ SpecificDocData.documents_mutation_log_tbl.doc_from }}</span>	</span><br>
-							<span class="text-xs text-gray-500 font-light" v-if="SpecificDocData.documents_mutation_log_tbl != null && SpecificDocData.doc_type == 'Purchase Order'">PO No. <span class="text-green-500">{{ SpecificDocData.documents_mutation_log_tbl.doc_to }}</span>	</span><br>
+							<div class="text-xs text-gray-500 font-light" v-if="SpecificDocData.documents_mutation_log_tbl != null && SpecificDocData.doc_type == 'Purchase Request'">PR No.
+								<span class="text-green-500">{{ SpecificDocData.documents_mutation_log_tbl.doc_from }}</span>
+							</div>
+							<div class="text-xs text-gray-500 font-light" v-if="SpecificDocData.documents_mutation_log_tbl != null && SpecificDocData.doc_type == 'Purchase Order'">PO No.
+								<span class="text-green-500">{{ SpecificDocData.documents_mutation_log_tbl.doc_to }}</span>
+							</div>
 							<div class="text-xs text-gray-500 font-light ml-auto">Created On: {{ frontEndDateFormat(SpecificDocData.created_at) }}</div>	
 						</div>
 					</section>
+
 					<!-- Particulars -->
-					<section class="flex gap-x-4 px-5 mt-2 overflow-x-auto" v-if="!ToggleDocsHistory_Particulars">
-						<!-- This example requires Tailwind CSS v2.0+ -->
-						<div class="py-2 align-middle inline-block min-w-full">
-							<section class="border-b text-gray-500 flex justify-between items-center">
-								<span class="text-1xl font-semibold">Particulars</span><br>
-							</section>
-							<div class="overflow-hidden border border-gray-200 ">
-								<table class="table-auto min-w-full divide-y divide-gray-200">
-									<thead class="bg-gray-50">
-										<tr>
-											<th scope="col" class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-												No
-											</th>
-											<th scope="col" class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-												Item
-											</th>
-											<th scope="col" class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-												Qty
-											</th>
-											<th scope="col" class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-												Unit
-											</th>
-											<th scope="col" class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-												Amount
-											</th>
-											<th scope="col" class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-												Purpose
-											</th>
-										</tr>
-									</thead>
-									<tbody class="bg-white divide-y divide-gray-200 text-purple-500 text-xs">
-										<tr v-for="(item, index) in SpecificDocData.documents_particulars_tbl" :key="item.created_at" class="hover:bg-purple-300 hover:text-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50">
-											<td class="px-3 py-1">{{ forIndex(index) }}</td>
-											<td class="px-3 py-1">{{ item.Item }}</td>
-											<td class="px-3 py-1">{{ item.item_qty }}</td>
-											<td class="px-3 py-1">{{ item.item_unit }}</td>
-											<td class="px-3 py-1">₱ {{ formatAmount(item.item_amount) }}</td>
-											<td class="px-3 py-1">{{ item.purpose }}</td>
-										</tr>
-									</tbody>
-								</table>
-							</div>
-						</div>
+					<section class="px-5 mt-2" v-if="!ToggleDocsHistory_Particulars">
+						<particulars-list :Particulars="SpecificDocData.documents_particulars_tbl"></particulars-list>
 					</section>
 
 					<!-- History -->
-					<section class="px-5 mt-2 overflow-x-auto" v-if="ToggleDocsHistory_Particulars">
-						<table class="table-auto min-w-full divide-y divide-gray-200">
-							<thead class="text-xs bg-gray-50">
-								<tr>
-									<th scope="col" class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+					<section class="px-5 mt-2" v-if="ToggleDocsHistory_Particulars">
+						<table class="w-full flex flex-row flex-no-wrap sm:bg-white overflow-hidden my-5 border-2 border-gray-600">
+							<thead class="flex-1 sm:flex-none text-xs bg-gray-600 text-white divide-y divide-gray-800">
+								<tr v-for="history in SpecificDocData.documents_status_log_tbl" :key="history" class="flex flex-col flex-no-wrap sm:table-row mb-2 sm:mb-0">
+									<th class="h-12 px-3 py-2 text-left lg:h-full">
 										Date
 									</th>
-									<th scope="col" class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+									<th class="h-16 px-3 py-2 text-left lg:h-full">
 										Location
 									</th>
-									<th scope="col" class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+									<th class="h-24 px-3 py-2 text-left lg:h-full">
 										Remarks/Notes & Action
 									</th>
-									<th scope="col" class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+									<th class="h-16 px-3 py-2 text-left lg:h-full">
 										Destination
 									</th>
-									<th scope="col" class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+									<th class="h-16 px-3 py-2 text-left lg:h-full">
 										Attachments
 									</th>
 								</tr>
 							</thead>
-							<tbody class="bg-white divide-y divide-gray-200">
-								<tr v-for="history in SpecificDocData.documents_status_log_tbl" :key="history" class="text-gray-500" style="font-size:.65rem;line-height:1rem;">
-									<td class="px-2 py-2 whitespace-nowrap">
+							<tbody class="flex-1 sm:flex-none bg-white divide-y divide-gray-800 lg:divide-y lg:divide-gray-200">
+								<tr v-for="history in SpecificDocData.documents_status_log_tbl" :key="history" class="flex flex-col flex-no-wrap sm:table-row mb-2 sm:mb-0 text-gray-500" style="font-size:.65rem;line-height:1rem;">
+									<td class="h-12 px-3 py-2 text-left lg:h-full">
 										<span v-html=" frontEndDateFormat(history.created_at) "></span>
 									</td>
-									<td class="px-2 py-2 whitespace-nowrap">
+									<td class="h-16 px-3 py-2 text-left lg:h-full">
 										<doc-location :Division="history.division" :Cluster="history.cluster" :Office="history.office" :Type="1"></doc-location>
 									</td>
-									<td class="px-2 py-2 whitespace-nowrap">
+									<td class="h-24 px-3 py-2 text-left lg:h-full">
 										<span v-if="history.doc_notes != null"> {{ history.doc_notes }} </span>
 										<span class="text-red-500" v-if="history.doc_notes == null"> No Document Notes </span>
 										<br/>
@@ -425,19 +385,17 @@
 										</span>
 										<span class="text-red-500" v-if="history.document_status == null"> No Action </span>
 									</td>
-									<td class="px-2 py-2 whitespace-nowrap">
+									<td class="h-16 px-3 py-2 text-left lg:h-full">
 										<doc-destination v-if="history.forwarded_to" :Destination="history.forwarded_to"></doc-destination>	
 										<span v-if="!history.forwarded_to" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-500 text-white">
 											Pending
 										</span>
 									</td>
-									<td class="px-2 py-2 whitespace-nowrap">
-										<div v-for="att in history.img_logs_tbl" :key="att" class="inline-flex gap-x-2">
-											<div class="px-1">
-												<figure class="relative max-w-xs cursor-pointer">
-													<img @click="openImageInNewTab($event)" :id="'image_'+att.id" class="object-cover opacity-90 border-b-2 border-gray-500 mb-2 hover:opacity-100" style="height:50px;width:50px;" :src="'../storage/'+att.path">
-												</figure>
-											</div>
+									<td class="flex gap-2 overflow-x-auto h-16 px-3 py-2 text-left lg:h-full">
+										<div v-for="att in history.img_logs_tbl" :key="att" class="">
+											<figure class="relative max-w-xs cursor-pointer">
+												<img @click="openImageInNewTab($event)" :id="'image_'+att.id" class="object-cover opacity-90 border-b-2 border-gray-500 mb-2 hover:opacity-100" style="height:50px;width:50px;" :src="'../storage/'+att.path">
+											</figure>
 										</div>
 
 										<span class="text-red-500" v-if="history.img_logs_tbl.length == 0">
@@ -478,6 +436,7 @@
 	import DocTypes from '../../CustomComponents/DocTypes.vue'
 	import DocLocation from '../../CustomComponents/DocLocation.vue'
 	import DocDestination from '../../CustomComponents/DocDestination.vue'
+	import ParticularsList from '../../CustomComponents/ParticularsList.vue'
 
     export default {
         components: {
@@ -489,6 +448,7 @@
 			DocTypes,
 			DocLocation,
 			DocDestination,
+			ParticularsList
         },
 		props: ['Documents','UsersDetails'],
 		data() {
@@ -510,11 +470,7 @@
 					SpecificUserData: null,
 					CreateParticularsArray: [
 						{
-							item: '',
-							qty: '',
-							unit: '',
-							amt: '',
-							purpose: '',
+
 						}
 					],
 					CreateDocfile: [],
@@ -562,9 +518,6 @@
 				Mylib.closeModal(this,type);
 				this.ToggleDocsHistory_Particulars = true;
 			},
-			forIndex(index) {
-				return index+1
-			},
 			toggleParticularsDocHistory(){
 				this.ToggleDocsHistory_Particulars = !this.ToggleDocsHistory_Particulars;
 			},
@@ -576,9 +529,6 @@
 			},
 			viewParticulars(data){
 				Mylib.viewParticulars(this,data);
-			},
-			formatAmount(value) {
-				return Mylib.formatAmount(value);
 			},
 			frontEndDateFormat: function(date_data) {
 				return Mylib.frontEndDateFormat(date_data);
@@ -646,14 +596,13 @@
 					amt:this.CreateDocForm.CreateParticularsArray.amt,
 					purpose: this.CreateDocForm.CreateParticularsArray.purpose,
 				};
-				
 				this.CreateDocForm.CreateParticularsArray.push(my_object)
 
-				this.CreateDocForm.CreateParticularsArray.item = '';
-				this.CreateDocForm.CreateParticularsArray.qty = '';
-				this.CreateDocForm.CreateParticularsArray.unit = '';
-				this.CreateDocForm.CreateParticularsArray.amt = '';
-				this.CreateDocForm.CreateParticularsArray.purpose = '';
+				this.CreateDocForm.CreateParticularsArray.item;
+				this.CreateDocForm.CreateParticularsArray.qty;
+				this.CreateDocForm.CreateParticularsArray.unit;
+				this.CreateDocForm.CreateParticularsArray.amt;
+				this.CreateDocForm.CreateParticularsArray.purpose;
 				console.log(this.CreateDocForm.CreateParticularsArray);
 			},
 			removeRow: function (index) {

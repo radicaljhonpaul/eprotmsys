@@ -33,6 +33,7 @@ class NotificationsController extends Controller
         }])
         ->whereIn('id', $array_id)
         ->where('is_open', 0)
+        ->orderBy('id','Desc')
         ->get();
     }
 

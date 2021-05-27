@@ -11,6 +11,7 @@ use App\Http\Controllers\Documents\DocumentController;
 use App\Http\Controllers\Offices\DivSecClusController;
 use App\Http\Controllers\Notifications\NotificationsController;
 use App\Http\Controllers\Dashboard\DashboardController;
+use App\Http\Controllers\Documents\DocumentExportImportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,8 +38,10 @@ Route::get('getOfficesDivision', [DivSecClusController::class, 'getOfficesDivisi
 Route::get('getOfficesCluster', [DivSecClusController::class, 'getOfficesCluster']);
 Route::get('getOffices', [DivSecClusController::class, 'getOffices']);
 
-Route::get('getSpecificUser', [OfficeController::class, 'getSpecificUser']);
+// Exports
+Route::get('exportAllDocuments', [DocumentExportImportController::class, 'exportAllDocuments'])->name('exportAllDocuments');
 
+Route::get('getSpecificUser', [OfficeController::class, 'getSpecificUser']);
 Route::group(['middleware' => ['auth:sanctum', 'verified']], function(){
     // Needs to be auth when accessing notifications
     Route::get('getUserNotifications', [NotificationsController::class, 'getUserNotifications']);
@@ -48,6 +51,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function(){
     Route::get('getMostReceivedDocs', [DashboardController::class, 'getMostReceivedDocs']);
     Route::get('getUtilitiesCounts', [DashboardController::class, 'getUtilitiesCounts']);
     Route::get('getAPTAllReceivedDocs', [DashboardController::class, 'getAPTAllReceivedDocs']);
+    
     // Route::get('getPRAppOverRec', [DashboardController::class, 'getPRAppOverRec']);
     // Route::get('getPOAppOverRec', [DashboardController::class, 'getPOAppOverRec']);
     // Route::get('getAPTperDocs', [DashboardController::class, 'getAPTperDocs']);
@@ -59,11 +63,12 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function(){
         Route::get('/mydocs', [DocumentController::class, 'mydocs'])->name('mydocs');
         Route::get('/logged', [DocumentController::class, 'logged'])->name('logged');
         Route::get('/outgoing', [DocumentController::class, 'outgoing'])->name('outgoing');
-        Route::get('/docshistory', [DocumentController::class, 'docshistory'])->name('docshistory');
+        Route::get('/docsHistory', [DocumentController::class, 'docsHistory'])->name('docsHistory');
         
         // Custom function Processing Data
         Route::get('/getMutatedDocument', [DocumentController::class, 'getMutatedDocument'])->name('getMutatedDocument');
         Route::get('/searchDocuments', [DocumentController::class, 'searchDocuments'])->name('searchDocuments');
+        Route::get('/getFilteredDocumentsHistory', [DocumentController::class, 'getFilteredDocumentsHistory'])->name('getFilteredDocumentsHistory');
         Route::post('/routedoc', [DocumentController::class, 'routedoc'])->name('routedoc');
         Route::post('/logdoc', [DocumentController::class, 'logdoc'])->name('logdoc');
         Route::post('/createdoc', [DocumentController::class, 'create'])->name('createdoc');

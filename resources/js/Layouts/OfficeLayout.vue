@@ -31,6 +31,10 @@
                                 <jet-nav-link :href="route('office.outgoing')" :active="route().current('office.outgoing')"> 
                                     Forwarded &nbsp; <i class="fas fa-file-export text-gray-800"></i>
                                 </jet-nav-link>
+
+                                <jet-nav-link :href="route('office.docsHistory')" :active="route().current('office.docsHistory')"> 
+                                    History &nbsp; <i class="fas fa-clipboard-list text-gray-800"></i>
+                                </jet-nav-link>
                             </div>
                         </div>
 
@@ -64,7 +68,7 @@
                                         <button v-if="$page.props.jetstream.managesProfilePhotos" class="flex text-sm border-2 border-transparent rounded-full focus:outline-none focus:border-gray-200 transition duration-150 ease-in-out">
                                             <img v-if="$page.props.user.profile_photo_path" class="h-8 w-8 border-2 border-gray-200 rounded-full object-cover" :src="'/storage/'+$page.props.user.profile_photo_path" :alt="$page.props.user.email" />
                                             <img v-if="$page.props.user.profile_photo_path == null && $page.props.UsersDetails[0].gender == 'Male'" class="h-8 w-8 border-2 border-gray-200 rounded-full object-cover" src="/images/no_profile_pic/male.gif">
-                                            <img v-if="$page.props.user.profile_photo_path == null && $page.props.UsersDetails[0].gender == 'Female'" class="h-8 w-8 border-2 border-gray-200 rounded-full object-cover" src="/images/no_profile_pic/female.gif">
+                                            <img v-if="$page.props.user.profile_photo_path == null && $page.props.UsersDetails[0].gender == 'Female'" class="h-8 w-8 border-2 border+gray-200 rounded-full object-cover" src="/images/no_profile_pic/female.gif">
                                         </button>
 
                                         <span v-if="!$page.props.jetstream.managesProfilePhotos" class="inline-flex rounded-md">
@@ -145,6 +149,10 @@
 
                         <jet-responsive-nav-link :href="route('office.outgoing')" :active="route().current('office.outgoing')"> 
                             Forwarded &nbsp; <i class="fas fa-file-export text-gray-800"></i>
+                        </jet-responsive-nav-link>
+
+                        <jet-responsive-nav-link :href="route('office.docsHistory')" :active="route().current('office.docsHistory')"> 
+                            History &nbsp; <i class="fas fa-clipboard-list text-gray-800"></i>
                         </jet-responsive-nav-link>
                     </div>
 
