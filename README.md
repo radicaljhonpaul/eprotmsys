@@ -18,6 +18,17 @@ If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Lar
 
 ## License
 
+## Installation
+// Clone this repo
+// Check "zql_file" folder
+// If you're using xampp - turn on your PHP and MySQL Server and go to PhpMyadmin
+// Import eprotrackmo.sql to your MySQL Server
+// Check .env file and hosts and vhost file (for local domain name) | Default is "doh.protrailmis.co"
+// Run npm install
+// Run npm run hot/watch/dev/prod
+// Run php artisan:websockets serve
+// Go to browser and type "http://doh.protrailmis.co/laravel-websockets" - (domain is based on hosts and vhost file) and click "Connect"
+
 ## Commits Notes
 
 - Apr 21, 2021 Wed
